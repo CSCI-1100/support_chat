@@ -1,0 +1,504 @@
+<!-- templates/chat/technician_chat.html - 🔧 TECHNICIAN CHAT INTERFACE -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}🔧 Chat {{ chat.chat_id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.tech-chat-container {
+    height: 85vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.tech-chat-header {
+    background: linear-gradient(45deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 1rem;
+}
+
+.chat-messages {
+    height: 65vh;
+    overflow-y: auto;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.message {
+    margin-bottom: 1rem;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.message.student {
+    text-align: left;
+}
+
+.message.technician {
+    text-align: right;
+}
+
+.message.system {
+    text-align: center;
+}
+
+.message-bubble {
+    display: inline-block;
+    max-width: 75%;
+    padding: 0.875rem 1.125rem;
+    border-radius: 18px;
+    word-wrap: break-word;
+    position: relative;
+}
+
+.student .message-bubble {
+    background: linear-gradient(145deg, #007bff, #0056b3);
+    color: white;
+}
+
+.technician .message-bubble {
+    background: linear-gradient(145deg, #28a745, #1e7e34);
+    color: white;
+}
+
+.system .message-bubble {
+    background: #f8f9fa;
+    color: #6c757d;
+    font-style: italic;
+    border: 1px dashed #dee2e6;
+}
+
+.tech-input-area {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.participant-badge {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 0.25rem 0.75rem;
+    margin: 0 0.25rem;
+    font-size: 0.8rem;
+}
+
+.close-chat-btn {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.close-chat-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+}
+
+.attachment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.attachment-item {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+}
+
+.attachment-item:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quick-actions {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.quick-action-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    padding: 0.25rem 0.5rem;
+    margin: 0.125rem;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.quick-action-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="tech-chat-container shadow-lg">
+                <!-- 🌟 Enhanced Chat Header -->
+                <div class="tech-chat-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-1">
+                                <i class="bi bi-chat-heart"></i>
+                                Chat {{ chat.chat_id }}
+                            </h4>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-light text-dark">
+                                    👨‍🎓 {{ chat.student_name }}
+                                </span>
+                                <small>Started {{ chat.created_at|timesince }} ago</small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Participating Technicians -->
+                            <div class="d-flex flex-wrap">
+                                {% for tech in chat.technicians.all %}
+                                    <span class="participant-badge">
+                                        <i class="bi bi-person-check"></i> {{ tech.get_full_name }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Close Chat Button -->
+                            <button type="button" class="btn close-chat-btn text-white"
+                                    data-bs-toggle="modal" data-bs-target="#closeChatModal">
+                                <i class="bi bi-x-circle"></i> Close Chat
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions mt-2">
+                        <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Thanks for contacting support! I\'ll help you with that.')">
+                            👋 Greeting
+                        </button>
+                        <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Can you provide more details about the issue?')">
+                            ❓ More Info
+                        </button>
+                        <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Let me check that for you...')">
+                            🔍 Checking
+                        </button>
+                        <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Is this issue resolved for you?')">
+                            ✅ Resolution Check
+                        </button>
+                        <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Is there anything else I can help you with today?')">
+                            🤝 Additional Help
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 📡 Messages Area -->
+                <div class="chat-messages" id="messagesContainer">
+                    {% for message in messages %}
+                        <div class="message {% if message.is_from_student %}student{% elif message.message_type == 'system' %}system{% else %}technician{% endif %}">
+                            <div class="message-bubble">
+                                <div class="message-sender mb-1">
+                                    <strong>
+                                        {% if message.is_from_student %}
+                                            👨‍🎓 {{ message.sender_name }}
+                                        {% elif message.message_type == 'system' %}
+                                            🤖 System
+                                        {% else %}
+                                            🔧 {{ message.sender_name }}
+                                        {% endif %}
+                                    </strong>
+                                </div>
+
+                                <div class="message-content">
+                                    {{ message.content|linebreaks }}
+                                </div>
+
+                                {% if message.attachments.exists %}
+                                    <div class="attachment-grid">
+                                        {% for attachment in message.attachments.all %}
+                                            <a href="{% url 'chat:download_attachment' attachment.id %}"
+                                               class="attachment-item" target="_blank">
+                                                <div class="d-flex align-items-center">
+                                                    {% if attachment.is_image %}
+                                                        <i class="bi bi-image text-primary me-2"></i>
+                                                    {% else %}
+                                                        <i class="bi bi-file-earmark text-secondary me-2"></i>
+                                                    {% endif %}
+                                                    <div class="flex-grow-1">
+                                                        <div class="small fw-bold text-truncate">
+                                                            {{ attachment.original_filename }}
+                                                        </div>
+                                                        <div class="text-muted" style="font-size: 0.7rem;">
+                                                            {{ attachment.display_size }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                <div class="message-time text-white-50 small mt-2">
+                                    {{ message.timestamp|date:"H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- 💬 Technician Input Area -->
+                <div class="tech-input-area">
+                    <form method="post" enctype="multipart/form-data" id="techMessageForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="send_message">
+
+                        <div class="input-group">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    onclick="toggleEmojiPicker()" title="Add emoji">
+                                😊
+                            </button>
+
+                            {{ form.content }}
+
+                            <button type="button" class="btn btn-outline-secondary"
+                                    onclick="document.getElementById('techFileInput').click()"
+                                    title="Attach files">
+                                <i class="bi bi-paperclip"></i>
+                            </button>
+
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-send"></i> Send
+                            </button>
+                        </div>
+
+                        {{ form.attachments }}
+                        <div id="techFilePreview" class="mt-2"></div>
+                    </form>
+
+                    <!-- 😊 Emoji Picker -->
+                    <div id="techEmojiPicker" class="mt-2" style="display: none;">
+                        <div class="emoji-grid p-2 bg-white rounded shadow">
+                            <div class="row g-1">
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('😊')">😊</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('👍')">👍</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('✅')">✅</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🔧')">🔧</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('💡')">💡</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🚀')">🚀</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('⭐')">⭐</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🎉')">🎉</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📊 Chat Info Sidebar -->
+        <div class="col-lg-3">
+            <div class="card h-100" style="border-radius: 15px;">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Chat Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <dl>
+                        <dt><i class="bi bi-person"></i> Student:</dt>
+                        <dd>{{ chat.student_name }}</dd>
+
+                        <dt><i class="bi bi-clock"></i> Started:</dt>
+                        <dd>{{ chat.created_at|date:"M d, Y H:i" }}</dd>
+
+                        <dt><i class="bi bi-chat-dots"></i> Status:</dt>
+                        <dd>
+                            <span class="badge bg-success">Active Chat</span>
+                        </dd>
+
+                        <dt><i class="bi bi-people"></i> Technicians:</dt>
+                        <dd>
+                            {% for tech in chat.technicians.all %}
+                                <div class="badge bg-secondary mb-1">
+                                    {{ tech.get_full_name }}
+                                </div>
+                            {% endfor %}
+                        </dd>
+                    </dl>
+
+                    <div class="mt-4">
+                        <h6><i class="bi bi-chat-quote"></i> Initial Request:</h6>
+                        <div class="alert alert-light small">
+                            {{ chat.initial_message }}
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{% url 'chat:technician_dashboard' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🔒 Close Chat Modal -->
+<div class="modal fade" id="closeChatModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i> Close Chat Session
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>⚠️ Warning:</strong> This action will permanently close the chat and delete all messages and files.</p>
+                <p>Are you sure you want to close this chat session with <strong>{{ chat.student_name }}</strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="close_chat">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Close & Delete Chat
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Enhanced technician chat functionality
+function scrollToBottom() {
+    const container = document.getElementById('messagesContainer');
+    container.scrollTop = container.scrollHeight;
+}
+
+function toggleEmojiPicker() {
+    const picker = document.getElementById('techEmojiPicker');
+    picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+}
+
+function insertTechEmoji(emoji) {
+    const textarea = document.getElementById('{{ form.content.id_for_label }}');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    textarea.value = text.substring(0, start) + emoji + text.substring(end);
+    textarea.focus();
+    textarea.setSelectionRange(start + emoji.length, start + emoji.length);
+    toggleEmojiPicker();
+}
+
+function insertQuickMessage(message) {
+    const textarea = document.getElementById('{{ form.content.id_for_label }}');
+    textarea.value = message;
+    textarea.focus();
+}
+
+// File preview for technician uploads
+document.getElementById('{{ form.attachments.id_for_label }}').addEventListener('change', function(e) {
+    const preview = document.getElementById('techFilePreview');
+    preview.innerHTML = '';
+
+    for (let file of e.target.files) {
+        const fileDiv = document.createElement('div');
+        fileDiv.className = 'alert alert-success small d-flex justify-content-between align-items-center';
+        fileDiv.innerHTML = `
+            <span><i class="bi bi-paperclip"></i> ${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+        `;
+        preview.appendChild(fileDiv);
+    }
+});
+
+// Enhanced form submission
+document.getElementById('techMessageForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
+    submitBtn.disabled = true;
+
+    fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Clear form
+            document.getElementById('{{ form.content.id_for_label }}').value = '';
+            document.getElementById('{{ form.attachments.id_for_label }}').value = '';
+            document.getElementById('techFilePreview').innerHTML = '';
+
+            // Reload to show new message
+            location.reload();
+        }
+    })
+    .catch(console.error)
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+});
+
+// Auto-scroll and real-time updates
+document.addEventListener('DOMContentLoaded', function() {
+    scrollToBottom();
+
+    // Auto-refresh messages every 3 seconds
+    setInterval(function() {
+        fetch(`/chat/api/messages/{{ chat.chat_id }}/`)
+            .then(response => response.json())
+            .then(data => {
+                // Simple check for new messages - in production, implement proper message diffing
+                const currentMessageCount = document.querySelectorAll('.message').length;
+                if (data.messages.length > currentMessageCount) {
+                    location.reload();
+                }
+            })
+            .catch(console.error);
+    }, 3000);
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + Enter to send message
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        document.getElementById('techMessageForm').dispatchEvent(new Event('submit'));
+    }
+});
+</script>
+{% endblock %}

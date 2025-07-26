@@ -1,0 +1,44 @@
+{% extends '../base.html' %}
+
+{% block title %}Login - 💬 Chat Support{% endblock %}
+
+{% block content %}
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 position-absolute top-50 start-50 translate-50-rev">
+        <div class="form-container shadow">
+            <div class="text-center mb-4">
+                <h4 class="ff-bold">Staff Login</h4>
+            </div>
+
+            <form method="post" class="d-flex flex-column gap-3" novalidate>
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="forms-label">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ field.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors|join:", " }}
+                    </div>
+                {% endif %}
+
+                <button type="submit" class="btn bttn-primary ff-bold w-100">Log In</button>
+                <div class="text-center">
+                    <a href="{% url 'password_reset' %}" class="text-highlight-primary text-decoration-none">
+                        Forgot your password?
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

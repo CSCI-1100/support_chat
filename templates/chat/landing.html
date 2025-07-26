@@ -1,0 +1,300 @@
+<!-- templates/chat/landing.html - 🌟 CSCI 1100 DIMENSIONAL PORTAL INTERFACE 🌟 -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}💻 CSCI 1100 Live Support{% endblock %}
+
+{% block content %}
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center"
+     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%, #f093fb 80%);">
+    
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-lg border-0" style="border-radius: 20px; backdrop-filter: blur(15px);">
+                <div class="card-header text-center py-4 border-0" style="background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%); border-radius: 20px 20px 0 0;">
+                    <h1 class="text-white mb-2">
+                        <i class="bi bi-mortarboard"></i>
+                        CSCI 1100 Live Support Hub
+                    </h1>
+                    <p class="text-dark mb-0">🚀 Get help with course topics & assignments!</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="badge bg-success mb-3 px-3 py-2 pulse-glow">
+                            <i class="bi bi-chat-dots-fill"></i> Academic Support Available
+                        </div>
+
+                        <p class="text-muted mb-3">
+                            💬 Connect with course assistants for help with CSCI 1100 topics:
+                        </p>
+
+                        <!-- Enhanced Topic Grid -->
+                        <div class="row g-2 mb-4">
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge bg-info text-dark">
+                                    <i class="bi bi-shield-check"></i>
+                                    <div>Information Literacy</div>
+                                    <small>Info search & evaluation</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge bg-success text-white">
+                                    <i class="bi bi-code-slash"></i>
+                                    <div>Programming</div>
+                                    <small>Concepts, algorithms, debugging</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge bg-warning text-dark">
+                                    <i class="bi bi-globe"></i>
+                                    <div>Web Literacy</div>
+                                    <small>HTML, CSS, browsers</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge bg-danger text-white">
+                                    <i class="bi bi-diagram-3"></i>
+                                    <div>Networks</div>
+                                    <small>Internet, protocols, cloud</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge bg-primary text-white">
+                                    <i class="bi bi-bar-chart"></i>
+                                    <div>Data Literacy</div>
+                                    <small>Analysis, visualization, trends</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge text-white" style="background: linear-gradient(45deg, #9c27b0, #673ab7);">
+                                    <i class="bi bi-microsoft"></i>
+                                    <div>Office Suite</div>
+                                    <small>Word, Excel, PowerPoint</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge bg-dark text-white">
+                                    <i class="bi bi-robot"></i>
+                                    <div>AI & Machine Learning</div>
+                                    <small>Concepts, ethics, applications</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge text-white" style="background: linear-gradient(45deg, #ff6b6b, #feca57);">
+                                    <i class="bi bi-palette"></i>
+                                    <div>Content Creation</div>
+                                    <small>Design, tools, copyright</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge text-white" style="background: linear-gradient(45deg, #667eea, #764ba2);">
+                                    <i class="bi bi-shield-lock"></i>
+                                    <div>Cybersecurity</div>
+                                    <small>Privacy, threats, best practices</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" class="d-flex flex-column gap-3">
+                        {% csrf_token %}
+                        
+                        <div>
+                            <label for="{{ form.student_name.id_for_label }}" class="form-label fw-bold">
+                                {{ form.student_name.label }}
+                            </label>
+                            {{ form.student_name }}
+                            {% if form.student_name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.student_name.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.initial_message.id_for_label }}" class="form-label fw-bold">
+                                {{ form.initial_message.label }}
+                            </label>
+                            {{ form.initial_message }}
+                            {% if form.initial_message.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.initial_message.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mt-3" 
+                                style="border-radius: 15px; background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%); border: none;">
+                            <i class="bi bi-chat-square-dots"></i>
+                            Connect with Course Assistant
+                        </button>
+                    </form>
+
+                    <div class="row mt-4">
+                        <div class="col-md-8">
+                            <div class="alert alert-light border-0 py-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle"></i>
+                                    For computer hardware/IT problems, contact the IT Helpdesk
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <small class="text-muted">
+                                    <i class="bi bi-shield-check"></i>
+                                    Secure & Private
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.topic-badge {
+    padding: 0.75rem 0.5rem;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+    min-height: 80px;
+}
+
+.topic-badge:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.topic-badge i {
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+}
+
+.topic-badge div:not(small) {
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.1;
+}
+
+.topic-badge small {
+    font-size: 0.7rem;
+    opacity: 0.9;
+    line-height: 1.1;
+}
+
+@media (max-width: 768px) {
+    .topic-badge {
+        min-height: 70px;
+        padding: 0.5rem 0.25rem;
+    }
+
+    .topic-badge i {
+        font-size: 1rem;
+    }
+
+    .topic-badge div:not(small) {
+        font-size: 0.8rem;
+    }
+
+    .topic-badge small {
+        font-size: 0.65rem;
+    }
+}
+
+.pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+    from {
+        box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+        transform: scale(1);
+    }
+    to {
+        box-shadow: 0 0 20px rgba(40, 167, 69, 0.8);
+        transform: scale(1.02);
+    }
+}
+
+.form-control:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+    transition: all 0.3s ease;
+}
+
+/* Enhanced glassmorphism effect */
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Topic interaction effects */
+.topic-badge {
+    position: relative;
+    overflow: hidden;
+}
+
+.topic-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.topic-badge:hover::before {
+    left: 100%;
+}
+</style>
+
+<script>
+// Add click handlers to topic badges for UX feedback
+document.addEventListener('DOMContentLoaded', function() {
+    const topicBadges = document.querySelectorAll('.topic-badge');
+    const messageTextarea = document.getElementById('{{ form.initial_message.id_for_label }}');
+
+    topicBadges.forEach(badge => {
+        badge.addEventListener('click', function() {
+            const topicName = this.querySelector('div:not(small)').textContent;
+            const currentValue = messageTextarea.value;
+
+            if (!currentValue.toLowerCase().includes(topicName.toLowerCase())) {
+                const newText = currentValue ?
+                    `${currentValue}\n\nI need help with ${topicName}: ` :
+                    `I need help with ${topicName}: `;
+                messageTextarea.value = newText;
+                messageTextarea.focus();
+
+                // Visual feedback
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            }
+        });
+    });
+
+    // Auto-focus on name field
+    document.getElementById('{{ form.student_name.id_for_label }}').focus();
+});
+</script>
+{% endblock %}

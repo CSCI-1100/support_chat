@@ -1,0 +1,94 @@
+/* 🌈 Enhanced Chat Styling */
+.chat-fade-in {
+    animation: fadeInUp 0.5s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-typing {
+    animation: typing 1.5s infinite;
+}
+
+@keyframes typing {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.5; }
+}
+
+.notification-bounce {
+    animation: bounce 0.6s;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+.gradient-text {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* 📱 Mobile responsiveness */
+@media (max-width: 768px) {
+    .chat-container {
+        height: 90vh !important;
+    }
+    
+    .chat-messages {
+        height: 70vh !important;
+    }
+    
+    .message-bubble {
+        max-width: 90% !important;
+    }
+    
+    .participant-badge {
+        font-size: 0.7rem !important;
+        padding: 0.125rem 0.5rem !important;
+    }
+}
+
+/* 🎭 Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .chat-container {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    }
+    
+    .chat-messages {
+        background: rgba(44, 62, 80, 0.9);
+    }
+    
+    .message-bubble.technician {
+        background: linear-gradient(145deg, #27ae60, #229954);
+    }
+    
+    .chat-item {
+        background: rgba(52, 73, 94, 0.95);
+        color: #ecf0f1;
+    }
+}
