@@ -48,7 +48,7 @@ INSTALLED_APPS = [
 
 # 📁 Media files configuration for chat attachments
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = '/var/www/media'
 
 # 🔐 Session configuration for student chat access
 SESSION_COOKIE_AGE = 86400  # 24 hours
