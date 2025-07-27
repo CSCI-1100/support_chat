@@ -13,8 +13,17 @@ from .models import ChatSession, ChatMessage, ChatAttachment, ChatStatus
 from .forms import ChatStartForm, ChatMessageForm
 from django.contrib.auth import get_user_model
 
+# 🌈🔧 COMPLETE DIMENSIONAL REPAIR MATRIX 🔧🌈
+
 def chat_landing(request):
-    """🌈 THE DIMENSIONAL PORTAL - Student Entry Point"""
+    """🌟 CSCI 1100 DIMENSIONAL PORTAL INTERFACE 🌟"""
+
+    # 🚨 CRITICAL: ENSURE SESSION EXISTS BEFORE ANYTHING
+    if not request.session.session_key:
+        request.session.create()
+        # 💫 Force session to persist
+        request.session.modified = True
+
     if request.method == 'POST':
         form = ChatStartForm(request.POST)
         if form.is_valid():
@@ -22,7 +31,7 @@ def chat_landing(request):
             chat = ChatSession.objects.create(
                 student_name=form.cleaned_data['student_name'],
                 initial_message=form.cleaned_data['initial_message'],
-                student_session_key=request.session.session_key or ''
+                student_session_key=request.session.session_key
             )
 
             # 🎯 Create initial system message
@@ -48,12 +57,31 @@ def chat_landing(request):
 
     return render(request, 'chat/landing.html', {'form': form})
 
+
 def student_chat(request, chat_id):
-    """👨‍🎓 STUDENT CONSCIOUSNESS INTERFACE"""
+    """👨‍🎓 STUDENT CONSCIOUSNESS INTERFACE - FIXED"""
     chat = get_object_or_404(ChatSession, chat_id=chat_id)
 
-    # 🔐 Quantum access validation
-    if chat.student_session_key != request.session.session_key:
+    # 🔐 ENHANCED QUANTUM ACCESS VALIDATION
+    current_session = request.session.session_key
+
+    # If no session exists, create one
+    if not current_session:
+        request.session.create()
+        current_session = request.session.session_key
+
+    # 🌊 FLEXIBLE ACCESS LOGIC
+    access_granted = False
+
+    if chat.student_session_key == current_session:
+        access_granted = True
+    elif not chat.student_session_key and request.method == 'GET':
+        # Empty session key - assume first access and update
+        chat.student_session_key = current_session
+        chat.save()
+        access_granted = True
+
+    if not access_granted:
         messages.error(request, '🚫 Access denied to this chat dimension')
         return redirect('chat:landing')
 
@@ -180,7 +208,7 @@ def join_chat(request, chat_id):
 
 @login_required
 def technician_chat(request, chat_id):
-    """🔧 TECHNICIAN CONSCIOUSNESS INTERFACE"""
+    """🔧 TECHNICIAN CONSCIOUSNESS INTERFACE - FIXED"""
     chat = get_object_or_404(ChatSession, chat_id=chat_id)
 
     # 🔐 Verify technician access
@@ -216,6 +244,12 @@ def technician_chat(request, chat_id):
                     )
 
                 return JsonResponse({'status': 'success'})
+            else:
+                # 🚨 Return form errors for debugging
+                return JsonResponse({
+                    'status': 'error',
+                    'errors': message_form.errors.as_json()
+                })
 
         elif action == 'close_chat':
             # 🔒 DIMENSIONAL CLOSURE PROTOCOL
@@ -230,12 +264,13 @@ def technician_chat(request, chat_id):
             messages.success(request, f'🔒 Chat {chat_id} has been closed and purged from the quantum realm')
             return redirect('chat:technician_dashboard')
 
+    # 🌟 CRITICAL FIX: Always create fresh form instance
     message_form = ChatMessageForm()
 
     context = {
         'chat': chat,
         'messages': chat.messages.all().order_by('timestamp'),
-        'message_form': message_form,
+        'form': message_form,  # 🔑 KEY CHANGE: Use 'form' not 'message_form'
         'other_technicians': chat.technicians.exclude(id=request.user.id)
     }
 

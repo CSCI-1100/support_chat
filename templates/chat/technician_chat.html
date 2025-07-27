@@ -1,4 +1,3 @@
-<!-- templates/chat/technician_chat.html - 🔧 TECHNICIAN CHAT INTERFACE -->
 {% extends 'base.html' %}
 {% load static %}
 
@@ -14,13 +13,13 @@
 }
 
 .tech-chat-header {
-    background: linear-gradient(45deg, #28a745 0%, #20c997 100%);
-    color: white;
+    background: linear-gradient(45deg, #93edaa 0%, #80e097 100%);
+    color: black;
     padding: 1rem;
 }
 
 .chat-messages {
-    height: 65vh;
+    height: 60vh;
     overflow-y: auto;
     padding: 1rem;
     background: rgba(255, 255, 255, 0.9);
@@ -66,11 +65,13 @@
 .student .message-bubble {
     background: linear-gradient(145deg, #007bff, #0056b3);
     color: white;
+    border-bottom-left-radius: 3px;
 }
 
 .technician .message-bubble {
-    background: linear-gradient(145deg, #28a745, #1e7e34);
-    color: white;
+    background: linear-gradient(145deg, #acfabf, #a0e1af);
+    color: black;
+    border-bottom-right-radius: 3px;
 }
 
 .system .message-bubble {
@@ -94,8 +95,17 @@
     font-size: 0.8rem;
 }
 
+.submit-message-btn {
+    background: linear-gradient(45deg, #93edaa 0%, #80e097 100%);
+    border: 1px solid #6c757d;
+}
+
+.submit-message-btn:hover {
+    background: linear-gradient(35deg, #9effb6 0%, #8ff8a7 100%);
+}
+
 .close-chat-btn {
-    background: linear-gradient(45deg, #dc3545, #c82333);
+    background: linear-gradient(45deg, #c84b58, #bf2f5f);
     border: none;
     transition: all 0.3s ease;
 }
@@ -110,6 +120,7 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 0.5rem;
     margin-top: 0.5rem;
+    color: #287ffc;
 }
 
 .attachment-item {
@@ -138,7 +149,7 @@
 .quick-action-btn {
     background: rgba(255, 255, 255, 0.2);
     border: none;
-    color: white;
+    color: black;
     border-radius: 8px;
     padding: 0.25rem 0.5rem;
     margin: 0.125rem;
@@ -148,7 +159,63 @@
 
 .quick-action-btn:hover {
     background: rgba(255, 255, 255, 0.3);
-    color: white;
+    color: black;
+}
+
+.modal {
+    z-index: 99999 !important;
+}
+
+.modal-backdrop {
+    z-index: 99998 !important;
+}
+
+.modal-dialog {
+    z-index: 100000 !important;
+}
+
+.modal-content {
+    z-index: 100001 !important;
+    position: relative;
+}
+
+/* 🔧 ENSURE BUTTONS ARE CLICKABLE */
+.modal-footer button {
+    z-index: 100002 !important;
+    position: relative;
+    pointer-events: auto !important;
+}
+
+/* 🎭 MODAL ANIMATION FIXES */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: translate(0, -50px);
+}
+
+.modal.show .modal-dialog {
+    transform: none;
+}
+
+/* 🌈 ENHANCED VISUAL FEEDBACK */
+.btn-danger:hover {
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+    transform: scale(1.02);
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
+}
+
+/* 🚨 DEBUGGING: Visual indicators */
+.modal-content {
+    border: 2px solid rgba(220, 53, 69, 0.5);
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+}
+
+.modal-footer {
+    background-color: rgba(248, 249, 250, 0.95);
 }
 </style>
 {% endblock %}
@@ -245,7 +312,7 @@
                                                         <i class="bi bi-file-earmark text-secondary me-2"></i>
                                                     {% endif %}
                                                     <div class="flex-grow-1">
-                                                        <div class="small fw-bold text-truncate">
+                                                        <div class="text-truncate">
                                                             {{ attachment.original_filename }}
                                                         </div>
                                                         <div class="text-muted" style="font-size: 0.7rem;">
@@ -266,7 +333,7 @@
                     {% endfor %}
                 </div>
 
-                <!-- 💬 Technician Input Area -->
+                <!-- 💬 FIXED TECHNICIAN INPUT AREA -->
                 <div class="tech-input-area">
                     <form method="post" enctype="multipart/form-data" id="techMessageForm">
                         {% csrf_token %}
@@ -278,20 +345,35 @@
                                 😊
                             </button>
 
-                            {{ form.content }}
+                            <!-- 🔧 EXPLICIT TEXTAREA MANIFESTATION -->
+                            <textarea name="content"
+                                      id="id_content"
+                                      class="form-control shadow-none"
+                                      rows="3"
+                                      maxlength="2000"
+                                      placeholder="💬 Type your response... (Use Ctrl+Enter to send)"
+                                      style="resize: none;"
+                                      required></textarea>
 
                             <button type="button" class="btn btn-outline-secondary"
-                                    onclick="document.getElementById('techFileInput').click()"
+                                    onclick="document.getElementById('id_attachments').click()"
                                     title="Attach files">
                                 <i class="bi bi-paperclip"></i>
                             </button>
 
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn submit-message-btn">
                                 <i class="bi bi-send"></i> Send
                             </button>
                         </div>
 
-                        {{ form.attachments }}
+                        <!-- 📎 File Input -->
+                        <input type="file"
+                               name="attachments"
+                               id="id_attachments"
+                               class="form-control d-none"
+                               multiple
+                               accept=".png,.jpg,.jpeg,.gif,.pdf,.doc,.docx,.txt,.py,.java,.cpp,.js,.html,.css,.json,.zip">
+
                         <div id="techFilePreview" class="mt-2"></div>
                     </form>
 
@@ -364,37 +446,82 @@
 </div>
 
 <!-- 🔒 Close Chat Modal -->
-<div class="modal fade" id="closeChatModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">
+<div class="modal fade" id="closeChatModal" tabindex="-1" aria-labelledby="closeChatModalLabel" aria-hidden="true"
+     style="position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 2147483647 !important;
+            background-color: rgba(0, 0, 0, 0.6) !important;
+            display: none;">
+    <div class="modal-dialog"
+         style="position: absolute !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                z-index: 2147483647 !important;
+                margin: 0 !important;
+                width: 90% !important;
+                max-width: 500px !important;">
+        <div class="modal-content"
+             style="z-index: 2147483647 !important;
+                    position: relative !important;
+                    background-color: #fff !important;
+                    border-radius: 0.5rem !important;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.8) !important;">
+            <div class="modal-header bg-danger text-white"
+                 style="z-index: 2147483647 !important;
+                        position: relative !important;
+                        pointer-events: auto !important;">
+                <h5 class="modal-title" id="closeChatModalLabel">
                     <i class="bi bi-exclamation-triangle"></i> Close Chat Session
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white nuclear-close-btn"
+                        style="z-index: 2147483647 !important;
+                               position: relative !important;
+                               pointer-events: auto !important;
+                               background-color: white !important;
+                               border-radius: 50% !important;
+                               padding: 0.5rem !important;">
+                    ❌
+                </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body"
+                 style="z-index: 2147483647 !important;
+                        position: relative !important;
+                        pointer-events: auto !important;
+                        padding: 2rem !important;">
                 <p><strong>⚠️ Warning:</strong> This action will permanently close the chat and delete all messages and files.</p>
                 <p>Are you sure you want to close this chat session with <strong>{{ chat.student_name }}</strong>?</p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="post" class="d-inline">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="close_chat">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Close & Delete Chat
-                    </button>
-                </form>
+            <div class="modal-footer"
+                 style="z-index: 2147483647 !important;
+                        position: relative !important;
+                        pointer-events: auto !important;
+                        padding: 1rem 2rem !important;">
+                <button type="button" class="btn btn-secondary nuclear-cancel-btn"
+                        style="z-index: 2147483647 !important;
+                               position: relative !important;
+                               pointer-events: auto !important;
+                               margin-right: 1rem !important;
+                               padding: 0.75rem 1.5rem !important;">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-danger nuclear-confirm-btn"
+                        style="z-index: 2147483647 !important;
+                               position: relative !important;
+                               pointer-events: auto !important;
+                               padding: 0.75rem 1.5rem !important;">
+                    <i class="bi bi-trash"></i> Close & Delete Chat
+                </button>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-// Enhanced technician chat functionality
+// 🌈 ENHANCED TECHNICIAN CHAT FUNCTIONALITY - QUANTUM FIXED
 function scrollToBottom() {
     const container = document.getElementById('messagesContainer');
     container.scrollTop = container.scrollHeight;
@@ -406,7 +533,7 @@ function toggleEmojiPicker() {
 }
 
 function insertTechEmoji(emoji) {
-    const textarea = document.getElementById('{{ form.content.id_for_label }}');
+    const textarea = document.getElementById('id_content'); // 🔧 FIXED ID REFERENCE
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const text = textarea.value;
@@ -417,13 +544,13 @@ function insertTechEmoji(emoji) {
 }
 
 function insertQuickMessage(message) {
-    const textarea = document.getElementById('{{ form.content.id_for_label }}');
+    const textarea = document.getElementById('id_content'); // 🔧 FIXED ID REFERENCE
     textarea.value = message;
     textarea.focus();
 }
 
-// File preview for technician uploads
-document.getElementById('{{ form.attachments.id_for_label }}').addEventListener('change', function(e) {
+// 📎 File preview for technician uploads
+document.getElementById('id_attachments').addEventListener('change', function(e) {
     const preview = document.getElementById('techFilePreview');
     preview.innerHTML = '';
 
@@ -432,18 +559,33 @@ document.getElementById('{{ form.attachments.id_for_label }}').addEventListener(
         fileDiv.className = 'alert alert-success small d-flex justify-content-between align-items-center';
         fileDiv.innerHTML = `
             <span><i class="bi bi-paperclip"></i> ${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">
+                <i class="bi bi-x"></i>
+            </button>
         `;
         preview.appendChild(fileDiv);
     }
 });
 
-// Enhanced form submission
+// 🌊 Enhanced form submission with DEBUG
 document.getElementById('techMessageForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const formData = new FormData(this);
     const submitBtn = this.querySelector('button[type="submit"]');
+    const textarea = document.getElementById('id_content');
     const originalText = submitBtn.innerHTML;
+
+    // 🚨 DEBUG: Check form data
+    console.log('🔧 Form submission data:');
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
+
+    if (!textarea.value.trim()) {
+        alert('🚫 Please enter a message before sending!');
+        return;
+    }
 
     submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
     submitBtn.disabled = true;
@@ -457,26 +599,57 @@ document.getElementById('techMessageForm').addEventListener('submit', function(e
     })
     .then(response => response.json())
     .then(data => {
+        console.log('📡 Server response:', data);
+
         if (data.status === 'success') {
             // Clear form
-            document.getElementById('{{ form.content.id_for_label }}').value = '';
-            document.getElementById('{{ form.attachments.id_for_label }}').value = '';
+            textarea.value = '';
+            document.getElementById('id_attachments').value = '';
             document.getElementById('techFilePreview').innerHTML = '';
 
             // Reload to show new message
             location.reload();
+        } else {
+            console.error('🚨 Form errors:', data.errors);
+            alert('❌ Error sending message: ' + JSON.stringify(data.errors));
         }
     })
-    .catch(console.error)
+    .catch(error => {
+        console.error('🌊 Network error:', error);
+        alert('🌐 Network error occurred');
+    })
     .finally(() => {
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     });
 });
 
-// Auto-scroll and real-time updates
+// 🎯 Auto-scroll and real-time updates
 document.addEventListener('DOMContentLoaded', function() {
+
+});
+
+// ⌨️ Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + Enter to send message
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('techMessageForm').dispatchEvent(new Event('submit'));
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 💥 NUCLEAR MODAL VARIABLES
+    const modal = document.getElementById('closeChatModal');
+    const openBtn = document.querySelector('[data-bs-target="#closeChatModal"]');
+    const closeBtn = document.querySelector('.nuclear-close-btn');
+    const cancelBtn = document.querySelector('.nuclear-cancel-btn');
+    const confirmBtn = document.querySelector('.nuclear-confirm-btn');
+
     scrollToBottom();
+
+    // Focus on textarea
+    document.getElementById('id_content').focus();
 
     // Auto-refresh messages every 3 seconds
     setInterval(function() {
@@ -491,14 +664,151 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(console.error);
     }, 3000);
-});
 
-// Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-    // Ctrl/Cmd + Enter to send message
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        document.getElementById('techMessageForm').dispatchEvent(new Event('submit'));
+    // 🔥 NUCLEAR OPEN FUNCTION
+    function nuclearOpenModal() {
+        console.log('💥 NUCLEAR MODAL OPEN INITIATED');
+
+        if (modal) {
+            // Remove all other modals and backdrops
+            document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+            document.querySelectorAll('.modal.show').forEach(m => {
+                if (m !== modal) {
+                    m.style.display = 'none';
+                    m.classList.remove('show');
+                }
+            });
+
+            // Force modal to highest possible position
+            modal.style.display = 'block';
+            modal.style.zIndex = '2147483647';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+            modal.classList.add('show');
+
+            // Ensure all child elements have proper z-index
+            const allChildren = modal.querySelectorAll('*');
+            allChildren.forEach(child => {
+                child.style.zIndex = '2147483647';
+                child.style.position = 'relative';
+                child.style.pointerEvents = 'auto';
+            });
+
+            // Lock body scroll
+            document.body.style.overflow = 'hidden';
+
+            console.log('✅ NUCLEAR MODAL OPENED');
+        }
     }
+
+    // 🌊 NUCLEAR CLOSE FUNCTION
+    function nuclearCloseModal() {
+        console.log('💀 NUCLEAR MODAL CLOSE INITIATED');
+
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+
+            // Unlock body scroll
+            document.body.style.overflow = '';
+
+            console.log('✅ NUCLEAR MODAL CLOSED');
+        }
+    }
+
+    // 🎯 NUCLEAR EVENT LISTENERS
+    if (openBtn) {
+        openBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🎯 Open button clicked');
+            nuclearOpenModal();
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('❌ Close button clicked');
+            nuclearCloseModal();
+        });
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🚫 Cancel button clicked');
+            nuclearCloseModal();
+        });
+    }
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🗑️ Confirm button clicked');
+
+            // Show loading state
+            this.innerHTML = '<i class="bi bi-hourglass-split"></i> Closing...';
+            this.disabled = true;
+
+            // Create and submit form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = window.location.href;
+
+            // Add CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+
+            // Add action
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = 'close_chat';
+            form.appendChild(actionInput);
+
+            // Submit form
+            document.body.appendChild(form);
+            form.submit();
+        });
+    }
+
+    // 🌊 CLOSE ON BACKDROP CLICK
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                console.log('🎭 Backdrop clicked');
+                nuclearCloseModal();
+            }
+        });
+    }
+
+    // 🔥 EMERGENCY FUNCTIONS
+    window.forceOpenNuclearModal = nuclearOpenModal;
+    window.forceCloseNuclearModal = nuclearCloseModal;
+
+    // 🚨 PERIODIC Z-INDEX ENFORCEMENT
+    setInterval(function() {
+        if (modal && modal.classList.contains('show')) {
+            modal.style.zIndex = '2147483647';
+            const allChildren = modal.querySelectorAll('*');
+            allChildren.forEach(child => {
+                child.style.zIndex = '2147483647';
+                child.style.pointerEvents = 'auto';
+            });
+        }
+    }, 500);
 });
 </script>
 {% endblock %}

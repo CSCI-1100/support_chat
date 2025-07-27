@@ -48,7 +48,7 @@
 }
 
 .new-chat-alert {
-    background: linear-gradient(45deg, #ff6b6b, #feca57);
+    background: linear-gradient(45deg, rgba(240, 85, 85, 0.8), rgba(240, 187, 72, 0.8));
     border-radius: 10px;
     animation: glow 2s ease-in-out infinite alternate;
 }
@@ -72,7 +72,7 @@
 
 .chat-timestamp {
     font-size: 0.8rem;
-    color: #6c757d;
+    color: #ffffff;
 }
 
 .notification-badge {
@@ -150,7 +150,7 @@
                                         <span class="status-dot status-waiting"></span>
                                         👨‍🎓 {{ chat.student_name }}
                                     </h6>
-                                    <p class="mb-2 text-muted small">
+                                    <p class="mb-2">
                                         "{{ chat.initial_message|truncatewords:15 }}"
                                     </p>
                                     <div class="chat-timestamp">
@@ -168,7 +168,7 @@
                     {% empty %}
                         <div class="text-center text-muted py-4">
                             <i class="bi bi-check-circle display-4"></i>
-                            <p class="mt-2">🎉 No students waiting! Great job team!</p>
+                            <p class="mt-2 text-muted">🎉 No students waiting! Great job team!</p>
                         </div>
                     {% endfor %}
                 </div>
@@ -196,7 +196,7 @@
                                         👨‍🎓 {{ chat.student_name }}
                                         <small class="text-muted">- {{ chat.chat_id }}</small>
                                     </h6>
-                                    <p class="mb-2 text-muted small">
+                                    <p class="mb-2 text-white">
                                         Started: {{ chat.created_at|timesince }} ago
                                     </p>
                                     <div class="small text-info">
@@ -231,7 +231,7 @@
             <div class="alert alert-info text-center" style="border-radius: 12px; background: rgba(13, 202, 240, 0.1); border: 1px solid rgba(13, 202, 240, 0.2);">
                 <i class="bi bi-arrow-clockwise"></i>
                 Dashboard auto-refreshes every 10 seconds to show new chats
-                <small class="ms-2 text-muted">| Last updated: <span id="lastUpdated"></span></small>
+                <small class="ms-2 text-muted"><span>| &ensp;Last updated: </span><span id="lastUpdated"></span></small>
             </div>
         </div>
     </div>
