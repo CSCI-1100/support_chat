@@ -4,3 +4,4 @@ media/
 migrations/
 staticfiles/
 *pyc*
+*.sock
