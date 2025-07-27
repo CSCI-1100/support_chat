@@ -24,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-8x4(*f^#gvi4=npb2+13g@-ziny*a=a3(etk!ogf7r%*ae8l&b"
+SECRET_KEY = getenv("SUPPORT_CHAT_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = getenv("ALLOWED_HOSTS").split(',')
+ALLOWED_HOSTS = getenv("SUPPORT_CHAT_ALLOWED_HOSTS").split(',')
 
 
 # Application definition
@@ -52,6 +52,8 @@ MEDIA_ROOT = '/var/www/media'
 
 # 🔐 Session configuration for student chat access
 SESSION_COOKIE_AGE = 86400  # 24 hours
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
