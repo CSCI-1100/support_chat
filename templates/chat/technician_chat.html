@@ -74,6 +74,14 @@
     border-bottom-right-radius: 3px;
 }
 
+.student .message-bubble .message-time {
+    color: #ffffff92;
+}
+
+.technician .message-bubble .message-time {
+    color: #6c757d;
+}
+
 .system .message-bubble {
     background: #f8f9fa;
     color: #6c757d;
@@ -325,7 +333,7 @@
                                     </div>
                                 {% endif %}
 
-                                <div class="message-time text-white-50 small mt-2">
+                                <div class="message-time small mt-2">
                                     {{ message.timestamp|date:"H:i" }}
                                 </div>
                             </div>

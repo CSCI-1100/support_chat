@@ -2,27 +2,29 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
-from django.core.paginator import Paginator
-from django.db.models import Q, Count
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
-import json
-import mimetypes
-from .models import ChatSession, ChatMessage, ChatAttachment, ChatStatus
-from .forms import ChatStartForm, ChatMessageForm
+from .models import *
+from .forms import *
 from django.contrib.auth import get_user_model
+import mimetypes
 
-# 🌈🔧 COMPLETE DIMENSIONAL REPAIR MATRIX 🔧🌈
+# 🌈🔧 COMPLETE DIMENSIONAL REPAIR MATRIX WITH SCHEDULE AWARENESS 🔧🌈
 
 def chat_landing(request):
-    """🌟 CSCI 1100 DIMENSIONAL PORTAL INTERFACE 🌟"""
+    """🌟 CSCI 1100 DIMENSIONAL PORTAL INTERFACE WITH SCHEDULE AWARENESS 🌟"""
 
     # 🚨 CRITICAL: ENSURE SESSION EXISTS BEFORE ANYTHING
     if not request.session.session_key:
         request.session.create()
         # 💫 Force session to persist
         request.session.modified = True
+
+    # 📅 Check current availability status
+    is_available, availability_message = HelpdeskSchedule.is_currently_available()
+
+    # Check for schedule override
+    today = timezone.now().date()
+    override = ScheduleOverride.get_override_for_date(today)
 
     if request.method == 'POST':
         form = ChatStartForm(request.POST)
@@ -34,11 +36,18 @@ def chat_landing(request):
                 student_session_key=request.session.session_key
             )
 
-            # 🎯 Create initial system message
+            # 🎯 Create initial system message with availability context
+            if is_available:
+                system_message = f"💬 Chat started by {chat.student_name}. Support is currently available!"
+            else:
+                system_message = f"💬 Chat started by {chat.student_name}. Support is currently offline - a technician will respond when available."
+                if override:
+                    system_message += f" (Special schedule: {override.reason})"
+
             ChatMessage.objects.create(
                 chat=chat,
                 sender_name="🤖 System",
-                content=f"💬 Chat started by {chat.student_name}",
+                content=system_message,
                 message_type='system'
             )
 
@@ -50,16 +59,39 @@ def chat_landing(request):
                 is_from_student=True
             )
 
-            messages.success(request, f'🚀 Chat {chat.chat_id} initiated! Waiting for technician...')
+            # 📅 Add schedule context message if offline
+            if not is_available:
+                next_available = HelpdeskSchedule.get_next_available_time()
+                ChatMessage.objects.create(
+                    chat=chat,
+                    sender_name="🤖 System",
+                    content=f"ℹ️ Support hours: {availability_message}. Next available: {next_available}",
+                    message_type='system'
+                )
+
+            if is_available:
+                messages.success(request, f'🚀 Chat {chat.chat_id} initiated! Connecting you with a course assistant...')
+            else:
+                messages.info(request, f'📝 Chat {chat.chat_id} created! Your message has been queued for when support resumes.')
+
             return redirect('chat:student_chat', chat_id=chat.chat_id)
     else:
         form = ChatStartForm()
 
-    return render(request, 'chat/landing.html', {'form': form})
+    # 📊 Get schedule context for template
+    context = {
+        'form': form,
+        'is_available': is_available,
+        'availability_message': availability_message,
+        'has_override': override is not None,
+        'override_reason': override.reason if override else None,
+    }
+
+    return render(request, 'chat/landing.html', context)
 
 
 def student_chat(request, chat_id):
-    """👨‍🎓 STUDENT CONSCIOUSNESS INTERFACE - FIXED"""
+    """👨‍🎓 STUDENT CONSCIOUSNESS INTERFACE - FIXED WITH SCHEDULE AWARENESS"""
     chat = get_object_or_404(ChatSession, chat_id=chat_id)
 
     # 🔐 ENHANCED QUANTUM ACCESS VALIDATION
@@ -84,6 +116,9 @@ def student_chat(request, chat_id):
     if not access_granted:
         messages.error(request, '🚫 Access denied to this chat dimension')
         return redirect('chat:landing')
+
+    # 📅 Check current availability for messaging context
+    is_available, availability_message = HelpdeskSchedule.is_currently_available()
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -112,6 +147,15 @@ def student_chat(request, chat_id):
                         mime_type=mimetypes.guess_type(file.name)[0] or 'application/octet-stream'
                     )
 
+                # 🎯 Add offline context message if support is unavailable
+                if not is_available and chat.status == ChatStatus.WAITING:
+                    ChatMessage.objects.create(
+                        chat=chat,
+                        sender_name="🤖 System",
+                        content=f"📝 Your message has been received. {availability_message}",
+                        message_type='system'
+                    )
+
                 return JsonResponse({'status': 'success'})
 
         elif action == 'leave_chat':
@@ -135,14 +179,16 @@ def student_chat(request, chat_id):
         'chat': chat,
         'messages': chat.messages.all().order_by('timestamp'),
         'message_form': message_form,
-        'can_message': chat.status not in [ChatStatus.STUDENT_LEFT, ChatStatus.CLOSED]
+        'can_message': chat.status not in [ChatStatus.STUDENT_LEFT, ChatStatus.CLOSED],
+        'is_support_available': is_available,
+        'availability_message': availability_message,
     }
 
     return render(request, 'chat/student_chat.html', context)
 
 @login_required
 def technician_dashboard(request):
-    """🔧 TECHNICIAN COMMAND CENTER - The Neural Hub"""
+    """🔧 TECHNICIAN COMMAND CENTER WITH SCHEDULE AWARENESS"""
     User = get_user_model()
 
     # 🌊 Quantum chat stream analysis
@@ -157,6 +203,10 @@ def technician_dashboard(request):
     total_active = ChatSession.objects.filter(status=ChatStatus.ACTIVE).count()
     user_active = active_chats.count()
 
+    # 📅 Schedule status for dashboard context
+    is_available, availability_message = HelpdeskSchedule.is_currently_available()
+    next_available = HelpdeskSchedule.get_next_available_time()
+
     context = {
         'waiting_chats': waiting_chats,
         'active_chats': active_chats,
@@ -164,6 +214,11 @@ def technician_dashboard(request):
             'total_waiting': total_waiting,
             'total_active': total_active,
             'user_active': user_active,
+        },
+        'schedule_status': {
+            'is_available': is_available,
+            'message': availability_message,
+            'next_available': next_available,
         }
     }
 

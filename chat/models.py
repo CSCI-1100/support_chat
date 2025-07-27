@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 import datetime
-import os
 
 User = get_user_model()
 
@@ -130,3 +131,188 @@ class ChatAttachment(models.Model):
     def is_image(self):
         """🖼️ Check if file is an image"""
         return self.mime_type.startswith('image/') if self.mime_type else False
+
+class HelpdeskSchedule(models.Model):
+    """📅 Weekly schedule for helpdesk availability"""
+
+    DAYS_OF_WEEK = [
+        (0, 'Monday'),
+        (1, 'Tuesday'),
+        (2, 'Wednesday'),
+        (3, 'Thursday'),
+        (4, 'Friday'),
+        (5, 'Saturday'),
+        (6, 'Sunday'),
+    ]
+
+    day_of_week = models.IntegerField(choices=DAYS_OF_WEEK, unique=True)
+    is_active = models.BooleanField(default=False, help_text="Is support available on this day?")
+    start_time = models.TimeField(null=True, blank=True, help_text="When support starts (24-hour format)")
+    end_time = models.TimeField(null=True, blank=True, help_text="When support ends (24-hour format)")
+
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='schedule_updates'
+    )
+
+    class Meta:
+        ordering = ['day_of_week']
+        verbose_name = "Helpdesk Schedule"
+        verbose_name_plural = "Helpdesk Schedules"
+
+    def __str__(self):
+        day_name = self.get_day_of_week_display()
+        if self.is_active and self.start_time and self.end_time:
+            return f"{day_name}: {self.start_time.strftime('%I:%M %p')} - {self.end_time.strftime('%I:%M %p')}"
+        elif self.is_active:
+            return f"{day_name}: Active (no time restrictions)"
+        else:
+            return f"{day_name}: Closed"
+
+    def clean(self):
+        """Validate that if active, start/end times are provided and logical"""
+        if self.is_active:
+            if not self.start_time or not self.end_time:
+                raise ValidationError("Active days must have both start and end times specified.")
+
+            if self.start_time >= self.end_time:
+                raise ValidationError("Start time must be before end time.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def is_currently_available(cls):
+        """Check if support is currently available based on schedule"""
+        now = timezone.localtime()
+        current_day = now.weekday()  # 0=Monday, 6=Sunday
+        current_time = now.time()
+
+        try:
+            day_schedule = cls.objects.get(day_of_week=current_day)
+
+            if not day_schedule.is_active:
+                return False, f"Support is closed on {day_schedule.get_day_of_week_display()}s"
+
+            if not day_schedule.start_time or not day_schedule.end_time:
+                return True, "Support is available"
+
+            if day_schedule.start_time <= current_time <= day_schedule.end_time:
+                return True, "Support is currently available"
+            else:
+                return False, f"Support hours: {day_schedule.start_time.strftime('%I:%M %p')} - {day_schedule.end_time.strftime('%I:%M %p')}"
+
+        except cls.DoesNotExist:
+            # No schedule configured for this day - default to closed
+            return False, "Schedule not configured for this day"
+
+    @classmethod
+    def get_next_available_time(cls):
+        """Get the next time support will be available"""
+        now = timezone.localtime()
+        current_day = now.weekday()
+        current_time = now.time()
+
+        # Check remaining time today
+        try:
+            today_schedule = cls.objects.get(day_of_week=current_day, is_active=True)
+            if (today_schedule.start_time and today_schedule.end_time and
+                current_time < today_schedule.start_time):
+                return f"Today at {today_schedule.start_time.strftime('%I:%M %p')}"
+        except cls.DoesNotExist:
+            pass
+
+        # Check next 7 days
+        for i in range(1, 8):
+            check_day = (current_day + i) % 7
+            try:
+                schedule = cls.objects.get(day_of_week=check_day, is_active=True)
+                if schedule.start_time:
+                    day_name = dict(cls.DAYS_OF_WEEK)[check_day]
+                    if i == 1:
+                        return f"Tomorrow ({day_name}) at {schedule.start_time.strftime('%I:%M %p')}"
+                    else:
+                        return f"{day_name} at {schedule.start_time.strftime('%I:%M %p')}"
+            except cls.DoesNotExist:
+                continue
+
+        return "Schedule not available"
+
+    @classmethod
+    def initialize_default_schedule(cls):
+        """Create default schedule (Monday-Friday 9AM-5PM)"""
+        default_schedules = [
+            # Monday-Friday: 9 AM - 5 PM
+            (0, True, datetime.time(9, 0), datetime.time(17, 0)),   # Monday
+            (1, True, datetime.time(9, 0), datetime.time(17, 0)),   # Tuesday
+            (2, True, datetime.time(9, 0), datetime.time(17, 0)),   # Wednesday
+            (3, True, datetime.time(9, 0), datetime.time(17, 0)),   # Thursday
+            (4, True, datetime.time(9, 0), datetime.time(17, 0)),   # Friday
+            # Weekend: Closed
+            (5, False, None, None),  # Saturday
+            (6, False, None, None),  # Sunday
+        ]
+
+        for day, active, start, end in default_schedules:
+            cls.objects.get_or_create(
+                day_of_week=day,
+                defaults={
+                    'is_active': active,
+                    'start_time': start,
+                    'end_time': end
+                }
+            )
+
+
+class ScheduleOverride(models.Model):
+    """📅 Special schedule overrides for holidays, events, etc."""
+
+    date = models.DateField(unique=True)
+    is_active = models.BooleanField(default=False, help_text="Is support available on this specific date?")
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    reason = models.CharField(max_length=200, help_text="Why this override exists (e.g., 'Holiday', 'Extended hours for finals')")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='schedule_overrides'
+    )
+
+    class Meta:
+        ordering = ['date']
+        verbose_name = "Schedule Override"
+        verbose_name_plural = "Schedule Overrides"
+
+    def __str__(self):
+        if self.is_active and self.start_time and self.end_time:
+            return f"{self.date}: {self.start_time.strftime('%I:%M %p')} - {self.end_time.strftime('%I:%M %p')} ({self.reason})"
+        elif self.is_active:
+            return f"{self.date}: Open ({self.reason})"
+        else:
+            return f"{self.date}: Closed ({self.reason})"
+
+    def clean(self):
+        if self.is_active and (not self.start_time or not self.end_time):
+            raise ValidationError("Active override days must have both start and end times.")
+
+        if self.start_time and self.end_time and self.start_time >= self.end_time:
+            raise ValidationError("Start time must be before end time.")
+
+    @classmethod
+    def get_override_for_date(cls, date):
+        """Get schedule override for a specific date"""
+        try:
+            return cls.objects.get(date=date)
+        except cls.DoesNotExist:
+            return None

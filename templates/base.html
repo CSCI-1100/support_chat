@@ -302,6 +302,18 @@
             backdrop-filter: blur(10px);
         }
 
+        .schedule-summary {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .topic-badge {
+            color: #212529;
+        }
+
         .form-control:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
@@ -367,8 +379,25 @@
                 color: #ecf0f1;
             }
 
+            label {
+                color: #ecf0f1;
+            }
+
             small span, .text-muted span {
                 color: #a0c5ce;
+            }
+
+            .schedule-summary {
+                background: #6b747c; /* Dark gray background */
+                border-radius: 12px;
+                padding: 1rem;
+                margin-top: 1rem;
+                border: 1px solid rgba(255, 255, 255, 0.1); /* Light border for contrast */
+                color: #f0f0f0; /* Light text for readability */
+            }
+
+            .topic-badge {
+                color: #cce3f9;
             }
         }
     </style>
@@ -417,6 +446,13 @@
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="{% url 'manage_users' %}">
                                         <i class="bi bi-people"></i> Manage Users
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'manage_schedule' %}">
+                                        <i class="bi bi-calendar-check"></i> Manage Schedule
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'manage_schedule_overrides' %}">
+                                        <i class="bi bi-calendar-x"></i> Schedule Overrides
                                     </a></li>
                                 </ul>
                             </li>

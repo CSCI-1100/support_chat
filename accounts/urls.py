@@ -34,4 +34,11 @@ urlpatterns = [
     path('users/add-manager/', views.add_system_manager, name='add_system_manager'),
     path('users/toggle/<int:user_id>/', views.toggle_user_active, name='toggle_user_active'),
     path('users/delete/<int:user_id>/', views.delete_user, name='delete_user'),
+
+    # 📅 NEW SCHEDULE MANAGEMENT URLS
+    path('schedule/', views.manage_schedule, name='manage_schedule'),
+    path('schedule/update/<int:day_of_week>/', views.update_day_schedule, name='update_day_schedule'),
+    path('schedule/overrides/', views.manage_schedule_overrides, name='manage_schedule_overrides'),
+    path('schedule/overrides/delete/<int:override_id>/', views.delete_schedule_override, name='delete_schedule_override'),
+    path('schedule/status/', views.schedule_status_api, name='schedule_status_api'),
 ]
