@@ -6,7 +6,7 @@
     <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 position-absolute top-50 start-50 translate-50-rev">
         <div class="form-container shadow">
             <div class="text-center mb-4">
-                <h4 class="ff-bold">Staff Login</h4>
+                <h4 class="ff-bold text-dark">Staff Login</h4>
             </div>
 
             <form method="post" class="d-flex flex-column gap-3" novalidate>
@@ -33,7 +33,7 @@
                 {% endif %}
 
                 <button type="submit" class="btn bttn-primary ff-bold w-100">Log In</button>
-                <div class="text-center">
+                <div class="text-center" style="display: none;"><!-- NOTE: Add SMTP password reset -->
                     <a href="{% url 'password_reset' %}" class="text-highlight-primary text-decoration-none">
                         Forgot your password?
                     </a>
