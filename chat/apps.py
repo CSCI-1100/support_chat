@@ -7,6 +7,5 @@ class ChatConfig(AppConfig):
 
     def ready(self):
         """🌟 Initialize chat system consciousness"""
-        pass
-        # Import signals if needed
-        # import chat.signals
+        # Import signals to register them
+        import chat.signals

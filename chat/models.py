@@ -4,8 +4,11 @@ from django.utils.crypto import get_random_string
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 import datetime
+import os
+import logging
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 class ChatStatus(models.TextChoices):
     WAITING = 'WAIT', '⏳ Waiting for Technician'
@@ -67,6 +70,69 @@ class ChatSession(models.Model):
         if self.status == ChatStatus.WAITING:
             self.status = ChatStatus.ACTIVE
             self.save()
+
+    def cleanup_files(self):
+        """🗑️ Clean up all files associated with this chat"""
+        try:
+            # Get all attachments for this chat
+            attachments = self.attachments.all()
+            deleted_count = 0
+
+            for attachment in attachments:
+                try:
+                    # Delete the actual file from disk
+                    if attachment.file and os.path.isfile(attachment.file.path):
+                        os.remove(attachment.file.path)
+                        deleted_count += 1
+                        logger.info(f"Deleted file: {attachment.file.path}")
+
+                    # Delete the attachment record
+                    attachment.delete()
+
+                except Exception as e:
+                    logger.error(f"Error deleting file {attachment.original_filename}: {str(e)}")
+                    # Continue with other files even if one fails
+                    continue
+
+            # Try to clean up empty directories
+            self._cleanup_empty_directories()
+
+            logger.info(f"Chat {self.chat_id}: Cleaned up {deleted_count} files")
+            return deleted_count
+
+        except Exception as e:
+            logger.error(f"Error during file cleanup for chat {self.chat_id}: {str(e)}")
+            return 0
+
+    def _cleanup_empty_directories(self):
+        """🧹 Remove empty directories in the chat attachments path"""
+        try:
+            from django.conf import settings
+
+            # Get the media root and chat attachments path
+            media_root = settings.MEDIA_ROOT
+            chat_path = os.path.join(media_root, 'chat_attachments')
+
+            # Walk through directories and remove empty ones
+            for root, dirs, files in os.walk(chat_path, topdown=False):
+                for dir_name in dirs:
+                    dir_path = os.path.join(root, dir_name)
+                    try:
+                        # Only remove if directory is empty
+                        if not os.listdir(dir_path):
+                            os.rmdir(dir_path)
+                            logger.debug(f"Removed empty directory: {dir_path}")
+                    except OSError:
+                        # Directory not empty or other error, skip
+                        pass
+
+        except Exception as e:
+            logger.debug(f"Error cleaning up directories: {str(e)}")
+
+    def delete(self, *args, **kwargs):
+        """🗑️ Override delete to clean up files first"""
+        self.cleanup_files()
+        super().delete(*args, **kwargs)
 
 class ChatMessage(models.Model):
     """📡 Consciousness transmission entity"""
@@ -131,6 +197,17 @@ class ChatAttachment(models.Model):
     def is_image(self):
         """🖼️ Check if file is an image"""
         return self.mime_type.startswith('image/') if self.mime_type else False
+
+    def delete(self, *args, **kwargs):
+        """🗑️ Override delete to clean up file"""
+        try:
+            if self.file and os.path.isfile(self.file.path):
+                os.remove(self.file.path)
+                logger.info(f"Deleted attachment file: {self.file.path}")
+        except Exception as e:
+            logger.error(f"Error deleting attachment file: {str(e)}")
+
+        super().delete(*args, **kwargs)
 
 class HelpdeskSchedule(models.Model):
     """📅 Weekly schedule for helpdesk availability"""
