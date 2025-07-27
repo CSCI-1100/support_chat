@@ -36,8 +36,8 @@ class ChatStartForm(forms.Form):
         label="💬 How can we help you today?",
         widget=forms.Textarea(attrs={
             'class': 'form-control shadow-none',
-            'rows': 7,
-            'placeholder': '🌟 Describe what you need help with...\n\nExamples:\n- Help with Python loops in my assignment\n- Trouble finding a resource\n- Need clarification on key concepts from the lecture',
+            'rows': 4,
+            'placeholder': '🌟 Describe what you need help with. Examples:\n- Need clarification on key concepts from the lecture\n- Trouble finding a resource\n- Help with Python loops in my assignment',
             'style': 'resize: vertical;'
         })
     )
