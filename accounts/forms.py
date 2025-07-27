@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from custom_validators.validators import *
 from django.core.exceptions import ValidationError
 from .models import User, SystemManager
 from django.contrib.auth.forms import AuthenticationForm
