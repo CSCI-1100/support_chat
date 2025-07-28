@@ -453,27 +453,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="schedule-day today">
                     <div>
                         <span class="status-dot dot-current"></span>
-                        <strong>${todayName} (Special Hours)</strong>
+                        <span class="ff-sans-bolder">${todayName} (Special Hours)</span>
                     </div>
                     <div><em>${overrideReason}</em></div>
                 </div>
             `;
-        } else if (todaySchedule.is_available && todaySchedule.start_time && todaySchedule.end_time) {
+        } else if (todaySchedule.is_active && todaySchedule.start_time && todaySchedule.end_time) {
             scheduleHTML = `
                 <div class="schedule-day today">
                     <div>
                         <span class="status-dot dot-current"></span>
-                        <strong>${todayName}</strong>
+                        <span class="ff-sans-bolder">${todayName}</span>
                     </div>
                     <div>${todaySchedule.start_time} - ${todaySchedule.end_time}</div>
                 </div>
             `;
-        } else if (todaySchedule.is_available) {
+        } else if (todaySchedule.is_active) {
             scheduleHTML = `
                 <div class="schedule-day today">
                     <div>
                         <span class="status-dot dot-current"></span>
-                        <strong>${todayName}</strong>
+                        <span class="ff-sans-bolder">${todayName}</span>
                     </div>
                     <div>Open (no time restrictions)</div>
                 </div>
@@ -483,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="schedule-day today">
                     <div>
                         <span class="status-dot dot-unavailable"></span>
-                        <strong>${todayName}</strong>
+                        <span class="ff-sans-bolder">${todayName}</span>
                     </div>
                     <div>Closed</div>
                 </div>
