@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div><em>${overrideReason}</em></div>
                 </div>
             `;
-        } else if (todaySchedule.is_active && todaySchedule.start_time && todaySchedule.end_time) {
+        } else if (todaySchedule.is_available && todaySchedule.start_time && todaySchedule.end_time) {
             scheduleHTML = `
                 <div class="schedule-day today">
                     <div>
@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div>${todaySchedule.start_time} - ${todaySchedule.end_time}</div>
                 </div>
             `;
-        } else if (todaySchedule.is_active) {
+        } else if (todaySchedule.is_available) {
             scheduleHTML = `
                 <div class="schedule-day today">
                     <div>
