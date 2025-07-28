@@ -27,7 +27,7 @@ class ChatStartForm(forms.Form):
         label="🎓 Your Name",
         widget=forms.TextInput(attrs={
             'class': 'form-control shadow-none',
-            'placeholder': '✨ Enter your name (e.g., "Alex Student")',
+            'placeholder': '✨ Enter your name',
             'autocomplete': 'name'
         })
     )
