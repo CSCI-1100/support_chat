@@ -276,7 +276,7 @@
     }
 
     .mobile-textarea {
-        width: 100% !important;
+        width: 90vw !important;
         min-height: 80px !important;
         resize: vertical !important;
         border-radius: 12px !important;
@@ -338,6 +338,39 @@
         justify-content: center;
     }
 
+    .student-input-group .input-group {
+        gap: 0.75rem;
+    }
+
+    .student-input-group textarea {
+        min-height: 100px !important;
+        border-radius: 12px !important;
+    }
+
+    .student-input-group .d-flex {
+        justify-content: space-between;
+        align-items: stretch;
+    }
+
+    .student-input-group .btn {
+        min-width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+    }
+
+    /* Ensure adequate padding for mobile */
+
+    body {
+        padding-bottom: 0 !important;
+    }
+
+    main {
+        padding-bottom: 2rem !important;
+    }
+
     /* Animation adjustments for mobile */
     @keyframes studentMessageSlide {
         from {
@@ -370,13 +403,13 @@
 }
 
 /* Ensure proper body padding for mobile */
-@media (max-width: 770px) {
-    body {
-        padding-bottom: 0 !important;
+@media (min-width: 771px) {
+    .student-input-group .input-group {
+        align-items: center;
     }
 
-    main {
-        padding-bottom: 2rem !important;
+    .student-input-group textarea {
+        resize: none;
     }
 }
 </style>
@@ -484,127 +517,113 @@
                         </div>
                     {% endfor %}
                 </div>
-
                 <!-- 💬 STUDENT MESSAGE INPUT DIMENSION - MOBILE RESPONSIVE -->
                 {% if can_message %}
-                    <div class="chat-input">
-                        <form method="post" enctype="multipart/form-data" id="studentMessageForm">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="send_message">
+                <div class="chat-input">
+                    <form method="post" enctype="multipart/form-data" id="studentMessageForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="send_message">
 
-                            <!-- Desktop Layout -->
-                            <div class="student-input-group d-none d-md-block">
-                                <div class="input-group">
-                                    <button type="button" class="emoji-btn"
+                        <!-- Single responsive layout that adapts to screen size -->
+                        <div class="student-input-group">
+                            <div class="input-group flex-column flex-md-row">
+                                <!-- Emoji button - hidden on mobile -->
+                                <button type="button" class="emoji-btn d-none d-md-block"
+                                        onclick="toggleStudentEmojiPicker()"
+                                        title="Add emoji 😊">
+                                    😊
+                                </button>
+
+                                <!-- Single textarea that works on all screen sizes -->
+                                <textarea name="content"
+                                        id="id_student_content"
+                                        class="form-control shadow-none mx-0 mx-md-2 mb-3 mb-md-0"
+                                        rows="3"
+                                        maxlength="2000"
+                                        placeholder="💬 Ask your CSCI 1100 question here... (Press Ctrl+Enter to send)"
+                                        style="resize: none; border: 2px solid rgba(79, 172, 254, 0.3); border-radius: 12px;"
+                                        required></textarea>
+
+                                <!-- Action buttons container -->
+                                <div class="d-flex gap-2 justify-content-between">
+                                    <!-- Mobile emoji button -->
+                                    <button type="button" class="btn btn-outline-primary d-md-none"
                                             onclick="toggleStudentEmojiPicker()"
-                                            title="Add emoji 😊">
+                                            title="Add emoji">
                                         😊
                                     </button>
-
-                                    <textarea name="content"
-                                              id="id_student_content"
-                                              class="form-control shadow-none mx-2"
-                                              rows="3"
-                                              maxlength="2000"
-                                              placeholder="💬 Ask your CSCI 1100 question here... (Press Ctrl+Enter to send)"
-                                              style="resize: none; border: 2px solid rgba(79, 172, 254, 0.3);"
-                                              required></textarea>
 
                                     <button type="button" class="btn btn-outline-primary"
                                             onclick="document.getElementById('id_student_attachments').click()"
                                             title="Attach files 📎">
                                         <i class="bi bi-paperclip"></i>
+                                        <span class="d-none d-md-inline ms-1">Attach</span>
                                     </button>
 
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-send"></i> Send
+                                        <i class="bi bi-send"></i>
+                                        <span class="d-none d-md-inline ms-1">Send</span>
                                     </button>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Mobile Layout -->
-                            <div class="d-md-none mobile-input-stack">
-                                <!-- First row: Emoji + Textarea + Attach button -->
-                                <div class="mobile-input-row">
-                                    <div class="mobile-textarea-container">
-                                        <textarea name="content"
-                                                  class="form-control shadow-none mobile-textarea mb-3"
-                                                  rows="4"
-                                                  maxlength="2000"
-                                                  placeholder="💬 Ask your CSCI 1100 question here..."
-                                                  style="border: 2px solid rgba(79, 172, 254, 0.3);"
-                                                  required></textarea>
-                                    </div>
+                        <!-- 📎 STUDENT FILE INPUT -->
+                        <input type="file"
+                            name="attachments"
+                            id="id_student_attachments"
+                            class="form-control d-none"
+                            multiple
+                            accept=".png,.jpg,.jpeg,.webp,.gif,.pdf,.odt,.doc,.docx,.rtf,.txt,.py,.cs,.js,.html,.css,.json,.zip">
 
-                                    <div style="display: grid; grid-template-columns: 1fr;">
-                                        <button type="button" class="btn btn-outline-primary mobile-btn"
-                                            onclick="document.getElementById('id_student_attachments').click()"
-                                            title="Attach files">
-                                        <i class="bi bi-paperclip"></i>
-                                        </button>
-                                        <button type="submit" title="Send" class="btn btn-primary mobile-btn">
-                                            <i class="bi bi-send"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                        <div id="studentFilePreview" class="mt-2"></div>
+                    </form>
 
-                            <!-- 📎 STUDENT FILE INPUT -->
-                            <input type="file"
-                                   name="attachments"
-                                   id="id_student_attachments"
-                                   class="form-control d-none"
-                                   multiple
-                                   accept=".png,.jpg,.jpeg,.webp,.gif,.pdf,.odt,.doc,.docx,.rtf,.txt,.py,.cs,.js,.html,.css,.json,.zip">
+                    <!-- 😊 STUDENT EMOJI PICKER DIMENSION -->
+                    <div id="studentEmojiPicker" class="mt-3" style="display: none;">
+                        <div class="emoji-grid p-3 bg-white rounded-3 shadow-lg">
+                            <h6 class="text-center text-dark mb-3">Choose an emoji:</h6>
+                            <div class="row g-2">
+                                <!-- HAPPY EMOTIONS -->
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😊')">😊</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😃')">😃</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😄')">😄</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤗')">🤗</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😍')">😍</button></div>
 
-                            <div id="studentFilePreview" class="mt-2"></div>
-                        </form>
+                                <!-- THINKING/CONFUSED -->
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤔')">🤔</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😕')">😕</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😅')">😅</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😰')">😰</button></div>
 
-                        <!-- 😊 STUDENT EMOJI PICKER DIMENSION -->
-                        <div id="studentEmojiPicker" class="mt-3" style="display: none;">
-                            <div class="emoji-grid p-3 bg-white rounded-3 shadow-lg">
-                                <h6 class="text-center text-dark mb-3">Choose an emoji:</h6>
-                                <div class="row g-2">
-                                    <!-- HAPPY EMOTIONS -->
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😊')">😊</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😃')">😃</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😄')">😄</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤗')">🤗</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😍')">😍</button></div>
+                                <!-- REACTIONS -->
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👍')">👍</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👎')">👎</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👏')">👏</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🙏')">🙏</button></div>
 
-                                    <!-- THINKING/CONFUSED -->
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤔')">🤔</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😕')">😕</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😅')">😅</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😰')">😰</button></div>
-
-                                    <!-- REACTIONS -->
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👍')">👍</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👎')">👎</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👏')">👏</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🙏')">🙏</button></div>
-
-                                    <!-- ACADEMIC -->
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('📚')">📚</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💻')">💻</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💡')">💡</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⚡')">⚡</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🚀')">🚀</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⭐')">⭐</button></div>
-                                </div>
+                                <!-- ACADEMIC -->
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('📚')">📚</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💻')">💻</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💡')">💡</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⚡')">⚡</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🚀')">🚀</button></div>
+                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⭐')">⭐</button></div>
                             </div>
                         </div>
                     </div>
+                </div>
                 {% else %}
-                    <div class="chat-input text-center">
-                        <div class="alert alert-info mb-0" style="border-radius: 15px;">
-                            <h5>💬 Chat Session Ended</h5>
-                            <p class="mb-2">This chat has ended. Thanks for using CSCI 1100 support!</p>
-                            <a href="{% url 'chat:landing' %}" class="btn btn-primary">
-                                <i class="bi bi-chat-square-dots"></i> Start New Chat
-                            </a>
-                        </div>
+                <div class="chat-input text-center">
+                    <div class="alert alert-info mb-0" style="border-radius: 15px;">
+                        <h5>💬 Chat Session Ended</h5>
+                        <p class="mb-2">This chat has ended. Thanks for using CSCI 1100 support!</p>
+                        <a href="{% url 'chat:landing' %}" class="btn btn-primary">
+                            <i class="bi bi-chat-square-dots"></i> Start New Chat
+                        </a>
                     </div>
+                </div>
                 {% endif %}
             </div>
         </div>
@@ -612,8 +631,6 @@
 </div>
 
 <script>
-// 🌊 STUDENT CHAT CONSCIOUSNESS FUNCTIONS - MOBILE ENHANCED 🌊
-
 function scrollToBottom() {
     const container = document.getElementById('messagesContainer');
     container.scrollTop = container.scrollHeight;
@@ -637,9 +654,7 @@ function toggleStudentEmojiPicker() {
 }
 
 function insertStudentEmoji(emoji) {
-    // Try both possible textarea IDs (desktop and mobile)
-    const textarea = document.getElementById('id_student_content') ||
-                    document.querySelector('.mobile-textarea');
+    const textarea = document.getElementById('id_student_content');
 
     if (textarea) {
         const start = textarea.selectionStart;
@@ -652,7 +667,7 @@ function insertStudentEmoji(emoji) {
     toggleStudentEmojiPicker();
 }
 
-// 📎 File preview for student uploads - Enhanced for mobile
+// 📎 File preview for student uploads
 document.getElementById('id_student_attachments').addEventListener('change', function(e) {
     const preview = document.getElementById('studentFilePreview');
     preview.innerHTML = '';
@@ -680,14 +695,13 @@ function removeFile(button, filename) {
     button.parentElement.remove();
 }
 
-// 🌊 Enhanced form submission with MOBILE SUPPORT
+// 🌊 SIMPLIFIED form submission
 document.getElementById('studentMessageForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const formData = new FormData(this);
     const submitBtn = this.querySelector('button[type="submit"]');
-    const textarea = document.getElementById('id_student_content') ||
-                    document.querySelector('.mobile-textarea');
+    const textarea = document.getElementById('id_student_content');
     const originalText = submitBtn.innerHTML;
 
     console.log('👨‍🎓 Student form submission:');
@@ -744,7 +758,7 @@ document.addEventListener('click', function(e) {
 
     if (picker.style.display !== 'none' &&
         !picker.contains(e.target) &&
-        !emojiBtn.contains(e.target)) {
+        e.target.closest('.emoji-btn') === null) {
         toggleStudentEmojiPicker();
     }
 });
@@ -768,8 +782,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Focus on textarea if chat is active
     {% if can_message %}
-        const textarea = document.getElementById('id_student_content') ||
-                        document.querySelector('.mobile-textarea');
+        const textarea = document.getElementById('id_student_content');
         if (textarea) {
             textarea.focus();
         }
