@@ -5,7 +5,7 @@
 
 {% block extra_css %}
 <style>
-/* 🌈 STUDENT CHAT REALITY MATRIX - MOBILE RESPONSIVE 🌈 */
+/* 🌈 STUDENT CHAT REALITY MATRIX 🌈 */
 .chat-container {
     height: 85vh;
     border-radius: 20px;
@@ -180,238 +180,6 @@
     transform: scale(1.05);
     box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
 }
-
-/* 📱 MOBILE RESPONSIVE STYLES */
-@media (max-width: 770px) {
-    .chat-container {
-        height: 82vh; /* Slightly shorter on mobile */
-        margin-bottom: 2rem;
-    }
-
-    .chat-header {
-        padding: 1rem;
-        border-radius: 15px 15px 0 0;
-    }
-
-    /* Stack header elements vertically on mobile */
-    .header-content {
-        flex-direction: column !important;
-        gap: 1rem;
-    }
-
-    .header-left {
-        width: 100%;
-    }
-
-    .header-right {
-        width: 100%;
-        justify-content: space-between !important;
-        align-items: center !important;
-    }
-
-    /* Status badge responsive */
-    .status-badge {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.85rem;
-        border-radius: 12px;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 200px;
-    }
-
-    /* Leave chat button mobile */
-    .close-chat-btn {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.85rem;
-        white-space: nowrap;
-    }
-
-    /* Hide long chat ID on mobile */
-    .mobile-hide {
-        display: none !important;
-    }
-
-    .chat-messages {
-        height: 50vh;
-        padding: 1rem;
-    }
-
-    /* Adjust message bubbles for mobile */
-    .message-bubble {
-        max-width: 85% !important;
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
-    }
-
-    .message-sender {
-        font-size: 0.75rem;
-    }
-
-    .message-time {
-        font-size: 0.65rem;
-    }
-
-    .chat-input {
-        padding: 1rem;
-        border-radius: 0 0 15px 15px;
-    }
-
-    /* Mobile input group */
-    .mobile-input-stack {
-        flex-direction: column !important;
-        gap: 0.75rem;
-    }
-
-    .mobile-input-row {
-        display: flex;
-        gap: 0.5rem;
-        align-items: stretch;
-    }
-
-    .mobile-textarea-container {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .mobile-textarea {
-        width: 90vw !important;
-        min-height: 80px !important;
-        resize: vertical !important;
-        border-radius: 12px !important;
-    }
-
-    .mobile-action-buttons {
-        display: flex;
-        gap: 0.5rem;
-        flex-shrink: 0;
-    }
-
-    .mobile-btn {
-        padding: 0.75rem;
-        border-radius: 12px;
-        min-width: 48px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Emoji button mobile */
-    .emoji-btn {
-        width: 48px !important;
-        height: 48px !important;
-        padding: 0.5rem !important;
-        font-size: 1.2rem !important;
-    }
-
-    /* File preview mobile */
-    .attachment-preview {
-        padding: 0.5rem;
-        border-radius: 8px;
-        font-size: 0.85rem;
-    }
-
-    #studentFilePreview {
-        max-height: 100px;
-        overflow-y: auto;
-    }
-
-    /* Emoji picker mobile */
-    #studentEmojiPicker {
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        z-index: 10000 !important;
-        border-radius: 15px 15px 0 0 !important;
-        max-height: 40vh !important;
-        overflow-y: auto !important;
-    }
-
-    .emoji-grid {
-        padding: 1rem !important;
-    }
-
-    .emoji-grid .row {
-        justify-content: center;
-    }
-
-    .student-input-group .input-group {
-        gap: 0.75rem;
-    }
-
-    .student-input-group textarea {
-        min-height: 100px !important;
-        border-radius: 12px !important;
-    }
-
-    .student-input-group .d-flex {
-        justify-content: space-between;
-        align-items: stretch;
-    }
-
-    .student-input-group .btn {
-        min-width: 48px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-    }
-
-    /* Ensure adequate padding for mobile */
-
-    body {
-        padding-bottom: 0 !important;
-    }
-
-    main {
-        padding-bottom: 2rem !important;
-    }
-
-    /* Animation adjustments for mobile */
-    @keyframes studentMessageSlide {
-        from {
-            opacity: 0;
-            transform: translateY(10px) scale(0.98);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-    }
-}
-
-@media (max-width: 570px) {
-    .status-badge {
-        font-size: 0.75rem;
-        padding: 0.375rem 0.5rem;
-        max-width: 160px;
-    }
-
-    .close-chat-btn {
-        font-size: 0.75rem;
-        padding: 0.375rem 0.5rem;
-    }
-
-    /* Ultra-compact for very small screens */
-    .status-badge .bi {
-        margin-right: 0.25rem;
-    }
-}
-
-/* Ensure proper body padding for mobile */
-@media (min-width: 771px) {
-    .student-input-group .input-group {
-        align-items: center;
-    }
-
-    .student-input-group textarea {
-        resize: none;
-    }
-}
 </style>
 {% endblock %}
 
@@ -420,55 +188,47 @@
     <div class="row justify-content-center">
         <div class="col-lg-10 col-xl-8">
             <div class="chat-container">
-                <!-- 🌟 ENHANCED STUDENT CHAT HEADER - MOBILE RESPONSIVE -->
+                <!-- 🌟 ENHANCED STUDENT CHAT HEADER -->
                 <div class="chat-header">
-                    <div class="d-flex justify-content-between align-items-center header-content">
-                        <div class="header-left">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
                             <h3 class="mb-1">
                                 <i class="bi bi-mortarboard"></i>
                                 CSCI 1100 Support Chat
                             </h3>
-                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <div class="d-flex align-items-center gap-2">
                                 <span class="badge bg-light text-dark">
                                     👨‍🎓 {{ chat.student_name }}
                                 </span>
-                                <small class="opacity-75 mobile-hide">
+                                <small class="opacity-75">
                                     Chat ID: {{ chat.chat_id }}
                                 </small>
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center gap-2 header-right">
-                            <!-- STATUS CONSCIOUSNESS - RESPONSIVE -->
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- STATUS CONSCIOUSNESS -->
                             {% if chat.status == 'WAIT' %}
                                 <span class="status-badge bg-warning text-dark">
-                                    <i class="bi bi-hourglass-split"></i>
-                                    <span class="d-none d-sm-inline">⏳ Waiting for course assistant...</span>
-                                    <span class="d-sm-none">Waiting...</span>
+                                    <i class="bi bi-hourglass-split"></i> ⏳ Waiting for course assistant...
                                 </span>
                             {% elif chat.status == 'ACTV' %}
                                 <span class="status-badge text-dark" style="background: linear-gradient(145deg, #acfabf, #a0e1af);">
-                                    <i class="bi bi-person-check"></i>
-                                    <span class="d-none d-sm-inline">🔧 Assistant connected!</span>
-                                    <span class="d-sm-none">Connected!</span>
+                                    <i class="bi bi-person-check"></i> 🔧 Assistant connected!
                                 </span>
                             {% elif chat.status == 'LEFT' %}
                                 <span class="status-badge bg-secondary">
-                                    <i class="bi bi-door-open"></i>
-                                    <span class="d-none d-sm-inline">👋 You left the chat</span>
-                                    <span class="d-sm-none">Left chat</span>
+                                    <i class="bi bi-door-open"></i> 👋 You left the chat
                                 </span>
                             {% endif %}
 
-                            <!-- LEAVE CHAT PORTAL - RESPONSIVE -->
+                            <!-- LEAVE CHAT PORTAL -->
                             {% if can_message %}
                                 <form method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to leave this chat? You can always start a new one!')">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="leave_chat">
                                     <button type="submit" class="btn close-chat-btn text-white">
-                                        <i class="bi bi-door-open"></i>
-                                        <span class="d-none d-sm-inline">Leave Chat</span>
-                                        <span class="d-sm-none">Leave</span>
+                                        <i class="bi bi-door-open"></i> Leave Chat
                                     </button>
                                 </form>
                             {% endif %}
@@ -517,113 +277,100 @@
                         </div>
                     {% endfor %}
                 </div>
-                <!-- 💬 STUDENT MESSAGE INPUT DIMENSION - MOBILE RESPONSIVE -->
+
+                <!-- 💬 STUDENT MESSAGE INPUT DIMENSION -->
                 {% if can_message %}
-                <div class="chat-input">
-                    <form method="post" enctype="multipart/form-data" id="studentMessageForm">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="send_message">
+                    <div class="chat-input">
+                        <form method="post" enctype="multipart/form-data" id="studentMessageForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="send_message">
 
-                        <!-- Single responsive layout that adapts to screen size -->
-                        <div class="student-input-group">
-                            <div class="input-group flex-column flex-md-row">
-                                <!-- Emoji button - hidden on mobile -->
-                                <button type="button" class="emoji-btn d-none d-md-block"
-                                        onclick="toggleStudentEmojiPicker()"
-                                        title="Add emoji 😊">
-                                    😊
-                                </button>
-
-                                <!-- Single textarea that works on all screen sizes -->
-                                <textarea name="content"
-                                        id="id_student_content"
-                                        class="form-control shadow-none mx-0 mx-md-2 mb-3 mb-md-0"
-                                        rows="3"
-                                        maxlength="2000"
-                                        placeholder="💬 Ask your CSCI 1100 question here... (Press Ctrl+Enter to send)"
-                                        style="resize: none; border: 2px solid rgba(79, 172, 254, 0.3); border-radius: 12px;"
-                                        required></textarea>
-
-                                <!-- Action buttons container -->
-                                <div class="d-flex gap-2 justify-content-between">
-                                    <!-- Mobile emoji button -->
-                                    <button type="button" class="btn btn-outline-primary d-md-none"
+                            <div class="student-input-group">
+                                <div class="input-group">
+                                    <button type="button" class="emoji-btn"
                                             onclick="toggleStudentEmojiPicker()"
-                                            title="Add emoji">
+                                            title="Add emoji 😊">
                                         😊
                                     </button>
+
+                                    <!-- 🌈 EXPLICIT STUDENT TEXTAREA MANIFESTATION -->
+                                    <textarea name="content"
+                                              id="id_student_content"
+                                              class="form-control shadow-none mx-2"
+                                              rows="3"
+                                              maxlength="2000"
+                                              placeholder="💬 Ask your CSCI 1100 question here... (Press Ctrl+Enter to send)"
+                                              style="resize: none; border: 2px solid rgba(79, 172, 254, 0.3);"
+                                              required></textarea>
 
                                     <button type="button" class="btn btn-outline-primary"
                                             onclick="document.getElementById('id_student_attachments').click()"
                                             title="Attach files 📎">
                                         <i class="bi bi-paperclip"></i>
-                                        <span class="d-none d-md-inline ms-1">Attach</span>
                                     </button>
 
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-send"></i>
-                                        <span class="d-none d-md-inline ms-1">Send</span>
+                                        <i class="bi bi-send"></i> Send
                                     </button>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- 📎 STUDENT FILE INPUT -->
-                        <input type="file"
-                            name="attachments"
-                            id="id_student_attachments"
-                            class="form-control d-none"
-                            multiple
-                            accept=".png,.jpg,.jpeg,.webp,.gif,.pdf,.odt,.doc,.docx,.rtf,.txt,.py,.cs,.js,.html,.css,.json,.zip">
+                            <!-- 📎 STUDENT FILE INPUT -->
+                            <input type="file"
+                                   name="attachments"
+                                   id="id_student_attachments"
+                                   class="form-control d-none"
+                                   multiple
+                                   accept=".png,.jpg,.jpeg,.webp,.gif,.pdf,.odt,.doc,.docx,.rtf,.txt,.py,.cs,.js,.html,.css,.json,.zip">
 
-                        <div id="studentFilePreview" class="mt-2"></div>
-                    </form>
+                            <div id="studentFilePreview" class="mt-2"></div>
+                        </form>
 
-                    <!-- 😊 STUDENT EMOJI PICKER DIMENSION -->
-                    <div id="studentEmojiPicker" class="mt-3" style="display: none;">
-                        <div class="emoji-grid p-3 bg-white rounded-3 shadow-lg">
-                            <h6 class="text-center text-dark mb-3">Choose an emoji:</h6>
-                            <div class="row g-2">
-                                <!-- HAPPY EMOTIONS -->
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😊')">😊</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😃')">😃</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😄')">😄</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤗')">🤗</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😍')">😍</button></div>
+                        <!-- 😊 STUDENT EMOJI PICKER DIMENSION -->
+                        <div id="studentEmojiPicker" class="mt-3" style="display: none;">
+                            <div class="emoji-grid p-3 bg-white rounded-3 shadow-lg">
+                                <h6 class="text-center text-dark mb-3">Choose an emoji:</h6>
+                                <div class="row g-2">
+                                    <!-- HAPPY EMOTIONS -->
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😊')">😊</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😃')">😃</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😄')">😄</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤗')">🤗</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😍')">😍</button></div>
 
-                                <!-- THINKING/CONFUSED -->
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤔')">🤔</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😕')">😕</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😅')">😅</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😰')">😰</button></div>
+                                    <!-- THINKING/CONFUSED -->
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤔')">🤔</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😕')">😕</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😅')">😅</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😰')">😰</button></div>
 
-                                <!-- REACTIONS -->
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👍')">👍</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👎')">👎</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👏')">👏</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🙏')">🙏</button></div>
+                                    <!-- REACTIONS -->
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👍')">👍</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👎')">👎</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👏')">👏</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🙏')">🙏</button></div>
 
-                                <!-- ACADEMIC -->
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('📚')">📚</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💻')">💻</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💡')">💡</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⚡')">⚡</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🚀')">🚀</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⭐')">⭐</button></div>
+                                    <!-- ACADEMIC -->
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('📚')">📚</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💻')">💻</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💡')">💡</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⚡')">⚡</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🚀')">🚀</button></div>
+                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⭐')">⭐</button></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 {% else %}
-                <div class="chat-input text-center">
-                    <div class="alert alert-info mb-0" style="border-radius: 15px;">
-                        <h5>💬 Chat Session Ended</h5>
-                        <p class="mb-2">This chat has ended. Thanks for using CSCI 1100 support!</p>
-                        <a href="{% url 'chat:landing' %}" class="btn btn-primary">
-                            <i class="bi bi-chat-square-dots"></i> Start New Chat
-                        </a>
+                    <div class="chat-input text-center">
+                        <div class="alert alert-info mb-0" style="border-radius: 15px;">
+                            <h5>💬 Chat Session Ended</h5>
+                            <p class="mb-2">This chat has ended. Thanks for using CSCI 1100 support!</p>
+                            <a href="{% url 'chat:landing' %}" class="btn btn-primary">
+                                <i class="bi bi-chat-square-dots"></i> Start New Chat
+                            </a>
+                        </div>
                     </div>
-                </div>
                 {% endif %}
             </div>
         </div>
@@ -631,6 +378,8 @@
 </div>
 
 <script>
+// 🌊 STUDENT CHAT CONSCIOUSNESS FUNCTIONS 🌊
+
 function scrollToBottom() {
     const container = document.getElementById('messagesContainer');
     container.scrollTop = container.scrollHeight;
@@ -638,32 +387,17 @@ function scrollToBottom() {
 
 function toggleStudentEmojiPicker() {
     const picker = document.getElementById('studentEmojiPicker');
-    const isVisible = picker.style.display !== 'none';
-
-    if (isVisible) {
-        picker.style.display = 'none';
-        // Re-enable body scroll
-        document.body.style.overflow = '';
-    } else {
-        picker.style.display = 'block';
-        // Prevent body scroll when emoji picker is open on mobile
-        if (window.innerWidth <= 770) {
-            document.body.style.overflow = 'hidden';
-        }
-    }
+    picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
 }
 
 function insertStudentEmoji(emoji) {
     const textarea = document.getElementById('id_student_content');
-
-    if (textarea) {
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const text = textarea.value;
-        textarea.value = text.substring(0, start) + emoji + text.substring(end);
-        textarea.focus();
-        textarea.setSelectionRange(start + emoji.length, start + emoji.length);
-    }
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    textarea.value = text.substring(0, start) + emoji + text.substring(end);
+    textarea.focus();
+    textarea.setSelectionRange(start + emoji.length, start + emoji.length);
     toggleStudentEmojiPicker();
 }
 
@@ -693,9 +427,10 @@ document.getElementById('id_student_attachments').addEventListener('change', fun
 
 function removeFile(button, filename) {
     button.parentElement.remove();
+    // Note: Actual file removal would require more complex logic
 }
 
-// 🌊 SIMPLIFIED form submission
+// 🌊 Enhanced form submission with STUDENT DEBUGGING
 document.getElementById('studentMessageForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -704,6 +439,7 @@ document.getElementById('studentMessageForm').addEventListener('submit', functio
     const textarea = document.getElementById('id_student_content');
     const originalText = submitBtn.innerHTML;
 
+    // 🚨 DEBUG: Check form data
     console.log('👨‍🎓 Student form submission:');
     for (let [key, value] of formData.entries()) {
         console.log(key, value);
@@ -751,41 +487,13 @@ document.getElementById('studentMessageForm').addEventListener('submit', functio
     });
 });
 
-// Close emoji picker when clicking outside on mobile
-document.addEventListener('click', function(e) {
-    const picker = document.getElementById('studentEmojiPicker');
-    const emojiBtn = document.querySelector('.emoji-btn');
-
-    if (picker.style.display !== 'none' &&
-        !picker.contains(e.target) &&
-        e.target.closest('.emoji-btn') === null) {
-        toggleStudentEmojiPicker();
-    }
-});
-
-// Handle orientation change
-window.addEventListener('orientationchange', function() {
-    setTimeout(function() {
-        // Recalculate heights after orientation change
-        const chatContainer = document.querySelector('.chat-container');
-        if (window.innerWidth <= 770) {
-            chatContainer.style.height = '82vh';
-        } else {
-            chatContainer.style.height = '85vh';
-        }
-    }, 100);
-});
-
 // 🎯 Auto-scroll and real-time updates
 document.addEventListener('DOMContentLoaded', function() {
     scrollToBottom();
 
     // Focus on textarea if chat is active
     {% if can_message %}
-        const textarea = document.getElementById('id_student_content');
-        if (textarea) {
-            textarea.focus();
-        }
+        document.getElementById('id_student_content').focus();
     {% endif %}
 
     // Auto-refresh messages every 5 seconds for students
