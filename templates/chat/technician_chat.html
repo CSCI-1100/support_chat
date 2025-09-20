@@ -92,26 +92,10 @@
         }
     }
 
-    .chat-messages {
-        flex: 1;
-        overflow-y: auto;
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.9);
-        min-height: 0; /* Important for flex children */
-    }
-
     @media (max-width: 768px) {
         .chat-messages {
             padding: 0.75rem;
         }
-    }
-
-    .tech-input-area {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 1rem;
-        border-top: 1px solid #dee2e6;
-        border-radius: 0 0 15px 15px;
-        flex-shrink: 0;
     }
 
     @media (max-width: 768px) {
@@ -208,13 +192,6 @@
         border-bottom-right-radius: 3px;
     }
 
-    .system .message-bubble {
-        background: #f8f9fa;
-        color: #6c757d;
-        font-style: italic;
-        border: 1px dashed #dee2e6;
-    }
-
     /* Sidebar responsive behavior */
     .chat-sidebar {
         background: #fff;
@@ -265,11 +242,6 @@
         border-bottom-right-radius: 0px;
     }
 
-    .attachment-btn:hover {
-        background-color: #eaeced;
-        color: #888686;
-    }
-
     .close-chat-btn {
         background: linear-gradient(45deg, #c84b58, #bf2f5f);
         border: none;
@@ -315,7 +287,7 @@
     }
 
     .attachment-item:hover {
-        background: rgba(255, 255, 255, 1);
+        background: rgb(234, 234, 234);
         transform: translateY(-1px);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
@@ -421,7 +393,7 @@
                 <div class="tech-chat-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h4 class="mb-1">
+                            <h4 class="mb-1 text-dark">
                                 <i class="bi bi-chat-heart"></i>
                                 Chat {{ chat.chat_id }}
                             </h4>
@@ -533,7 +505,7 @@
 
                         <div class="input-group">
                             <button type="button" class="btn btn-outline-secondary"
-                                    onclick="toggleEmojiPicker()" title="Add emoji" style="background-color: #f4f5f6;">
+                                    onclick="toggleEmojiPicker()" title="Add emoji 😊">
                                 😊
                             </button>
 
@@ -573,7 +545,7 @@
 
                     <!-- 😊 Emoji Picker -->
                     <div id="techEmojiPicker" class="mt-2" style="display: none;">
-                        <div class="emoji-grid p-2 bg-white rounded shadow">
+                        <div class="emoji-grid p-2 rounded shadow">
                             <div class="row g-1">
                                 <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('😊')">😊</button></div>
                                 <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('👍')">👍</button></div>

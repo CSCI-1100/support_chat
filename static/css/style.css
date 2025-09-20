@@ -232,7 +232,7 @@ footer {
     background-size: cover;
 }
 
-input[type=text], input[type=password], input[type=email], input[type='tel'], input[type=url] {
+input[type=text], input[type=time], input[type=password], input[type=email], input[type='tel'], input[type=url] {
     width: 100%;
     padding: 5px;
     border: 1px solid #ccc;
@@ -307,10 +307,6 @@ label, .forms-label {
 
 .border-ccc {
     border-color: #ccc !important;
-}
-
-.color-666 {
-    color: #666;
 }
 
 .has-info {

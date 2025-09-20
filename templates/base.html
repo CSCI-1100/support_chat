@@ -346,6 +346,48 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
+        .time-input-group {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            min-height: 0; /* Important for flex children */
+        }
+
+        .system .message-bubble {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+            font-style: italic;
+            border: 2px dashed #ffc107;
+        }
+
+        .tech-input-area, .student-input-group {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem;
+            border-top: 1px solid #dee2e6;
+            border-radius: 0 0 15px 15px;
+            flex-shrink: 0;
+        }
+
+        .tech-input-area button {
+            background-color: #f4f5f6;
+        }
+
+        .tech-input-area button:hover {
+            background-color: #eaeced;
+            color: #888686;
+        }
+
+        .emoji-grid {
+            background-color: white;
+        }
+
         /* ✨ Animation Utilities */
         .fade-in {
             animation: fadeInUp 0.6s ease forwards;
@@ -384,6 +426,7 @@
 
         /* 🌙 Dark Mode Support */
         @media (prefers-color-scheme: dark) {
+
             body {
                 background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             }
@@ -396,8 +439,8 @@
             }
 
             .chat-item {
-                background: rgba(52, 73, 94, 0.9);
-                box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+                background: rgba(44, 82, 103, 0.8);
+                box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
             }
 
             /* Tables - comprehensive approach */
@@ -423,11 +466,6 @@
             /* Handle striped tables */
             .table-striped tbody tr:nth-of-type(odd) {
                 background: rgba(44, 62, 80, 0.9) !important;
-            }
-
-            /* Handle hover effects */
-            .table-hover tbody tr:hover {
-                background: rgba(41, 128, 185, 0.3) !important;
             }
 
             .alert {
@@ -463,6 +501,172 @@
 
             .topic-badge {
                 color: #cce3f9;
+            }
+
+            .bg-etsu-yellow {
+                background-color: hsl(44, 60%, 35%) !important; /* Darker yellow for dark mode */
+            }
+
+            .bg-putty-yellow {
+                background-color: hsl(48, 40%, 35%) !important; /* Darker putty yellow */
+            }
+
+            /* Text colors */
+            .text-putty-yellow {
+                color: hsl(48, 70%, 75%) !important; /* Lighter for better contrast */
+            }
+
+            /* Form elements */
+            .form-container {
+                background-color: rgba(52, 73, 94, 0.95) !important;
+                border-color: hsl(127, 140, 141) !important;
+                color: #ecf0f1;
+            }
+
+            .button-container {
+                background-color: rgba(44, 62, 80, 0.3) !important;
+                border-color: hsl(127, 140, 141) !important;
+            }
+
+            .time-input-group {
+                background-color: rgba(44, 62, 80, 0.9) !important;
+            }
+
+            .chat-messages {
+                background: rgba(52, 73, 94, 0.9);
+            }
+
+            .tech-input-area, .student-input-group {
+                background: #485b6e;
+                border-top: 1px solid rgba(105, 118, 132, 0.9);
+            }
+
+            .tech-input-area button {
+                background-color: #2f4356;
+                border: 1px solid #c9c9c9;
+            }
+
+            .attachment-btn {
+                color: #c9c9c9;
+            }
+
+            .system .message-bubble {
+                color: #a0c5ce;
+            }
+
+            .tech-input-area button:hover {
+                background-color: #475665;
+            }
+
+            .emoji-grid {
+                background-color: #2f4356;
+                border: 1px solid #c9c9c9;
+            }
+
+            /* Input fields */
+            input[type=text],
+            input[type=time],
+            input[type=password],
+            input[type=email],
+            input[type=tel],
+            input[type=url],
+            select,
+            textarea {
+                background-color: rgba(44, 62, 80, 0.9) !important;
+                border-color: hsl(127, 140, 141) !important;
+                color: #ecf0f1 !important;
+            }
+
+            input[type=text]::placeholder,
+            input[type=password]::placeholder,
+            input[type=email]::placeholder,
+            input[type='tel']::placeholder,
+            input[type=url]::placeholder,
+            textarea::placeholder {
+                color: #7fa3ac !important;
+            }
+
+            /* Labels */
+            label,
+            .forms-label {
+                color: #bebebe !important;
+            }
+
+            /* Button adjustments for dark mode */
+            .bttn-warning {
+                background-color: hsl(48, 50%, 40%) !important;
+                color: hsl(236, 240, 241) !important;
+            }
+
+            .bttn-warning:hover {
+                background-color: hsl(48, 50%, 45%) !important;
+                color: hsl(236, 240, 241) !important;
+            }
+
+            /* Table elements */
+            th, tr, td {
+                color: hsl(236, 240, 241) !important;
+                border-color: hsl(127, 140, 141) !important;
+            }
+
+            /* Bootstrap table overrides */
+            .table {
+                color: hsl(236, 240, 241) !important;
+            }
+
+            .table-striped > tbody > tr:nth-of-type(odd) > td,
+            .table-striped > tbody > tr:nth-of-type(odd) > th {
+                background-color: rgba(44, 62, 80, 0.3) !important;
+            }
+
+            /* Border utilities */
+            .border-ccc {
+                border-color: hsl(127, 140, 141) !important;
+            }
+
+            /* Info box */
+            .has-info {
+                background-color: rgba(var(--clr-info), 0.2) !important;
+                color: hsl(236, 240, 241) !important;
+            }
+
+            /* TOS box */
+            .tos-box {
+                background-color: rgba(44, 62, 80, 0.5) !important;
+                border-color: hsl(127, 140, 141) !important;
+                color: hsl(236, 240, 241) !important;
+            }
+
+            /* Dropdown items */
+            .dropdown-menu {
+                background-color: rgba(44, 62, 80, 0.95) !important;
+                border-color: hsl(127, 140, 141) !important;
+            }
+
+            .dropdown-item {
+                color: hsl(236, 240, 241) !important;
+            }
+
+            .dropdown-item:hover,
+            .dropdown-item:focus {
+                background-color: rgba(52, 73, 94, 0.7) !important;
+                color: hsl(236, 240, 241) !important;
+            }
+
+            /* Shadow adjustments for dark mode */
+            .shadow {
+                -webkit-box-shadow: 2px 15px 72px -5px rgba(0,0,0,0.9);
+                -moz-box-shadow: 2px 15px 72px -5px rgba(0,0,0,0.9);
+                box-shadow: 2px 15px 72px -5px rgba(0,0,0,0.9);
+            }
+
+            h1, h2, h3, h4 {
+                color: #ecf0f1;
+            }
+
+            /* Footer */
+            footer {
+                background-color: none !important;
             }
         }
     </style>
