@@ -326,6 +326,26 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        .chat-item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            border: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .schedule-day.today {
+            background: rgba(79, 172, 254, 0.1);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-weight: 600;
+        }
+
+        .chat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
         /* ✨ Animation Utilities */
         .fade-in {
             animation: fadeInUp 0.6s ease forwards;
@@ -366,12 +386,48 @@
         @media (prefers-color-scheme: dark) {
             body {
                 background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            }
+
+            /* Cards and table elements */
+            .card, .card-body {
+                background: rgba(52, 73, 94, 0.9);
+                color: #ecf0f1;
+                border-color: #7f8c8d;
+            }
+
+            .chat-item {
+                background: rgba(52, 73, 94, 0.9);
+                box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+            }
+
+            /* Tables - comprehensive approach */
+            table,
+            .table {
+                background: rgba(52, 73, 94, 0.9);
                 color: #ecf0f1;
             }
 
-            .card {
-                background: rgba(52, 73, 94, 0.9);
-                color: #ecf0f1;
+            table thead th,
+            .table thead th,
+            table tbody tr,
+            .table tbody tr,
+            table tbody td,
+            .table tbody td,
+            table tfoot tr,
+            .table tfoot tr {
+                background: rgba(52, 73, 94, 0.9) !important;
+                color: #ecf0f1 !important;
+                border-color: #7f8c8d !important;
+            }
+
+            /* Handle striped tables */
+            .table-striped tbody tr:nth-of-type(odd) {
+                background: rgba(44, 62, 80, 0.9) !important;
+            }
+
+            /* Handle hover effects */
+            .table-hover tbody tr:hover {
+                background: rgba(41, 128, 185, 0.3) !important;
             }
 
             .alert {
@@ -383,17 +439,26 @@
                 color: #ecf0f1;
             }
 
-            small span, .text-muted span {
+            .card-body * {
+                color: #ecf0f1;
+            }
+
+            small span, .text-muted span, .text-muted p {
                 color: #a0c5ce;
             }
 
             .schedule-summary {
-                background: #6b747c; /* Dark gray background */
+                background: rgba(53, 84, 114, 0.7);
                 border-radius: 12px;
                 padding: 1rem;
                 margin-top: 1rem;
                 border: 1px solid rgba(255, 255, 255, 0.1); /* Light border for contrast */
                 color: #f0f0f0; /* Light text for readability */
+            }
+
+            .schedule-day.today {
+                background-color: rgba(53, 84, 114, 0.6);
+                box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
             }
 
             .topic-badge {

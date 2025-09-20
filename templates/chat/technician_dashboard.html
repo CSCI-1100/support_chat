@@ -25,19 +25,6 @@
     text-align: center;
 }
 
-.chat-item {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    border: none;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-}
-
-.chat-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
 .waiting-indicator {
     animation: pulse 2s infinite;
 }
@@ -168,7 +155,7 @@
                     {% empty %}
                         <div class="text-center text-muted py-4">
                             <i class="bi bi-check-circle display-4"></i>
-                            <p class="mt-2 text-muted">🎉 No students waiting! Great job team!</p>
+                            <p class="mt-2">🎉 No students waiting! Great job team!</p>
                         </div>
                     {% endfor %}
                 </div>

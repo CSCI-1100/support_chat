@@ -43,3 +43,10 @@ class SystemManager(models.Model):
 
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.job_title}"
+
+    def get_departments_list(self):
+        return self.departments.split(',')
+
+    def get_departments_str(self):
+        departments = self.departments.split(',')
+        return ", ".join(departments)

@@ -32,14 +32,14 @@
                         {% for manager in system_managers %}
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between">
-                                    <span>Initials/Avatar</span>
+                                    <span>{{ manager.username }}</span>
                                     <span class="badge {% if manager.is_active %}bg-success{% else %}bg-danger{% endif %} d-inline-flex align-items-center">
                                         {% if manager.is_active %}Active{% else %}Inactive{% endif %}
                                     </span>
                                 </div>
                                 <div class="card-body">
                                     <div class="fs-4">{{ manager.get_full_name }}</div>
-                                    <div>{{ manager.systemmanager.departments }}</div>
+                                    <div>{{ manager.systemmanager.get_departments_str }}</div>
                                 </div>
                                 {% if manager != request.user %}
                                     <div class="card-footer d-flex justify-content-end gap-1">
@@ -66,6 +66,7 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Username</th>
                                     <th>Department</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -75,7 +76,8 @@
                                 {% for manager in system_managers %}
                                     <tr>
                                         <td>{{ manager.get_full_name }}</td>
-                                        <td>{{ manager.systemmanager.departments }}</td>
+                                        <td>{{ manager.username }}</td>
+                                        <td>{{ manager.systemmanager.get_departments_str }}</td>
                                         <td>
                                             <span class="badge {% if manager.is_active %}bg-success{% else %}bg-danger{% endif %} d-inline-flex align-items-center">
                                                 {% if manager.is_active %}Active{% else %}Inactive{% endif %}
@@ -121,7 +123,7 @@
                         {% for tech in technicians %}
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between">
-                                    <span>Initials/Avatar</span>
+                                    <span>{{ tech.username }}</span>
                                     <span class="badge {% if tech.is_active %}bg-success{% else %}bg-danger{% endif %} d-inline-flex align-items-center">
                                         {% if tech.is_active %}Active{% else %}Inactive{% endif %}
                                     </span>
@@ -152,6 +154,7 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Username</th>
                                     <th>Department</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -161,6 +164,7 @@
                                 {% for tech in technicians %}
                                     <tr>
                                         <td>{{ tech.get_full_name }}</td>
+                                        <td>{{ tech.username }}</td>
                                         <td>{{ tech.department }}</td>
                                         <td>
                                             <span class="badge {% if tech.is_active %}bg-success{% else %}bg-danger{% endif %} d-inline-flex align-items-center">
