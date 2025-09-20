@@ -5,224 +5,393 @@
 
 {% block extra_css %}
 <style>
-.tech-chat-container {
-    height: 85vh;
-    border-radius: 15px;
-}
-
-.tech-chat-header {
-    background: linear-gradient(45deg, #93edaa 0%, #80e097 100%);
-    color: black;
-    padding: 1rem;
-}
-
-.chat-messages {
-    height: 55vh;
-    overflow-y: auto;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.9);
-}
-
-.message {
-    margin-bottom: 1rem;
-    animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
+    /* Mobile-first responsive design */
+    .tech-chat-container {
+        border-radius: 15px;
+        background: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
     }
-    to {
-        opacity: 1;
-        transform: translateX(0);
+
+    .quick-actions {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
     }
-}
 
-.message.student {
-    text-align: left;
-}
+    .quick-action-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: black;
+        border-radius: 8px;
+        padding: 0.25rem 0.5rem;
+        margin: 0.125rem;
+        font-size: 0.8rem;
+        transition: all 0.2s ease;
+    }
 
-.message.technician {
-    text-align: right;
-}
+    .quick-action-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: black;
+    }
 
-.message.system {
-    text-align: center;
-}
+    /* Dynamic height calculation for different screen sizes */
+    @media (min-width: 992px) {
+        /* Desktop: Use viewport height minus navbar/padding */
+        .tech-chat-container {
+            height: 85vh;
+        }
+    }
 
-.message-bubble {
-    display: inline-block;
-    max-width: 75%;
-    padding: 0.875rem 1.125rem;
-    border-radius: 18px;
-    word-wrap: break-word;
-    position: relative;
-}
+    @media (max-width: 991.98px) {
+        /* Mobile/Tablet: Use auto height with minimum constraints */
+        .tech-chat-container {
+            min-height: 60vh;
+            max-height: 70vh;
+        }
+    }
 
-.student .message-bubble {
-    background: linear-gradient(145deg, #007bff, #0056b3);
-    color: white;
-    border-bottom-left-radius: 3px;
-}
+    @media (max-width: 576px) {
+        /* Small mobile: Optimize for smaller screens */
+        .tech-chat-container {
+            min-height: 50vh;
+            max-height: 60vh;
+            margin-bottom: 1rem;
+        }
+    }
 
-.technician .message-bubble {
-    background: linear-gradient(145deg, #acfabf, #a0e1af);
-    color: black;
-    border-bottom-right-radius: 3px;
-}
+    .tech-chat-header {
+        background: linear-gradient(45deg, #93edaa 0%, #80e097 100%);
+        color: black;
+        padding: 1rem;
+        border-radius: 15px 15px 0 0;
+        flex-shrink: 0;
+    }
 
-.student .message-bubble .message-time {
-    color: #ffffff92;
-}
+    /* Responsive header layout */
+    @media (max-width: 768px) {
+        .tech-chat-header {
+            padding: 0.75rem;
+        }
 
-.technician .message-bubble .message-time {
-    color: #6c757d;
-}
+        .tech-chat-header h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
 
-.system .message-bubble {
-    background: #f8f9fa;
-    color: #6c757d;
-    font-style: italic;
-    border: 1px dashed #dee2e6;
-}
+        .tech-chat-header .d-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
 
-.tech-input-area {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 1rem;
-    border-top: 1px solid #dee2e6;
-}
+        .participant-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+        }
+    }
 
-.participant-badge {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
-    padding: 0.25rem 0.75rem;
-    margin: 0 0.25rem;
-    font-size: 0.8rem;
-}
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.9);
+        min-height: 0; /* Important for flex children */
+    }
 
-.submit-message-btn {
-    background: linear-gradient(45deg, #93edaa 0%, #80e097 100%);
-    border: 1px solid #6c757d;
-}
+    @media (max-width: 768px) {
+        .chat-messages {
+            padding: 0.75rem;
+        }
+    }
 
-.submit-message-btn:hover {
-    background: linear-gradient(35deg, #9effb6 0%, #8ff8a7 100%);
-}
+    .tech-input-area {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 1rem;
+        border-top: 1px solid #dee2e6;
+        border-radius: 0 0 15px 15px;
+        flex-shrink: 0;
+    }
 
-.close-chat-btn {
-    background: linear-gradient(45deg, #c84b58, #bf2f5f);
-    border: none;
-    transition: all 0.3s ease;
-}
+    @media (max-width: 768px) {
+        .tech-input-area {
+            padding: 0.75rem;
+        }
 
-.close-chat-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
-}
+        .tech-input-area .input-group {
+            flex-wrap: wrap;
+        }
 
-.attachment-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    color: #287ffc;
-}
+        .tech-input-area textarea {
+            font-size: 16px; /* Prevents zoom on iOS */
+            min-height: 80px;
+        }
+    }
 
-.attachment-item {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    padding: 0.5rem;
-    border: 1px solid #dee2e6;
-    text-decoration: none;
-    color: inherit;
-    transition: all 0.2s ease;
-}
+    /* Quick actions responsive behavior */
+    .quick-actions {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
 
-.attachment-item:hover {
-    background: rgba(255, 255, 255, 1);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+    @media (max-width: 768px) {
+        .quick-actions {
+            padding: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
 
-.quick-actions {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-}
+        .quick-action-btn {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+            margin: 0.1rem;
+        }
+    }
 
-.quick-action-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: black;
-    border-radius: 8px;
-    padding: 0.25rem 0.5rem;
-    margin: 0.125rem;
-    font-size: 0.8rem;
-    transition: all 0.2s ease;
-}
+    /* Message styling remains the same but with mobile optimizations */
+    .message {
+        margin-bottom: 1rem;
+        animation: slideIn 0.3s ease;
+    }
 
-.quick-action-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    color: black;
-}
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
 
-.modal {
-    z-index: 99999 !important;
-}
+    .message.student {
+        text-align: left;
+    }
 
-.modal-backdrop {
-    z-index: 99998 !important;
-}
+    .message.technician {
+        text-align: right;
+    }
 
-.modal-dialog {
-    z-index: 100000 !important;
-}
+    .message.system {
+        text-align: center;
+    }
 
-.modal-content {
-    z-index: 100001 !important;
-    position: relative;
-}
+    .message-bubble {
+        display: inline-block;
+        max-width: 75%;
+        padding: 0.875rem 1.125rem;
+        border-radius: 18px;
+        word-wrap: break-word;
+        position: relative;
+    }
 
-/* 🔧 ENSURE BUTTONS ARE CLICKABLE */
-.modal-footer button {
-    z-index: 100002 !important;
-    position: relative;
-    pointer-events: auto !important;
-}
+    @media (max-width: 768px) {
+        .message-bubble {
+            max-width: 85%;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
 
-/* 🎭 MODAL ANIMATION FIXES */
-.modal.fade .modal-dialog {
-    transition: transform 0.3s ease-out;
-    transform: translate(0, -50px);
-}
+    .student .message-bubble {
+        background: linear-gradient(145deg, #007bff, #0056b3);
+        color: white;
+        border-bottom-left-radius: 3px;
+    }
 
-.modal.show .modal-dialog {
-    transform: none;
-}
+    .technician .message-bubble {
+        background: linear-gradient(145deg, #acfabf, #a0e1af);
+        color: black;
+        border-bottom-right-radius: 3px;
+    }
 
-/* 🌈 ENHANCED VISUAL FEEDBACK */
-.btn-danger:hover {
-    background-color: #c82333 !important;
-    border-color: #bd2130 !important;
-    transform: scale(1.02);
-}
+    .system .message-bubble {
+        background: #f8f9fa;
+        color: #6c757d;
+        font-style: italic;
+        border: 1px dashed #dee2e6;
+    }
 
-.btn-secondary:hover {
-    background-color: #5a6268 !important;
-    border-color: #545b62 !important;
-}
+    /* Sidebar responsive behavior */
+    .chat-sidebar {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-/* 🚨 DEBUGGING: Visual indicators */
-.modal-content {
-    border: 2px solid rgba(220, 53, 69, 0.5);
-    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
-}
+    @media (max-width: 991.98px) {
+        .chat-sidebar {
+            margin-top: 1rem;
+        }
+    }
 
-.modal-footer {
-    background-color: rgba(248, 249, 250, 0.95);
-}
+    @media (max-width: 576px) {
+        .chat-sidebar .card-body {
+            padding: 1rem;
+        }
+
+        .chat-sidebar dt {
+            font-size: 0.9rem;
+        }
+
+        .chat-sidebar dd {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    /* Button responsive behavior */
+    .submit-message-btn {
+        background: linear-gradient(45deg, #93edaa 0%, #80e097 100%);
+        border: 1px solid #6c757d;
+    }
+
+    .submit-message-btn:hover {
+        background: linear-gradient(35deg, #9effb6 0%, #8ff8a7 100%);
+    }
+
+    .close-chat-btn {
+        background: linear-gradient(45deg, #c84b58, #bf2f5f);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .close-chat-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    }
+
+    @media (max-width: 768px) {
+        .close-chat-btn {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+    }
+
+    /* Attachment grid responsive */
+    .attachment-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        color: #287ffc;
+    }
+
+    @media (max-width: 768px) {
+        .attachment-grid {
+            grid-template-columns: 1fr;
+            gap: 0.25rem;
+        }
+    }
+
+    .attachment-item {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        padding: 0.5rem;
+        border: 1px solid #dee2e6;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s ease;
+    }
+
+    .attachment-item:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Emoji picker responsive */
+    #techEmojiPicker {
+        position: relative;
+        z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+        .emoji-grid .row {
+            margin: 0;
+        }
+
+        .emoji-btn {
+            padding: 0.25rem;
+            font-size: 1.2rem;
+        }
+    }
+
+    /* Modal responsive fixes */
+    .modal {
+        z-index: 99999 !important;
+    }
+
+    .modal-backdrop {
+        z-index: 99998 !important;
+    }
+
+    @media (max-width: 576px) {
+        .modal-dialog {
+            margin: 1rem;
+            max-width: calc(100% - 2rem);
+        }
+
+        .modal-body {
+            padding: 1rem;
+        }
+
+        .modal-footer {
+            padding: 0.75rem 1rem;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .modal-footer button {
+            width: 100%;
+        }
+    }
+
+    /* Utility classes for responsive spacing */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+    }
+
+    /* Fix for very small screens */
+    @media (max-width: 400px) {
+        .tech-chat-header h4 {
+            font-size: 1rem;
+        }
+
+        .message-bubble {
+            max-width: 90%;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .quick-action-btn {
+            font-size: 0.6rem;
+            padding: 0.15rem 0.3rem;
+        }
+    }
+
+    /* Ensure proper scrolling on iOS */
+    .chat-messages {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Fix input zoom on iOS */
+    @media screen and (max-width: 768px) {
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        textarea,
+        select {
+            font-size: 16px !important;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -347,7 +516,7 @@
 
                         <div class="input-group">
                             <button type="button" class="btn btn-outline-secondary"
-                                    onclick="toggleEmojiPicker()" title="Add emoji">
+                                    onclick="toggleEmojiPicker()" title="Add emoji" style="background-color: #f4f5f6;">
                                 😊
                             </button>
 
@@ -363,7 +532,7 @@
 
                             <button type="button" class="btn btn-outline-secondary"
                                     onclick="document.getElementById('id_attachments').click()"
-                                    title="Attach files">
+                                    title="Attach files" style="background-color: #f4f5f6;">
                                 <i class="bi bi-paperclip"></i>
                             </button>
 
