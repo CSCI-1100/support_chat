@@ -5,181 +5,459 @@
 
 {% block extra_css %}
 <style>
-/* 🌈 STUDENT CHAT REALITY MATRIX 🌈 */
-.chat-container {
-    height: 85vh;
-    border-radius: 20px;
-}
+    /* 🌈 STUDENT CHAT REALITY MATRIX - RESPONSIVE EDITION 🌈 */
 
-.chat-header {
-    background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
-    border-radius: 20px 20px 0 0;
-    color: white;
-    padding: 1.5rem;
-    box-shadow: 0 4px 20px rgba(79, 172, 254, 0.3);
-}
-
-.chat-messages {
-    height: 55vh;
-    overflow-y: auto;
-    padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.9);
-}
-
-.message {
-    margin-bottom: 1.2rem;
-    animation: studentMessageSlide 0.4s ease-out;
-}
-
-@keyframes studentMessageSlide {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
+    /* Mobile-first responsive design for chat container */
+    .chat-container {
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+
+    /* Dynamic height calculation for different screen sizes */
+    @media (min-width: 992px) {
+        /* Desktop: Use viewport height minus navbar/padding */
+        .chat-container {
+            height: 85vh;
+        }
     }
-}
 
-.message.student {
-    text-align: right;
-}
-
-.message.technician {
-    text-align: left;
-}
-
-.message.system {
-    text-align: center;
-}
-
-.message-bubble {
-    display: inline-block;
-    max-width: 75%;
-    padding: 1rem 1.25rem;
-    border-radius: 20px;
-    word-wrap: break-word;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
-
-.student .message-bubble {
-    background: linear-gradient(145deg, #007bff, #0056b3);
-    color: white;
-    border-bottom-right-radius: 3px;
-}
-
-.technician .message-bubble {
-    background: linear-gradient(145deg, #acfabf, #a0e1af);
-    color: black;
-    border-bottom-left-radius: 3px;
-}
-
-.system .message-bubble {
-    background: rgba(255, 193, 7, 0.1);
-    color: #856404;
-    font-style: italic;
-    border: 2px dashed #ffc107;
-}
-
-.chat-input {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 0 0 20px 20px;
-    padding: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.status-badge {
-    animation: statusPulse 4s infinite;
-    padding: 0.5rem 1rem;
-    border-radius: 15px;
-    font-weight: 600;
-}
-
-@keyframes statusPulse {
-    0%, 100% {
-        opacity: 1;
-        transform: scale(1);
+    @media (max-width: 991.98px) {
+        /* Mobile/Tablet: Use auto height with minimum constraints */
+        .chat-container {
+            min-height: 60vh;
+            max-height: 70vh;
+            margin-bottom: 2rem; /* Extra space to prevent footer overlap */
+        }
     }
-    50% {
-        opacity: 0.7;
-        transform: scale(1.03);
+
+    @media (max-width: 576px) {
+        /* Small mobile: Optimize for smaller screens */
+        .chat-container {
+            min-height: 50vh;
+            max-height: 75vh;
+            margin-bottom: 3rem; /* More space on small screens */
+            border-radius: 15px; /* Slightly smaller border radius */
+        }
     }
-}
 
-.attachment-preview {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    padding: 0.75rem;
-    margin-top: 0.5rem;
-    border: 1px solid #dee2e6;
-    transition: all 0.3s ease;
-}
+    .chat-header {
+        background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+        border-radius: 20px 20px 0 0;
+        color: white;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(79, 172, 254, 0.3);
+        flex-shrink: 0; /* Prevent header from shrinking */
+    }
 
-.attachment-preview:hover {
-    background: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
+    /* Responsive header layout */
+    @media (max-width: 768px) {
+        .chat-header {
+            padding: 1rem;
+            border-radius: 15px 15px 0 0;
+        }
 
-.emoji-btn {
-    background: linear-gradient(135deg, #ee8484, #f6e1b4);
-    border: none;
-    color: white;
-    font-size: 1.3rem;
-    padding: 0.5rem;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    width: 45px;
-    height: 45px;
-}
+        .chat-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
 
-.emoji-btn:hover {
-    background: linear-gradient(135deg, #f6e1b4, #ee8484);
-    transform: scale(1.1) rotate(5deg);
-}
+        .chat-header .d-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
 
-.student-input-group {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 25px;
-    padding: 0.5rem;
-    height: fit-content;
-}
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+    }
 
-.message-sender {
-    font-size: 0.8rem;
-    opacity: 0.8;
-    margin-bottom: 0.5rem;
-}
+    @media (max-width: 576px) {
+        .chat-header {
+            padding: 0.75rem;
+        }
 
-.message-time {
-    font-size: 0.7rem;
-    opacity: 0.6;
-    margin-top: 0.5rem;
-}
+        .chat-header h3 {
+            font-size: 1.1rem;
+        }
 
-/* 🎭 DIMENSIONAL EFFECTS */
-.glow-effect {
-    box-shadow: 0 0 20px rgba(79, 172, 254, 0.6);
-    animation: glowPulse 3s ease-in-out infinite alternate;
-}
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
+        }
+    }
 
-@keyframes glowPulse {
-    from { box-shadow: 0 0 20px rgba(79, 172, 254, 0.4); }
-    to { box-shadow: 0 0 30px rgba(79, 172, 254, 0.8); }
-}
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.9);
+        min-height: 0; /* Important for flex children */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    }
 
-.close-chat-btn {
-    background: linear-gradient(45deg, #c84b58, #bf2f5f);
-    border: none;
-    transition: all 0.3s ease;
-}
+    /* Responsive messages area */
+    @media (max-width: 768px) {
+        .chat-messages {
+            padding: 1rem;
+            height: auto; /* Let flex handle the height */
+        }
+    }
 
-.close-chat-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
-}
+    @media (max-width: 576px) {
+        .chat-messages {
+            padding: 0.75rem;
+        }
+    }
+
+    .message {
+        margin-bottom: 1.2rem;
+        animation: studentMessageSlide 0.4s ease-out;
+    }
+
+    @media (max-width: 768px) {
+        .message {
+            margin-bottom: 1rem;
+        }
+    }
+
+    .message-bubble {
+        display: inline-block;
+        max-width: 75%;
+        padding: 1rem 1.25rem;
+        border-radius: 20px;
+        word-wrap: break-word;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    @media (max-width: 768px) {
+        .message-bubble {
+            max-width: 85%;
+            padding: 0.875rem 1.125rem;
+            font-size: 0.9rem;
+            border-radius: 18px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .message-bubble {
+            max-width: 90%;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 15px;
+        }
+    }
+
+    .chat-input {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 0 0 20px 20px;
+        padding: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        flex-shrink: 0; /* Prevent input area from shrinking */
+    }
+
+    /* Responsive input area */
+    @media (max-width: 768px) {
+        .chat-input {
+            padding: 1rem;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .chat-input .input-group {
+            flex-wrap: wrap;
+        }
+
+        .chat-input textarea {
+            font-size: 16px; /* Prevents zoom on iOS */
+            min-height: 80px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .chat-input {
+            padding: 0.75rem;
+        }
+
+        .chat-input textarea {
+            min-height: 70px;
+            font-size: 16px;
+        }
+    }
+
+    .student-input-group {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 25px;
+        padding: 0.5rem;
+        height: fit-content;
+    }
+
+    @media (max-width: 768px) {
+        .student-input-group {
+            border-radius: 20px;
+            padding: 0.4rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .student-input-group {
+            border-radius: 15px;
+            padding: 0.3rem;
+        }
+    }
+
+    .emoji-btn {
+        background: linear-gradient(135deg, #f6e1b4, #7de8fb);
+        border: none;
+        color: white;
+        font-size: 1.3rem;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        width: 45px;
+        height: 45px;
+    }
+
+    /* Button responsive behavior */
+    .submit-message-btn {
+        background: linear-gradient(45deg, #007bff 0%, #3995f8 100%);
+        border: 1px solid #6c757d;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        color: white;
+    }
+
+    .submit-message-btn:hover {
+        background: linear-gradient(35deg, #006cde 0%, #308cef 100%);
+        color: #d1d0d0;
+    }
+
+    .attachment-btn {
+        background: linear-gradient(45deg, #007bff 0%, #3995f8 100%);
+        border: 1px solid #6c757d;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-left-radius: 0px;
+        color: white;
+    }
+
+    .attachment-btn:hover {
+        background: linear-gradient(35deg, #006cde 0%, #308cef 100%);
+        color: #d1d0d0;
+    }
+
+    @media (max-width: 768px) {
+        .emoji-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .emoji-btn {
+            width: 35px;
+            height: 35px;
+            font-size: 1.1rem;
+            padding: 0.3rem;
+        }
+    }
+
+    .close-chat-btn {
+        background: linear-gradient(45deg, #c84b58, #bf2f5f);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+        .close-chat-btn {
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .close-chat-btn {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
+        }
+    }
+
+    .attachment-preview {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+        .attachment-preview {
+            padding: 0.5rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .attachment-preview {
+            padding: 0.4rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+    }
+
+    /* Emoji picker responsive */
+    #studentEmojiPicker {
+        position: relative;
+        z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+        .emoji-grid .row {
+            margin: 0;
+        }
+
+        .emoji-grid .emoji-btn {
+            padding: 0.25rem;
+            font-size: 1.1rem;
+            width: 35px;
+            height: 35px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .emoji-grid .emoji-btn {
+            padding: 0.2rem;
+            font-size: 1rem;
+            width: 30px;
+            height: 30px;
+        }
+    }
+
+    /* Alert responsiveness for chat ended message */
+    @media (max-width: 768px) {
+        .chat-input .alert h5 {
+            font-size: 1.1rem;
+        }
+
+        .chat-input .alert p {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .chat-input .alert h5 {
+            font-size: 1rem;
+        }
+
+        .chat-input .alert p {
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+    }
+
+    /* Container responsiveness */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container-fluid {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+    }
+
+    /* Fix for very small screens */
+    @media (max-width: 400px) {
+        .chat-header h3 {
+            font-size: 1rem;
+        }
+
+        .message-bubble {
+            max-width: 95%;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .chat-input {
+            padding: 0.5rem;
+        }
+
+        .student-input-group {
+            padding: 0.25rem;
+        }
+
+        .emoji-btn {
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+        }
+    }
+
+    /* Fix input zoom on iOS */
+    @media screen and (max-width: 768px) {
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        textarea,
+        select {
+            font-size: 16px !important;
+        }
+    }
+
+    /* File preview responsive */
+    #studentFilePreview {
+        max-height: 150px;
+        overflow-y: auto;
+    }
+
+    @media (max-width: 768px) {
+        #studentFilePreview {
+            max-height: 120px;
+        }
+
+        #studentFilePreview .alert {
+            font-size: 0.85rem;
+            padding: 0.5rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        #studentFilePreview {
+            max-height: 100px;
+        }
+
+        #studentFilePreview .alert {
+            font-size: 0.75rem;
+            padding: 0.4rem;
+        }
+    }
+
+    /* Badge responsive adjustments */
+    @media (max-width: 768px) {
+        .badge {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .badge {
+            font-size: 0.65rem;
+            padding: 0.25rem 0.5rem;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -303,15 +581,19 @@
                                               style="resize: none; border: 2px solid rgba(79, 172, 254, 0.3);"
                                               required></textarea>
 
-                                    <button type="button" class="btn btn-outline-primary"
+
+                                    </button>
+
+                                    <div style="display: grid; grid-template-columns: 1fr;">
+                                        <button type="button" class="btn submit-message-btn"
                                             onclick="document.getElementById('id_student_attachments').click()"
                                             title="Attach files 📎">
                                         <i class="bi bi-paperclip"></i>
-                                    </button>
 
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-send"></i> Send
-                                    </button>
+                                        <button type="submit" class="btn attachment-btn">
+                                            <i class="bi bi-send" title="Send"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 

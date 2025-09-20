@@ -247,10 +247,27 @@
     .submit-message-btn {
         background: linear-gradient(45deg, #93edaa 0%, #80e097 100%);
         border: 1px solid #6c757d;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-left-radius: 0px;
     }
 
     .submit-message-btn:hover {
         background: linear-gradient(35deg, #9effb6 0%, #8ff8a7 100%);
+        color: #888686;
+    }
+
+    .attachment-btn {
+        background-color: #f4f5f6;
+        border: 1px solid #6c757d;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+
+    .attachment-btn:hover {
+        background-color: #eaeced;
+        color: #888686;
     }
 
     .close-chat-btn {
@@ -530,15 +547,17 @@
                                       style="resize: none;"
                                       required></textarea>
 
-                            <button type="button" class="btn btn-outline-secondary"
+                            <div style="display: grid; grid-template-columns: 1fr;">
+                                <button type="button" class="btn attachment-btn"
                                     onclick="document.getElementById('id_attachments').click()"
-                                    title="Attach files" style="background-color: #f4f5f6;">
-                                <i class="bi bi-paperclip"></i>
-                            </button>
+                                    title="Attach files 📎">
+                                    <i class="bi bi-paperclip"></i>
+                                </button>
 
-                            <button type="submit" class="btn submit-message-btn">
-                                <i class="bi bi-send"></i> Send
-                            </button>
+                                <button type="submit" class="btn submit-message-btn">
+                                    <i class="bi bi-send" title="Send"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- 📎 File Input -->
