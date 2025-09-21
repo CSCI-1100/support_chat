@@ -316,7 +316,7 @@ def technician_chat(request, chat_id):
             chat.messages.all().delete()
             chat.delete()
 
-            messages.success(request, f'🔒 Chat {chat_id} has been closed and purged from the quantum realm')
+            messages.success(request, f'🔒 Chat {chat_id} has been closed and purged from the aether')
             return redirect('chat:technician_dashboard')
 
     # 🌟 CRITICAL FIX: Always create fresh form instance

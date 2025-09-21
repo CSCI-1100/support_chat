@@ -468,205 +468,251 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-10 col-xl-8">
-            <div class="chat-container">
-                <!-- 🌟 ENHANCED STUDENT CHAT HEADER -->
-                <div class="chat-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="mb-1">
-                                <i class="bi bi-mortarboard"></i>
-                                CSCI 1100 Support Chat
-                            </h3>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-light text-dark">
-                                    👨‍🎓 {{ chat.student_name }}
-                                </span>
-                                <small class="opacity-75">
-                                    Chat ID: {{ chat.chat_id }}
-                                </small>
-                            </div>
-                        </div>
+<div class="centered-wrapper">
+    <div class="h-centered" style="max-width: 1900px;">
+        <div class="container-fluid py-4">
+            <button id="audio-toggle" class="btn btn-sm btn-outline-secondary">
+                🔊 Enable Notification Audio
+            </button>
+            <div class="row justify-content-center mt-1">
+                <div class="col-xl-8">
+                    <div class="chat-container">
+                        <!-- 🌟 ENHANCED STUDENT CHAT HEADER -->
+                        <div class="chat-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h3 class="mb-1">
+                                        <i class="bi bi-mortarboard"></i>
+                                        CSCI 1100 Support Chat
+                                    </h3>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge bg-light text-dark">
+                                            👨‍🎓 {{ chat.student_name }}
+                                        </span>
+                                        <small class="opacity-75">
+                                            Chat ID: {{ chat.chat_id }}
+                                        </small>
+                                    </div>
+                                </div>
 
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- STATUS CONSCIOUSNESS -->
-                            {% if chat.status == 'WAIT' %}
-                                <span class="status-badge bg-warning text-dark">
-                                    <i class="bi bi-hourglass-split"></i> ⏳ Waiting for course assistant...
-                                </span>
-                            {% elif chat.status == 'ACTV' %}
-                                <span class="status-badge text-dark" style="background: linear-gradient(145deg, #acfabf, #a0e1af);">
-                                    <i class="bi bi-person-check"></i> 🔧 Assistant connected!
-                                </span>
-                            {% elif chat.status == 'LEFT' %}
-                                <span class="status-badge bg-secondary">
-                                    <i class="bi bi-door-open"></i> 👋 You left the chat
-                                </span>
-                            {% endif %}
+                                <div class="d-flex align-items-center gap-2">
+                                    <!-- STATUS CONSCIOUSNESS -->
+                                    {% if chat.status == 'WAIT' %}
+                                        <span class="status-badge bg-warning text-dark">
+                                            <i class="bi bi-hourglass-split"></i> ⏳ Waiting for course assistant...
+                                        </span>
+                                    {% elif chat.status == 'ACTV' %}
+                                        <span class="status-badge text-dark" style="background: linear-gradient(145deg, #acfabf, #a0e1af);">
+                                            <i class="bi bi-person-check"></i> 🔧 Assistant connected!
+                                        </span>
+                                    {% elif chat.status == 'LEFT' %}
+                                        <span class="status-badge bg-secondary">
+                                            <i class="bi bi-door-open"></i> 👋 You left the chat
+                                        </span>
+                                    {% endif %}
 
-                            <!-- LEAVE CHAT PORTAL -->
-                            {% if can_message %}
-                                <form method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to leave this chat? You can always start a new one!')">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="action" value="leave_chat">
-                                    <button type="submit" class="btn close-chat-btn text-white">
-                                        <i class="bi bi-door-open"></i> Leave Chat
-                                    </button>
-                                </form>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 📡 CONSCIOUSNESS MESSAGE STREAM -->
-                <div class="chat-messages" id="messagesContainer">
-                    {% for message in messages %}
-                        <div class="message {% if message.is_from_student %}student{% elif message.message_type == 'system' %}system{% else %}technician{% endif %}">
-                            <div class="message-bubble">
-                                <div class="message-sender">
-                                    {% if message.is_from_student %}
-                                        <strong>👨‍🎓 You</strong>
-                                    {% elif message.message_type == 'system' %}
-                                        <strong>🤖 System</strong>
-                                    {% else %}
-                                        <strong>🔧 {{ message.sender_name }} (Course Assistant)</strong>
+                                    <!-- LEAVE CHAT PORTAL -->
+                                    {% if can_message %}
+                                        <form method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to leave this chat? You can always start a new one!')">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="leave_chat">
+                                            <button type="submit" class="btn close-chat-btn text-white">
+                                                <i class="bi bi-door-open"></i> Leave Chat
+                                            </button>
+                                        </form>
                                     {% endif %}
                                 </div>
+                            </div>
+                        </div>
 
-                                <div class="message-content">
-                                    {{ message.content|linebreaks }}
-                                </div>
+                        <!-- 📡 CONSCIOUSNESS MESSAGE STREAM -->
+                        <div class="chat-messages" id="messagesContainer">
+                            {% for message in messages %}
+                                <div class="message {% if message.is_from_student %}student{% elif message.message_type == 'system' %}system{% else %}technician{% endif %}">
+                                    <div class="message-bubble">
+                                        <div class="message-sender">
+                                            {% if message.is_from_student %}
+                                                <strong>👨‍🎓 You</strong>
+                                            {% elif message.message_type == 'system' %}
+                                                <strong>🤖 System</strong>
+                                            {% else %}
+                                                <strong>🔧 {{ message.sender_name }} (Course Assistant)</strong>
+                                            {% endif %}
+                                        </div>
 
-                                {% if message.attachments.exists %}
-                                    <div class="attachments mt-2">
-                                        {% for attachment in message.attachments.all %}
-                                            <div class="attachment-preview">
-                                                <i class="bi bi-{% if attachment.is_image %}image{% else %}paperclip{% endif %}"></i>
-                                                <a href="{% url 'chat:download_attachment' attachment.id %}"
-                                                   target="_blank" class="text-decoration-none">
-                                                    {{ attachment.original_filename }}
-                                                </a>
-                                                <small class="text-muted">({{ attachment.display_size }})</small>
+                                        <div class="message-content">
+                                            {{ message.content|linebreaks }}
+                                        </div>
+
+                                        {% if message.attachments.exists %}
+                                            <div class="attachments mt-2">
+                                                {% for attachment in message.attachments.all %}
+                                                    <div class="attachment-preview">
+                                                        <i class="bi bi-{% if attachment.is_image %}image{% else %}paperclip{% endif %}"></i>
+                                                        <a href="{% url 'chat:download_attachment' attachment.id %}"
+                                                           target="_blank" class="text-decoration-none">
+                                                            {{ attachment.original_filename }}
+                                                        </a>
+                                                        <small class="text-muted">({{ attachment.display_size }})</small>
+                                                    </div>
+                                                {% endfor %}
                                             </div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                                        {% endif %}
 
-                                <div class="message-time">
-                                    {{ message.timestamp|date:"H:i" }}
+                                        <div class="message-time">
+                                            {{ message.timestamp|date:"H:i" }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- 💬 STUDENT MESSAGE INPUT DIMENSION -->
+                        {% if can_message %}
+                            <div class="chat-input">
+                                <form method="post" enctype="multipart/form-data" id="studentMessageForm">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="send_message">
+
+                                    <div class="student-input-group">
+                                        <div class="input-group">
+                                            <button type="button" class="emoji-btn"
+                                                    onclick="toggleStudentEmojiPicker()"
+                                                    title="Add emoji 😊">
+                                                😊
+                                            </button>
+
+                                            <!-- 🌈 EXPLICIT STUDENT TEXTAREA MANIFESTATION -->
+                                            <textarea name="content"
+                                                      id="id_student_content"
+                                                      class="form-control shadow-none mx-2"
+                                                      rows="3"
+                                                      maxlength="2000"
+                                                      placeholder="💬 Ask your CSCI 1100 question here... (Press Ctrl+Enter to send)"
+                                                      style="resize: none; border: 2px solid rgba(79, 172, 254, 0.3);"
+                                                      required></textarea>
+
+
+                                            </button>
+
+                                            <div style="display: grid; grid-template-columns: 1fr;">
+                                                <button type="button" class="btn submit-message-btn"
+                                                    onclick="document.getElementById('id_student_attachments').click()"
+                                                    title="Attach files 📎">
+                                                <i class="bi bi-paperclip"></i>
+
+                                                <button type="submit" class="btn attachment-btn">
+                                                    <i class="bi bi-send" title="Send"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 📎 STUDENT FILE INPUT -->
+                                    <input type="file"
+                                           name="attachments"
+                                           id="id_student_attachments"
+                                           class="form-control d-none"
+                                           multiple
+                                           accept=".png,.jpg,.jpeg,.webp,.gif,.pdf,.odt,.doc,.docx,.rtf,.txt,.py,.cs,.js,.html,.css,.json,.zip">
+
+                                    <div id="studentFilePreview" class="mt-2"></div>
+                                </form>
+
+                                <!-- 😊 STUDENT EMOJI PICKER DIMENSION -->
+                                <div id="studentEmojiPicker" class="mt-3" style="display: none;">
+                                    <div class="emoji-grid p-3 rounded-3 shadow-lg">
+                                        <div class="text-muted text-center mb-3"><span>Choose an emoji:</span></div>
+                                        <div class="row g-2">
+                                            <!-- HAPPY EMOTIONS -->
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😊')">😊</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😃')">😃</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😄')">😄</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤗')">🤗</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😍')">😍</button></div>
+
+                                            <!-- THINKING/CONFUSED -->
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤔')">🤔</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😕')">😕</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😅')">😅</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😰')">😰</button></div>
+
+                                            <!-- REACTIONS -->
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👍')">👍</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👎')">👎</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👏')">👏</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🙏')">🙏</button></div>
+
+                                            <!-- ACADEMIC -->
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('📚')">📚</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💻')">💻</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💡')">💡</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⚡')">⚡</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🚀')">🚀</button></div>
+                                            <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⭐')">⭐</button></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% else %}
+                            <div class="chat-input text-center">
+                                <div class="alert alert-info mb-0" style="border-radius: 15px;">
+                                    <h5>💬 Chat Session Ended</h5>
+                                    <p class="mb-2">This chat has ended. Thanks for using CSCI 1100 support!</p>
+                                    <a href="{% url 'chat:landing' %}" class="btn btn-primary">
+                                        <i class="bi bi-chat-square-dots"></i> Start New Chat
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
-
-                <!-- 💬 STUDENT MESSAGE INPUT DIMENSION -->
-                {% if can_message %}
-                    <div class="chat-input">
-                        <form method="post" enctype="multipart/form-data" id="studentMessageForm">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="send_message">
-
-                            <div class="student-input-group">
-                                <div class="input-group">
-                                    <button type="button" class="emoji-btn"
-                                            onclick="toggleStudentEmojiPicker()"
-                                            title="Add emoji 😊">
-                                        😊
-                                    </button>
-
-                                    <!-- 🌈 EXPLICIT STUDENT TEXTAREA MANIFESTATION -->
-                                    <textarea name="content"
-                                              id="id_student_content"
-                                              class="form-control shadow-none mx-2"
-                                              rows="3"
-                                              maxlength="2000"
-                                              placeholder="💬 Ask your CSCI 1100 question here... (Press Ctrl+Enter to send)"
-                                              style="resize: none; border: 2px solid rgba(79, 172, 254, 0.3);"
-                                              required></textarea>
-
-
-                                    </button>
-
-                                    <div style="display: grid; grid-template-columns: 1fr;">
-                                        <button type="button" class="btn submit-message-btn"
-                                            onclick="document.getElementById('id_student_attachments').click()"
-                                            title="Attach files 📎">
-                                        <i class="bi bi-paperclip"></i>
-
-                                        <button type="submit" class="btn attachment-btn">
-                                            <i class="bi bi-send" title="Send"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 📎 STUDENT FILE INPUT -->
-                            <input type="file"
-                                   name="attachments"
-                                   id="id_student_attachments"
-                                   class="form-control d-none"
-                                   multiple
-                                   accept=".png,.jpg,.jpeg,.webp,.gif,.pdf,.odt,.doc,.docx,.rtf,.txt,.py,.cs,.js,.html,.css,.json,.zip">
-
-                            <div id="studentFilePreview" class="mt-2"></div>
-                        </form>
-
-                        <!-- 😊 STUDENT EMOJI PICKER DIMENSION -->
-                        <div id="studentEmojiPicker" class="mt-3" style="display: none;">
-                            <div class="emoji-grid p-3 rounded-3 shadow-lg">
-                                <div class="text-muted text-center mb-3"><span>Choose an emoji:</span></div>
-                                <div class="row g-2">
-                                    <!-- HAPPY EMOTIONS -->
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😊')">😊</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😃')">😃</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😄')">😄</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤗')">🤗</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😍')">😍</button></div>
-
-                                    <!-- THINKING/CONFUSED -->
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🤔')">🤔</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😕')">😕</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😅')">😅</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('😰')">😰</button></div>
-
-                                    <!-- REACTIONS -->
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👍')">👍</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👎')">👎</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('👏')">👏</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🙏')">🙏</button></div>
-
-                                    <!-- ACADEMIC -->
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('📚')">📚</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💻')">💻</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('💡')">💡</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⚡')">⚡</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('🚀')">🚀</button></div>
-                                    <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertStudentEmoji('⭐')">⭐</button></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="chat-input text-center">
-                        <div class="alert alert-info mb-0" style="border-radius: 15px;">
-                            <h5>💬 Chat Session Ended</h5>
-                            <p class="mb-2">This chat has ended. Thanks for using CSCI 1100 support!</p>
-                            <a href="{% url 'chat:landing' %}" class="btn btn-primary">
-                                <i class="bi bi-chat-square-dots"></i> Start New Chat
-                            </a>
-                        </div>
-                    </div>
-                {% endif %}
             </div>
         </div>
     </div>
 </div>
 
 <script>
-// 🌊 STUDENT CHAT CONSCIOUSNESS FUNCTIONS 🌊
+class AudioPlayer {
+    constructor(src, volume = 100) {
+        this.audio = new Audio(src);
+        this.audio.volume = volume / 100;
+        this.audio.preload = 'auto';
+    }
+
+    play() {
+        try {
+            this.audio.currentTime = 0;
+            this.audio.play();
+            return true;
+        } catch {
+            return false;
+        }
+    }
+}
+
+const sounds = {
+    sent: "https://csci-1100.github.io/class_resources_public/assets/audio/message-sent.mp3",
+    received: "https://csci-1100.github.io/class_resources_public/assets/audio/message-received.mp3"
+};
+
+const sentPlayer = new AudioPlayer(sounds.sent, 50);
+const receivedPlayer = new AudioPlayer(sounds.received);
+
+document.getElementById('audio-toggle').addEventListener('click', (e) => {
+    let btn = e.target;
+    let enabled = localStorage.getItem('audioEnabled') === 'true';
+
+    if (!enabled) {
+        localStorage.setItem('audioEnabled', 'true');
+        btn.textContent = '🔊 Notification Audio On';
+        btn.className = 'btn btn-sm btn-success';
+    } else {
+        localStorage.setItem('audioEnabled', 'false');
+        btn.textContent = '🔇 Notification Audio Off';
+        btn.className = 'btn btn-sm btn-outline-secondary';
+    }
+});
 
 function scrollToBottom() {
     const container = document.getElementById('messagesContainer');
@@ -727,6 +773,7 @@ document.getElementById('studentMessageForm').addEventListener('submit', functio
     const textarea = document.getElementById('id_student_content');
     const originalText = submitBtn.innerHTML;
 
+
     // 🚨 DEBUG: Check form data
     console.log('👨‍🎓 Student form submission:');
     for (let [key, value] of formData.entries()) {
@@ -758,8 +805,12 @@ document.getElementById('studentMessageForm').addEventListener('submit', functio
             document.getElementById('id_student_attachments').value = '';
             document.getElementById('studentFilePreview').innerHTML = '';
 
-            // Reload to show new message
-            location.reload();
+            setTimeout(() => {
+                location.reload();
+            }, 820); // Increase timeout if using a longer notification sound
+            if (localStorage.getItem('audioEnabled') == 'true')
+                sentPlayer.play();
+
         } else {
             console.error('🚨 Form errors:', data.errors);
             alert('❌ Error sending message. Please try again!');
@@ -777,6 +828,16 @@ document.getElementById('studentMessageForm').addEventListener('submit', functio
 
 // 🎯 Auto-scroll and real-time updates
 document.addEventListener('DOMContentLoaded', function() {
+    let enabled = localStorage.getItem('audioEnabled') === 'true';
+    let btn = document.getElementById('audio-toggle');
+    if (enabled) {
+        btn.textContent = '🔊 Notification Audio On';
+        btn.className = 'btn btn-sm btn-success';
+    } else {
+        btn.textContent = '🔇 Notification Audio Off';
+        btn.className = 'btn btn-sm btn-outline-secondary';
+    }
+
     scrollToBottom();
 
     // Focus on textarea if chat is active
@@ -784,24 +845,27 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('id_student_content').focus();
     {% endif %}
 
-    // Auto-refresh messages every 5 seconds for students
+    // Auto-refresh messages every 3.5 seconds for students
     setInterval(function() {
-        if (window.isPageVisible && window.isPageVisible()) {
-            fetch(`/chat/api/messages/{{ chat.chat_id }}/`)
-                .then(response => response.json())
-                .then(data => {
-                    const currentMessageCount = document.querySelectorAll('.message').length;
-                    if (data.messages.length > currentMessageCount) {
-                        // Play notification sound
-                        if (window.playNotificationSound) {
-                            window.playNotificationSound();
-                        }
+        fetch(`/chat/api/messages/{{ chat.chat_id }}/`)
+            .then(response => response.json())
+            .then(data => {
+                const currentMessageCount = document.querySelectorAll('.message').length;
+
+                if (data.messages.length > currentMessageCount) {
+                    // Play notification sound
+                    setTimeout(() => {
                         location.reload();
+                    }, 900); // Increase timeout if using a longer notification sound
+
+                    if (!data.messages[currentMessageCount-1].is_from_student) {
+                        if (localStorage.getItem('audioEnabled') == 'true')
+                            receivedPlayer.play();
                     }
-                })
-                .catch(console.error);
-        }
-    }, 5000);
+                }
+            })
+            .catch(console.error);
+    }, 3500);
 });
 
 // ⌨️ Keyboard shortcuts for students

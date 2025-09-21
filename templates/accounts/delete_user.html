@@ -1,6 +1,6 @@
 {% extends '../base.html' %}
 
-{% block title %}Delete User - ETSU Computing Helpdesk{% endblock %}
+{% block title %}Delete User - 💬 Chat Support{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -20,65 +20,20 @@
                 </div>
                 
                 <div><span class="text-warning-emphasis"><strong>Warning:</strong></span> This action cannot be undone. The user account will be permanently deleted.</div>
-                
-                {% if tickets_count > 0 %}
-                    <div class="alert alert-info d-flex flex-column gap-3">
-                        <div><strong>Note:</strong> This user has {{ tickets_count }} assigned ticket{{ tickets_count|pluralize }}. Please select what to do with these tickets:</div>
-                        
-                        <form method="post" class="d-flex flex-column gap-2">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="confirm_delete">
-                            
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="reassign_option" id="unassign" value="unassign" checked>
-                                <label class="form-check-label" for="unassign">
-                                    Unassign tickets (tickets will return to the pool as new tickets)
-                                </label>
-                            </div>
-                            
-                            {% if other_technicians %}
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="reassign_option" id="reassign" value="reassign">
-                                    <label class="form-check-label" for="reassign">
-                                        Reassign tickets to another technician:
-                                    </label>
-                                </div>
-                                
-                                <div class="">
-                                    <select name="new_technician" class="form-select" id="new_technician">
-                                        <option value="">Select a technician</option>
-                                        {% for tech in other_technicians %}
-                                            <option value="{{ tech.id }}">{{ tech.get_full_name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            {% endif %}
-                            
-                            <div class="d-flex gap-1 justify-content-end">
-                                <button type="submit" class="btn btn-danger">Delete User</button>
-                                <a href="{% url 'manage_users' %}" class="btn bttn-outline-edit">
-                                    <i class="bi bi-box-arrow-in-left"></i>
-                                    Cancel
-                                </a>
-                            </div>
-                        </form>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="confirm_delete">
+                    <div class="d-flex gap-1 justify-content-end">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i>
+                            Delete User
+                        </button>
+                        <a href="{% url 'manage_users' %}" class="btn bttn-outline-edit">
+                            <i class="bi bi-box-arrow-left"></i>
+                            Cancel
+                        </a>
                     </div>
-                {% else %}
-                    <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="confirm_delete">
-                        <div class="d-flex gap-1 justify-content-end">
-                            <button type="submit" class="btn btn-danger">
-                                <i class="bi bi-trash"></i>
-                                Delete User
-                            </button>
-                            <a href="{% url 'manage_users' %}" class="btn bttn-outline-edit">
-                                <i class="bi bi-box-arrow-left"></i>
-                                Cancel
-                            </a>
-                        </div>
-                    </form>
-                {% endif %}
+                </form>
             </div>
         </div>
     </div>

@@ -143,11 +143,22 @@
 </style>
 {% endblock %}
 
-{% block content %}
-<div class="d-flex align-items-center justify-content-center"
-     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%, #f093fb 80%);">
+<div>
+     {% block content %}
+     <!-- 📡 Messages -->
+     {% if messages %}
+     <div class="container pt-3" style="background-color: none;">
+         {% for message in messages %}
+             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                 <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-triangle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                 {{ message }}
+                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+             </div>
+         {% endfor %}
+     </div>
+     {% endif %}
     
-    <div class="row w-100 justify-content-center">
+    <div class="pt-4 row w-100 justify-content-center">
         <div class="col-md-8 col-lg-7">
             <div class="card shadow-lg border-0" style="border-radius: 20px; backdrop-filter: blur(15px);">
 
@@ -324,6 +335,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
+    localStorage.setItem('audioEnabled', 'true');
 
     // Elements
     const statusBanner = document.getElementById('availabilityStatus');

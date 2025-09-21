@@ -385,225 +385,232 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-3">
-    <div class="row">
-        <div class="col-lg-9">
-            <div class="tech-chat-container">
-                <!-- 🌟 Enhanced Chat Header -->
-                <div class="tech-chat-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h4 class="mb-1 text-dark">
-                                <i class="bi bi-chat-heart"></i>
-                                Chat {{ chat.chat_id }}
-                            </h4>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-light text-dark">
-                                    👨‍🎓 {{ chat.student_name }}
-                                </span>
-                                <small>Started {{ chat.created_at|timesince }} ago</small>
-                            </div>
-                        </div>
-
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- Participating Technicians -->
-                            <div class="d-flex flex-wrap">
-                                {% for tech in chat.technicians.all %}
-                                    <span class="participant-badge">
-                                        <i class="bi bi-person-check"></i> {{ tech.get_full_name }}
-                                    </span>
-                                {% endfor %}
-                            </div>
-
-                            <!-- Close Chat Button -->
-                            <button type="button" class="btn close-chat-btn text-white"
-                                    data-bs-toggle="modal" data-bs-target="#closeChatModal">
-                                <i class="bi bi-x-circle"></i> Close Chat
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    <div class="quick-actions mt-2">
-                        <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Thanks for contacting support! I\'ll help you with that.')">
-                            👋 Greeting
-                        </button>
-                        <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Can you provide more details about the issue?')">
-                            ❓ More Info
-                        </button>
-                        <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Let me check that for you...')">
-                            🔍 Checking
-                        </button>
-                        <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Is this issue resolved for you?')">
-                            ✅ Resolution Check
-                        </button>
-                        <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Is there anything else I can help you with today?')">
-                            🤝 Additional Help
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 📡 Messages Area -->
-                <div class="chat-messages" id="messagesContainer">
-                    {% for message in messages %}
-                        <div class="message {% if message.is_from_student %}student{% elif message.message_type == 'system' %}system{% else %}technician{% endif %}">
-                            <div class="message-bubble">
-                                <div class="message-sender mb-1">
-                                    <strong>
-                                        {% if message.is_from_student %}
-                                            👨‍🎓 {{ message.sender_name }}
-                                        {% elif message.message_type == 'system' %}
-                                            🤖 System
-                                        {% else %}
-                                            🔧 {{ message.sender_name }}
-                                        {% endif %}
-                                    </strong>
+<div class="centered-wrapper">
+    <div class="h-centered" style="max-width: 1900px;">
+        <div class="container-fluid py-3">
+            <button id="audio-toggle" class="btn btn-sm btn-outline-secondary">
+                🔊 Enable Notification Audio
+            </button>
+            <div class="row mt-1">
+                <div class="col-lg-9">
+                    <div class="tech-chat-container">
+                        <!-- 🌟 Enhanced Chat Header -->
+                        <div class="tech-chat-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-1 text-dark">
+                                        <i class="bi bi-chat-heart"></i>
+                                        Chat {{ chat.chat_id }}
+                                    </h4>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge bg-light text-dark">
+                                            👨‍🎓 {{ chat.student_name }}
+                                        </span>
+                                        <small>Started {{ chat.created_at|timesince }} ago</small>
+                                    </div>
                                 </div>
 
-                                <div class="message-content">
-                                    {{ message.content|linebreaks }}
-                                </div>
-
-                                {% if message.attachments.exists %}
-                                    <div class="attachment-grid">
-                                        {% for attachment in message.attachments.all %}
-                                            <a href="{% url 'chat:download_attachment' attachment.id %}"
-                                               class="attachment-item" target="_blank">
-                                                <div class="d-flex align-items-center">
-                                                    {% if attachment.is_image %}
-                                                        <i class="bi bi-image text-primary me-2"></i>
-                                                    {% else %}
-                                                        <i class="bi bi-file-earmark text-secondary me-2"></i>
-                                                    {% endif %}
-                                                    <div class="flex-grow-1">
-                                                        <div class="text-truncate">
-                                                            {{ attachment.original_filename }}
-                                                        </div>
-                                                        <div class="text-muted" style="font-size: 0.7rem;">
-                                                            {{ attachment.display_size }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
+                                <div class="d-flex align-items-center gap-2">
+                                    <!-- Participating Technicians -->
+                                    <div class="d-flex flex-wrap">
+                                        {% for tech in chat.technicians.all %}
+                                            <span class="participant-badge">
+                                                <i class="bi bi-person-check"></i> {{ tech.get_full_name }}
+                                            </span>
                                         {% endfor %}
                                     </div>
-                                {% endif %}
 
-                                <div class="message-time small mt-2">
-                                    {{ message.timestamp|date:"H:i" }}
+                                    <!-- Close Chat Button -->
+                                    <button type="button" class="btn close-chat-btn text-white"
+                                            data-bs-toggle="modal" data-bs-target="#closeChatModal">
+                                        <i class="bi bi-x-circle"></i> Close Chat
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
 
-                <!-- 💬 FIXED TECHNICIAN INPUT AREA -->
-                <div class="tech-input-area">
-                    <form method="post" enctype="multipart/form-data" id="techMessageForm">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="send_message">
-
-                        <div class="input-group">
-                            <button type="button" class="btn btn-outline-secondary"
-                                    onclick="toggleEmojiPicker()" title="Add emoji 😊">
-                                😊
-                            </button>
-
-                            <!-- 🔧 EXPLICIT TEXTAREA MANIFESTATION -->
-                            <textarea name="content"
-                                      id="id_content"
-                                      class="form-control shadow-none"
-                                      rows="3"
-                                      maxlength="2000"
-                                      placeholder="💬 Type your response... (Use Ctrl+Enter to send)"
-                                      style="resize: none;"
-                                      required></textarea>
-
-                            <div style="display: grid; grid-template-columns: 1fr;">
-                                <button type="button" class="btn attachment-btn"
-                                    onclick="document.getElementById('id_attachments').click()"
-                                    title="Attach files 📎">
-                                    <i class="bi bi-paperclip"></i>
+                            <!-- Quick Actions -->
+                            <div class="quick-actions mt-2">
+                                <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Thanks for contacting support! I\'ll help you with that.')">
+                                    👋 Greeting
                                 </button>
-
-                                <button type="submit" class="btn submit-message-btn">
-                                    <i class="bi bi-send" title="Send"></i>
+                                <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Can you provide more details about the issue?')">
+                                    ❓ More Info
+                                </button>
+                                <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Let me check that for you...')">
+                                    🔍 Checking
+                                </button>
+                                <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Is this issue resolved for you?')">
+                                    ✅ Resolution Check
+                                </button>
+                                <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Is there anything else I can help you with today?')">
+                                    🤝 Additional Help
                                 </button>
                             </div>
                         </div>
 
-                        <!-- 📎 File Input -->
-                        <input type="file"
-                               name="attachments"
-                               id="id_attachments"
-                               class="form-control d-none"
-                               multiple
-                               accept=".png,.jpg,.jpeg,.webp,.gif,.pdf,.odt,.doc,.docx,.rtf,.txt,.py,.cs,.js,.html,.css,.json,.zip">
+                        <!-- 📡 Messages Area -->
+                        <div class="chat-messages" id="messagesContainer">
+                            {% for message in messages %}
+                                <div class="message {% if message.is_from_student %}student{% elif message.message_type == 'system' %}system{% else %}technician{% endif %}">
+                                    <div class="message-bubble">
+                                        <div class="message-sender mb-1">
+                                            <strong>
+                                                {% if message.is_from_student %}
+                                                    👨‍🎓 {{ message.sender_name }}
+                                                {% elif message.message_type == 'system' %}
+                                                    🤖 System
+                                                {% else %}
+                                                    🔧 {{ message.sender_name }}
+                                                {% endif %}
+                                            </strong>
+                                        </div>
 
-                        <div id="techFilePreview" class="mt-2"></div>
-                    </form>
+                                        <div class="message-content">
+                                            {{ message.content|linebreaks }}
+                                        </div>
 
-                    <!-- 😊 Emoji Picker -->
-                    <div id="techEmojiPicker" class="mt-2" style="display: none;">
-                        <div class="emoji-grid p-2 rounded shadow">
-                            <div class="row g-1">
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('😊')">😊</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('👍')">👍</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('✅')">✅</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🔧')">🔧</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('💡')">💡</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🚀')">🚀</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('⭐')">⭐</button></div>
-                                <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🎉')">🎉</button></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                        {% if message.attachments.exists %}
+                                            <div class="attachment-grid">
+                                                {% for attachment in message.attachments.all %}
+                                                    <a href="{% url 'chat:download_attachment' attachment.id %}"
+                                                       class="attachment-item" target="_blank">
+                                                        <div class="d-flex align-items-center">
+                                                            {% if attachment.is_image %}
+                                                                <i class="bi bi-image text-primary me-2"></i>
+                                                            {% else %}
+                                                                <i class="bi bi-file-earmark text-secondary me-2"></i>
+                                                            {% endif %}
+                                                            <div class="flex-grow-1">
+                                                                <div class="text-truncate">
+                                                                    {{ attachment.original_filename }}
+                                                                </div>
+                                                                <div class="text-muted" style="font-size: 0.7rem;">
+                                                                    {{ attachment.display_size }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
 
-        <!-- 📊 Chat Info Sidebar -->
-        <div class="col-lg-3">
-            <div class="card h-100" style="border-radius: 15px;">
-                <div class="card-header bg-info text-white">
-                    <h6 class="mb-0">
-                        <i class="bi bi-info-circle"></i> Chat Information
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <dl>
-                        <dt><i class="bi bi-person"></i> Student:</dt>
-                        <dd>{{ chat.student_name }}</dd>
-
-                        <dt><i class="bi bi-clock"></i> Started:</dt>
-                        <dd>{{ chat.created_at|date:"M d, Y H:i" }}</dd>
-
-                        <dt><i class="bi bi-chat-dots"></i> Status:</dt>
-                        <dd>
-                            <span class="badge bg-success">Active Chat</span>
-                        </dd>
-
-                        <dt><i class="bi bi-people"></i> Technicians:</dt>
-                        <dd>
-                            {% for tech in chat.technicians.all %}
-                                <div class="badge bg-secondary mb-1">
-                                    {{ tech.get_full_name }}
+                                        <div class="message-time small mt-2">
+                                            {{ message.timestamp|date:"H:i" }}
+                                        </div>
+                                    </div>
                                 </div>
                             {% endfor %}
-                        </dd>
-                    </dl>
+                        </div>
 
-                    <div class="mt-4">
-                        <h6><i class="bi bi-chat-quote"></i> Initial Request:</h6>
-                        <div class="alert alert-light small">
-                            {{ chat.initial_message }}
+                        <!-- 💬 FIXED TECHNICIAN INPUT AREA -->
+                        <div class="tech-input-area">
+                            <form method="post" enctype="multipart/form-data" id="techMessageForm">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="send_message">
+
+                                <div class="input-group">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            onclick="toggleEmojiPicker()" title="Add emoji 😊">
+                                        😊
+                                    </button>
+
+                                    <!-- 🔧 EXPLICIT TEXTAREA MANIFESTATION -->
+                                    <textarea name="content"
+                                              id="id_content"
+                                              class="form-control shadow-none"
+                                              rows="3"
+                                              maxlength="2000"
+                                              placeholder="💬 Type your response... (Use Ctrl+Enter to send)"
+                                              style="resize: none;"
+                                              required></textarea>
+
+                                    <div style="display: grid; grid-template-columns: 1fr;">
+                                        <button type="button" class="btn attachment-btn"
+                                            onclick="document.getElementById('id_attachments').click()"
+                                            title="Attach files 📎">
+                                            <i class="bi bi-paperclip"></i>
+                                        </button>
+
+                                        <button type="submit" class="btn submit-message-btn">
+                                            <i class="bi bi-send" title="Send"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 📎 File Input -->
+                                <input type="file"
+                                       name="attachments"
+                                       id="id_attachments"
+                                       class="form-control d-none"
+                                       multiple
+                                       accept=".png,.jpg,.jpeg,.webp,.gif,.pdf,.odt,.doc,.docx,.rtf,.txt,.py,.cs,.js,.html,.css,.json,.zip">
+
+                                <div id="techFilePreview" class="mt-2"></div>
+                            </form>
+
+                            <!-- 😊 Emoji Picker -->
+                            <div id="techEmojiPicker" class="mt-2" style="display: none;">
+                                <div class="emoji-grid p-2 rounded shadow">
+                                    <div class="row g-1">
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('😊')">😊</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('👍')">👍</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('✅')">✅</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🔧')">🔧</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('💡')">💡</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🚀')">🚀</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('⭐')">⭐</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🎉')">🎉</button></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="d-grid gap-2 mt-4">
-                        <a href="{% url 'chat:technician_dashboard' %}" class="btn btn-outline-primary">
-                            <i class="bi bi-arrow-left"></i> Back to Dashboard
-                        </a>
+                <!-- 📊 Chat Info Sidebar -->
+                <div class="col-lg-3">
+                    <div class="card h-100" style="border-radius: 15px;">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">
+                                <i class="bi bi-info-circle"></i> Chat Information
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <dl>
+                                <dt><i class="bi bi-person"></i> Student:</dt>
+                                <dd>{{ chat.student_name }}</dd>
+
+                                <dt><i class="bi bi-clock"></i> Started:</dt>
+                                <dd>{{ chat.created_at|date:"M d, Y H:i" }}</dd>
+
+                                <dt><i class="bi bi-chat-dots"></i> Status:</dt>
+                                <dd>
+                                    <span class="badge bg-success">Active Chat</span>
+                                </dd>
+
+                                <dt><i class="bi bi-people"></i> Technicians:</dt>
+                                <dd>
+                                    {% for tech in chat.technicians.all %}
+                                        <div class="badge bg-secondary mb-1">
+                                            {{ tech.get_full_name }}
+                                        </div>
+                                    {% endfor %}
+                                </dd>
+                            </dl>
+
+                            <div class="mt-4">
+                                <h6><i class="bi bi-chat-quote"></i> Initial Request:</h6>
+                                <div class="alert alert-light small">
+                                    {{ chat.initial_message }}
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <a href="{% url 'chat:technician_dashboard' %}" class="btn btn-outline-primary">
+                                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -687,7 +694,47 @@
 </div>
 
 <script>
-// 🌈 ENHANCED TECHNICIAN CHAT FUNCTIONALITY - QUANTUM FIXED
+class AudioPlayer {
+    constructor(src, volume = 100) {
+        this.audio = new Audio(src);
+        this.audio.volume = volume / 100;
+        this.audio.preload = 'auto';
+    }
+
+    play() {
+        try {
+            this.audio.currentTime = 0;
+            this.audio.play();
+            return true;
+        } catch {
+            return false;
+        }
+    }
+}
+
+const sounds = {
+    sent: "https://csci-1100.github.io/class_resources_public/assets/audio/message-sent.mp3",
+    received: "https://csci-1100.github.io/class_resources_public/assets/audio/message-received.mp3"
+};
+
+const sentPlayer = new AudioPlayer(sounds.sent, 50);
+const receivedPlayer = new AudioPlayer(sounds.received);
+
+document.getElementById('audio-toggle').addEventListener('click', (e) => {
+    let btn = e.target;
+    let enabled = localStorage.getItem('audioEnabled') === 'true';
+
+    if (!enabled) {
+        localStorage.setItem('audioEnabled', 'true');
+        btn.textContent = '🔊 Notification Audio On';
+        btn.className = 'btn btn-sm btn-success';
+    } else {
+        localStorage.setItem('audioEnabled', 'false');
+        btn.textContent = '🔇 Notification Audio Off';
+        btn.className = 'btn btn-sm btn-outline-secondary';
+    }
+});
+
 function scrollToBottom() {
     const container = document.getElementById('messagesContainer');
     container.scrollTop = container.scrollHeight;
@@ -772,9 +819,12 @@ document.getElementById('techMessageForm').addEventListener('submit', function(e
             textarea.value = '';
             document.getElementById('id_attachments').value = '';
             document.getElementById('techFilePreview').innerHTML = '';
-
-            // Reload to show new message
-            location.reload();
+            // Play notification sound
+            setTimeout(() => {
+                location.reload();
+            }, 820); // Increase timeout if using a longer notification sound
+            if (localStorage.getItem('audioEnabled') == 'true')
+                sentPlayer.play();
         } else {
             console.error('🚨 Form errors:', data.errors);
             alert('❌ Error sending message: ' + JSON.stringify(data.errors));
@@ -790,11 +840,6 @@ document.getElementById('techMessageForm').addEventListener('submit', function(e
     });
 });
 
-// 🎯 Auto-scroll and real-time updates
-document.addEventListener('DOMContentLoaded', function() {
-
-});
-
 // ⌨️ Keyboard shortcuts
 document.addEventListener('keydown', function(e) {
     // Ctrl/Cmd + Enter to send message
@@ -804,7 +849,20 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// 🎯 Teal-time updates
 document.addEventListener('DOMContentLoaded', function() {
+    let enabled = localStorage.getItem('audioEnabled') === 'true';
+    let btn = document.getElementById('audio-toggle');
+    if (enabled) {
+        btn.textContent = '🔊 Notification Audio On';
+        btn.className = 'btn btn-sm btn-success';
+    } else {
+        btn.textContent = '🔇 Notification Audio Off';
+        btn.className = 'btn btn-sm btn-outline-secondary';
+    }
+
+    scrollToBottom();
+
     // 💥 NUCLEAR MODAL VARIABLES
     const modal = document.getElementById('closeChatModal');
     const openBtn = document.querySelector('[data-bs-target="#closeChatModal"]');
@@ -822,10 +880,18 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/chat/api/messages/{{ chat.chat_id }}/`)
             .then(response => response.json())
             .then(data => {
-                // Simple check for new messages - in production, implement proper message diffing
                 const currentMessageCount = document.querySelectorAll('.message').length;
+
                 if (data.messages.length > currentMessageCount) {
-                    location.reload();
+                    // Play notification sound
+                    setTimeout(() => {
+                        location.reload();
+                    }, 900); // Increase timeout if using a longer notification sound
+
+                    if (data.messages[currentMessageCount-1].is_from_student) {
+                        if (localStorage.getItem('audioEnabled') == 'true')
+                            receivedPlayer.play();
+                    }
                 }
             })
             .catch(console.error);
