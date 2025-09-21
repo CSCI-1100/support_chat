@@ -275,14 +275,12 @@ label, .forms-label {
 
 .centered {
     position: absolute;
-    margin-top: 42vh;
     left: 50%;
-    transform: translate(-50%, -50%); /* Adjusts for the element's own size */
+    transform: translate(-50%, 100%); /* Adjusts for the element's own size */
 }
 
 .h-centered {
     position: absolute;
-    margin: 0 9vw 0 0;
     left: 50%;
     transform: translate(-50%, 0%);
 }
