@@ -8,11 +8,8 @@ from .forms import *
 from django.contrib.auth import get_user_model
 import mimetypes
 
-# 🌈🔧 COMPLETE DIMENSIONAL REPAIR MATRIX WITH SCHEDULE AWARENESS 🔧🌈
 
 def chat_landing(request):
-    """🌟 CSCI 1100 DIMENSIONAL PORTAL INTERFACE WITH SCHEDULE AWARENESS 🌟"""
-
     # 🚨 CRITICAL: ENSURE SESSION EXISTS BEFORE ANYTHING
     if not request.session.session_key:
         request.session.create()
@@ -159,16 +156,17 @@ def student_chat(request, chat_id):
                 return JsonResponse({'status': 'success'})
 
         elif action == 'leave_chat':
-            # 👋 Student departure quantum event
-            chat.status = ChatStatus.STUDENT_LEFT
-            chat.save()
+            # Check if chat is none (technician closed it)
+            if chat:
+                chat.status = ChatStatus.STUDENT_LEFT
+                chat.save()
 
-            ChatMessage.objects.create(
-                chat=chat,
-                sender_name="🤖 System",
-                content=f"👋 {chat.student_name} has left the chat",
-                message_type='system'
-            )
+                ChatMessage.objects.create(
+                    chat=chat,
+                    sender_name="🤖 System",
+                    content=f"👋 {chat.student_name} has left the chat",
+                    message_type='system'
+                )
 
             messages.info(request, '👋 You have left the chat. Thank you!')
             return redirect('chat:landing')
