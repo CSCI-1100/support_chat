@@ -5,3 +5,4 @@ migrations/
 staticfiles/
 *pyc*
 *.sock
+.DS_Store
