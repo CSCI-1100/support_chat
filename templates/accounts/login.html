@@ -1,0 +1,133 @@
+{% extends '../base.html' %}
+
+{% block title %}Login - 💬 Chat Support{% endblock %}
+
+{% block content %}
+<!-- 📡 Messages -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-triangle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="centered-wrapper">
+    <div class="centered" style="max-width: 700px;">
+        <div class="form-container shadow">
+            <div class="text-center mb-4">
+                <h4 class="ff-bold">Staff Login</h4>
+            </div>
+
+            <form method="post" class="d-flex flex-column gap-3" novalidate>
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="forms-label">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ field.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors|join:", " }}
+                    </div>
+                {% endif %}
+
+                <button type="submit" class="btn bttn-primary ff-bold w-100" style="max-width: 90%;">Log In</button>
+                <div class="text-center" style="display: none;"><!-- NOTE: Add SMTP password reset -->
+                    <a href="{% url 'password_reset' %}" class="text-highlight-primary text-decoration-none">
+                        Forgot your password?
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let pwdInputs = document.querySelectorAll('input[type="password"]');
+    let allInputs = document.getElementsByTagName('form')[0].getElementsByTagName('input'); // All form inputs
+    let allLabels = document.getElementsByTagName('form')[0].getElementsByTagName('label'); // All form labels
+    let allBtns = document.getElementsByTagName('form')[0].getElementsByClassName('btn'); // All elements of btn class
+
+    function toggleShowPassword(index) {
+        document.getElementById(`password-eye-${index}`).remove(); // Remove whichever icon is displayed.
+
+        if (pwdInputs[index].type == 'password') { // If type password, change to text; change crossed-out eye icon to eye icon
+            pwdInputs[index].type = 'text';
+            let newEyeCon =
+            `<div class="password-reveal-wrapper" title="Hide password" onclick="toggleShowPassword(${index})" id="password-eye-${index}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                </svg>
+            </div>`;
+            pwdInputs[index].insertAdjacentHTML('afterend', newEyeCon);
+        }
+        else  { // If type text, change to password; change eye icon to crossed-out eye icon
+            pwdInputs[index].type = 'password';
+            let newEyeCon =
+            `<div class="password-reveal-wrapper" title="Reveal password" onclick="toggleShowPassword(${index})" id="password-eye-${index}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.089z"/>
+                    <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12-.708.708z"/>
+                </svg>
+            </div>`;
+            pwdInputs[index].insertAdjacentHTML('afterend', newEyeCon);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let dom = new DOMParser();
+        let eyeCon = null;
+        /*
+            Foreach password input, insert an eye icon that will toggle the input 'type' property to reveal
+            the password in plain text. The eyecon is inserted after the input field. Its negative top margin
+            allows it to overlap the input field.
+        */
+        for (let i = 0; i < pwdInputs.length; i++) {
+            eyeCon =
+                `<div class="password-reveal-wrapper" title="Reveal password" onclick="toggleShowPassword(${i})" id="password-eye-${i}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.089z"/>
+                    <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12-.708.708z"/>
+                </svg>
+            </div>`;
+            pwdInputs[i].insertAdjacentHTML('afterend', eyeCon);
+        }
+
+        if (pwdInputs.length != 0) {
+            let inputWidth = pwdInputs[0].clientWidth;
+            let marginLeftPct = '10%';
+            let newInputWidthPct = ( 100 * ( (inputWidth*0.9) / inputWidth ) ).toString() + "%"; // This will be new width after adding left margin
+            let textIndentPx = '5px'; // Indent the text because the password icon overlaps some when screen gets small.
+
+            for (let i = 0; i < allInputs.length; i++) {
+                try {
+                    allInputs[i].style.marginLeft = marginLeftPct;
+                    allInputs[i].style.width = newInputWidthPct;
+                    allInputs[i].style.textIndent = textIndentPx;
+                    allLabels[i].style.marginLeft = marginLeftPct;
+                    allBtns[i].style.marginLeft = marginLeftPct;
+                }
+                catch { }
+            }
+        }
+    });
+</script>
+{% endblock %}

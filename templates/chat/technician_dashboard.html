@@ -1,0 +1,308 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block title %}🔧 Chat Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 15px;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+.metric-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.waiting-indicator {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.new-chat-alert {
+    background: linear-gradient(45deg, rgba(240, 85, 85, 0.8), rgba(240, 187, 72, 0.8));
+    border-radius: 10px;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 0 5px rgba(255, 107, 107, 0.5); }
+    to { box-shadow: 0 0 20px rgba(255, 107, 107, 0.8); }
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.status-waiting { background: #ffd93d; }
+.status-active { background: #6bcf7f; }
+.status-left { background: #95a5a6; }
+
+.chat-timestamp {
+    font-size: 0.8rem;
+    color: #ffffff;
+}
+
+.notification-badge {
+    background: #ff6b6b;
+    color: white;
+    border-radius: 50%;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="centered-wrapper">
+    <div class="h-centered" style="max-width: 1400px;">
+        <div class="container-fluid py-4">
+            <!-- Messages -->
+            {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-triangle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Metrics Dashboard -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="dashboard-card p-4">
+                        <h2 class="text-center mb-4">
+                            <i class="bi bi-headset"></i> Technician Command Center
+                        </h2>
+
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="h3 mb-0 waiting-indicator">{{ metrics.total_waiting }}</div>
+                                    <small>⏳ Waiting for Help</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="h3 mb-0">{{ metrics.total_active }}</div>
+                                    <small>💬 Active Chats</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="h3 mb-0">{{ metrics.user_active }}</div>
+                                    <small>🔧 Your Chats</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="h3 mb-0">{{ user.get_full_name|default:user.username }}</div>
+                                    <small>👋 Logged In</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Queues -->
+            <div class="row">
+                <!-- Waiting Queue -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card chat-item h-100">
+                        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="bi bi-hourglass-split"></i> Students Waiting for Help
+                            </h5>
+                            {% if waiting_chats %}
+                                <span class="notification-badge">{{ waiting_chats.count }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                            {% for chat in waiting_chats %}
+                                <div class="chat-item p-3 mb-3 {% if forloop.first %}new-chat-alert{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                <span class="status-dot status-waiting"></span>
+                                                👨‍🎓 {{ chat.student_name }}
+                                            </h6>
+                                            <p class="mb-2">
+                                                "{{ chat.initial_message|truncatewords:15 }}"
+                                            </p>
+                                            <div class="chat-timestamp">
+                                                <i class="bi bi-clock"></i> {{ chat.created_at|timesince }} ago
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <a href="{% url 'chat:join_chat' chat.chat_id %}"
+                                               class="btn btn-primary btn-sm">
+                                               <i class="bi bi-chat-dots-fill"></i> Join Chat
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="text-center text-muted py-4">
+                                    <i class="bi bi-check-circle display-4"></i>
+                                    <p class="mt-2">🎉 No students waiting! Great job team!</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Chats -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card chat-item h-100">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="bi bi-chat-dots"></i> Your Active Chats
+                            </h5>
+                            {% if active_chats %}
+                                <span class="badge bg-light text-dark">{{ active_chats.count }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                            {% for chat in active_chats %}
+                                <div class="chat-item p-3 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                <span class="status-dot status-active"></span>
+                                                👨‍🎓 {{ chat.student_name }}
+                                                <small class="text-muted"><span>- {{ chat.chat_id }}</span></small>
+                                            </h6>
+                                            <p class="mb-2 text-white">
+                                                Started: {{ chat.created_at|timesince }} ago
+                                            </p>
+                                            <div class="small text-info">
+                                                {% for tech in chat.technicians.all %}
+                                                    <i class="bi bi-person-check"></i> {{ tech.get_full_name }}
+                                                    {% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <a href="{% url 'chat:technician_chat' chat.chat_id %}"
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-arrow-right-circle"></i> Continue
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="text-center text-muted py-4">
+                                    <i class="bi bi-chat-square display-4"></i>
+                                    <p class="mt-2">💬 No active chats. Ready to help students!</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auto-refresh Notice -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-info text-center" style="border-radius: 12px; background: rgba(13, 202, 240, 0.1); border: 1px solid rgba(13, 202, 240, 0.2);">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Dashboard auto-refreshes every 10 seconds to show new chats
+                        <small class="ms-2 text-muted"><span>| &ensp;Last updated: </span><span id="lastUpdated"></span></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 🌊 Auto-refresh dashboard every 10 seconds
+function updateLastUpdated() {
+    document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+}
+
+function refreshDashboard() {
+    // Soft refresh - only reload if new chats are detected
+    fetch(window.location.href + '?ajax=1')
+        .then(response => response.text())
+        .then(html => {
+            // Parse response to check for changes
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(html, 'text/html');
+
+            // Check if waiting queue count changed
+            const currentWaiting = document.querySelectorAll('.new-chat-alert').length;
+            const newWaiting = newDoc.querySelectorAll('.new-chat-alert').length;
+
+            if (newWaiting > currentWaiting) {
+                // New chat alert sound
+                playNotificationSound();
+                // Full refresh to show new chats
+                location.reload();
+            }
+
+            updateLastUpdated();
+        })
+        .catch(console.error);
+}
+
+function playNotificationSound() {
+    // Simple notification beep
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    updateLastUpdated();
+    setInterval(refreshDashboard, 10000); // 10 seconds
+});
+
+// Add visual feedback for join buttons
+document.querySelectorAll('.btn').forEach(button => {
+    button.addEventListener('click', function() {
+        this.innerHTML = '<i class="bi bi-hourglass-split"></i> Connecting...';
+        this.disabled = true;
+    });
+});
+</script>
+{% endblock %}

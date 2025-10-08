@@ -1,0 +1,518 @@
+<!-- templates/chat/landing.html - Updated with schedule awareness -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}💻 CSCI 1100 Live Support{% endblock %}
+
+{% block extra_css %}
+<style>
+.availability-status {
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+    animation: statusPulse 3s ease-in-out infinite alternate;
+}
+
+.status-available {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.9), rgba(32, 201, 151, 0.9));
+    color: white;
+    box-shadow: 0 0 20px rgba(40, 167, 69, 0.5);
+}
+
+.status-unavailable {
+    background: linear-gradient(135deg, rgb(202, 97, 107), rgb(177, 73, 69));
+    color: white;
+    box-shadow: 0 0 20px rgba(196, 53, 67, 0.5);
+}
+
+.status-override {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.9), rgba(255, 171, 0, 0.9));
+    color: #856404;
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+}
+
+@keyframes statusPulse {
+    from {
+        transform: scale(1.01);
+        box-shadow: 0 0 20px rgba(73, 242, 248, 0.5);
+    }
+    to {
+        transform: scale(1.03);
+        box-shadow: 0 0 30px rgba(73, 242, 248, 0.8);
+    }
+}
+
+.schedule-day {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.schedule-day:last-child {
+    border-bottom: none;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.dot-available { background: #28a745; }
+.dot-unavailable { background: #dc3545; }
+.dot-current { background: #007bff; animation: dotPulse 2s infinite; }
+
+@keyframes dotPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.form-disabled {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.offline-message {
+    background: linear-gradient(135deg, rgba(202, 97, 107, 0.8), rgba(177, 73, 69, 0.8));
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.topic-badge {
+    padding: 0.75rem 0.5rem;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+    min-height: 80px;
+}
+
+.topic-badge:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.topic-badge i {
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+}
+
+.topic-badge div:not(small) {
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.1;
+}
+
+@media (max-width: 768px) {
+    .topic-badge {
+        min-height: 70px;
+        padding: 0.5rem 0.25rem;
+    }
+
+    .topic-badge i {
+        font-size: 1rem;
+    }
+
+    .topic-badge div:not(small) {
+        font-size: 0.9rem;
+    }
+}
+
+/* Topic color schemes */
+.ocean-1 { background: linear-gradient(45deg, #1e3b8a7e, #3b83f68b); }
+.ocean-2 { background: linear-gradient(135deg, #0f98d389, #24c2c27e); }
+.ocean-3 { background: linear-gradient(45deg, #0890b288, #0e74908c); }
+.sunset-1 { background: linear-gradient(45deg, #ab242483, #ea5a0c8e); }
+.sunset-2 { background: linear-gradient(135deg, #ea641c88, #cd9c0a8e); }
+.sunset-3 { background: linear-gradient(45deg, #d977068d, #af3d3d97); }
+.forest-1 { background: linear-gradient(45deg, #16a34a8f, #22c55e8c); }
+.forest-2 { background: linear-gradient(135deg, #0596688f, #10b98191); }
+.forest-3 { background: linear-gradient(45deg, #10b98190, #93cb39a3); }
+</style>
+{% endblock %}
+
+<div>
+     {% block content %}
+     <!-- 📡 Messages -->
+     {% if messages %}
+     <div class="container pt-3" style="background-color: none;">
+         {% for message in messages %}
+             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                 <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-triangle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                 {{ message }}
+                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+             </div>
+         {% endfor %}
+     </div>
+     {% endif %}
+    
+    <div class="pt-4 row w-100 justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg border-0" style="border-radius: 20px; backdrop-filter: blur(15px);">
+
+                <!-- Availability Status Banner -->
+                <div id="availabilityStatus" class="availability-status">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <i id="statusIcon" class="bi bi-clock display-6 me-3"></i>
+                            <div>
+                                <h4 id="statusTitle" class="mb-1">Checking availability...</h4>
+                                <div id="statusMessage">Please wait while we check support hours</div>
+                            </div>
+                        </div>
+                        <div id="currentTime" class="text-end">
+                            <div style="font-size: 1.2rem; font-weight: 600;"></div>
+                            <small id="timeZone">Eastern Time</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-header text-center py-4 border-0" style="background: linear-gradient(45deg, #398ccc 0%, #26ccd5 100%); border-radius: 20px 20px 0 0;">
+                    <h1 class="text-white mb-2">
+                        <i class="bi bi-mortarboard"></i>
+                        CSCI 1100 Live Support Hub
+                    </h1>
+                    <p class="mb-0 text-white fs-400">Get help with course topics & assignments!</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <p class="text-muted mb-3">
+                            <span>💬 Connect with course assistants for help with CSCI 1100 topics:</span>
+                        </p>
+
+                        <!-- Enhanced Topic Grid -->
+                        <div class="row g-2 mb-4">
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge ocean-1">
+                                    <i class="bi bi-shield-check"></i>
+                                    <div>Information Literacy</div>
+                                    <small>Info search & evaluation</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge ocean-2">
+                                    <i class="bi bi-code-slash"></i>
+                                    <div>Programming</div>
+                                    <small>Concepts, algorithms, debugging</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge ocean-3">
+                                    <i class="bi bi-globe"></i>
+                                    <div>Web Literacy</div>
+                                    <small>HTML, CSS, browsers</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge sunset-1">
+                                    <i class="bi bi-diagram-3"></i>
+                                    <div>The Connected World</div>
+                                    <small>Routers, the Internet, & cloud</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge sunset-2">
+                                    <i class="bi bi-bar-chart"></i>
+                                    <div>Data Literacy</div>
+                                    <small>Analysis, visualization, trends</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge sunset-3">
+                                    <i class="bi bi-microsoft"></i>
+                                    <div>Microsoft 365 Suite</div>
+                                    <small>Word, Excel, PowerPoint</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge forest-1">
+                                    <i class="bi bi-robot"></i>
+                                    <div>AI & Machine Learning</div>
+                                    <small>Concepts, ethics, applications</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge forest-2">
+                                    <i class="bi bi-palette"></i>
+                                    <div>Content Creation</div>
+                                    <small>Design, tools, copyright</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge forest-3">
+                                    <i class="bi bi-shield-lock"></i>
+                                    <div>Cybersecurity</div>
+                                    <small>Privacy, threats, best practices</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Form -->
+                    <form method="post" class="d-flex flex-column gap-3" id="chatForm">
+                        {% csrf_token %}
+                        
+                        <div>
+                            <label for="{{ form.student_name.id_for_label }}" class="form-label fw-bold">
+                                {{ form.student_name.label }}
+                            </label>
+                            {{ form.student_name }}
+                            {% if form.student_name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.student_name.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.initial_message.id_for_label }}" class="form-label fw-bold">
+                                {{ form.initial_message.label }}
+                            </label>
+                            {{ form.initial_message }}
+                            {% if form.initial_message.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.initial_message.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mt-3" id="submitBtn"
+                                style="border-radius: 15px; background: linear-gradient(45deg, #398ccc 0%, #26ccd5 100%); border: none;">
+                            <i class="bi bi-chat-square-dots"></i>
+                            <span id="submitText">Connect with Course Assistant</span>
+                        </button>
+                    </form>
+
+                    <!-- Schedule Summary -->
+                    <div class="schedule-summary" id="scheduleSummary" style="display: none;">
+                        <h6><i class="bi bi-calendar-week"></i> Support Hours</h6>
+                        <div id="scheduleList">
+                            <!-- Schedule will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Offline Message -->
+                    <div class="offline-message mt-3" id="offlineMessage" style="display: none;">
+                        <h5><i class="bi bi-moon-fill"></i> Support Currently Offline</h5>
+                        <p class="mt-3 mb-3">Live chat support is not available right now, but you can still submit your question and a course assistant will respond when support hours resume.</p>
+                        <p class="mb-0"><strong>Next available:</strong> <span id="nextAvailable"></span></p>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-8">
+                            <div class="p-2" style="border: 1px solid #dddede; border-radius: 15px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px 0px;">
+                                <p class="text-muted">
+                                    <span><i class="bi bi-info-circle"></i>&ensp;For computer hardware/IT and account problems, contact the <a target="_blank" href="https://www.etsu.edu/helpdesk/contact-us.php">ITS Help Desk</a></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-2" style="border: 1px solid #dddede; border-radius: 15px; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px 0px;">
+                                <p class="text-muted">
+                                    <span><i class="bi bi-shield-check"></i>&ensp;Secure & Private</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    localStorage.setItem('audioEnabled', 'true');
+
+    // Elements
+    const statusBanner = document.getElementById('availabilityStatus');
+    const statusIcon = document.getElementById('statusIcon');
+    const statusTitle = document.getElementById('statusTitle');
+    const statusMessage = document.getElementById('statusMessage');
+    const currentTimeDiv = document.getElementById('currentTime').querySelector('div');
+    const chatForm = document.getElementById('chatForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const scheduleSummary = document.getElementById('scheduleSummary');
+    const scheduleList = document.getElementById('scheduleList');
+    const offlineMessage = document.getElementById('offlineMessage');
+    const nextAvailable = document.getElementById('nextAvailable');
+
+    // Topic badge interactions
+    const topicBadges = document.querySelectorAll('.topic-badge');
+    const messageTextarea = document.getElementById('{{ form.initial_message.id_for_label }}');
+
+    topicBadges.forEach(badge => {
+        badge.addEventListener('click', function() {
+            const topicName = this.querySelector('div:not(small)').textContent;
+            const currentValue = messageTextarea.value;
+
+            if (!currentValue.toLowerCase().includes(topicName.toLowerCase())) {
+                const newText = currentValue ?
+                    `${currentValue}\n\nI need help with ${topicName}: ` :
+                    `I need help with ${topicName}: `;
+                messageTextarea.value = newText;
+                messageTextarea.focus();
+
+                // Visual feedback
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            }
+        });
+    });
+
+    // Update current time
+    function updateCurrentTime() {
+        const now = new Date();
+        currentTimeDiv.textContent = now.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    }
+
+    // Check schedule status
+    function checkScheduleStatus() {
+        fetch('/accounts/schedule/status/')
+            .then(response => response.json())
+            .then(data => {
+                updateStatusDisplay(data);
+            })
+            .catch(error => {
+                console.error('Error checking schedule:', error);
+                // Fallback to showing form
+                statusBanner.className = 'availability-status status-unavailable';
+                statusIcon.className = 'bi bi-exclamation-triangle display-6 me-3';
+                statusTitle.textContent = 'Status Unknown';
+                statusMessage.textContent = 'Unable to check support hours. You can still submit your question.';
+            });
+    }
+
+    function updateStatusDisplay(data) {
+        if (data.is_available) {
+            // Support is available
+            statusBanner.className = 'availability-status status-available';
+            statusIcon.className = 'bi bi-check-circle display-6 me-3';
+            statusTitle.textContent = 'Support Available Now!';
+            statusMessage.textContent = data.message;
+
+            // Enable form
+            chatForm.classList.remove('form-disabled');
+            submitText.textContent = 'Connect with Course Assistant';
+            submitBtn.disabled = false;
+
+            // Hide offline message
+            offlineMessage.style.display = 'none';
+
+        } else {
+            
+            // Support is not available
+            if (data.has_override) {
+                statusBanner.className = 'availability-status status-override';
+                statusIcon.className = 'bi bi-calendar-x display-6 me-3';
+            } else {
+                statusBanner.className = 'availability-status status-unavailable';
+                statusIcon.className = 'bi bi-clock display-6 me-3';
+            }
+
+            statusTitle.textContent = 'Support Currently Offline';
+            statusMessage.textContent = data.message;
+
+            // Update form for offline mode
+            submitText.textContent = 'Submit Question (Offline Mode)';
+
+            // Show offline message
+            nextAvailable.textContent = data.next_available;
+            offlineMessage.style.display = 'block';
+        }
+
+        // Show schedule summary if available
+        if (data.today_schedule) {
+            displayScheduleSummary(data.today_schedule, data.has_override, data.override_reason);
+        }
+    }
+
+    function displayScheduleSummary(todaySchedule, hasOverride, overrideReason) {
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const today = new Date().getDay();
+        const todayName = days[(today + 6) % 7]; // Adjust for Monday = 0
+
+        let scheduleHTML = '';
+
+        if (hasOverride) {
+            scheduleHTML = `
+                <div class="schedule-day today">
+                    <div>
+                        <span class="status-dot dot-current"></span>
+                        <span class="ff-sans-bolder">${todayName} (Special Hours)</span>
+                    </div>
+                    <div><em>${overrideReason}</em></div>
+                </div>
+            `;
+        } else if (todaySchedule.is_active && todaySchedule.start_time && todaySchedule.end_time) {
+            scheduleHTML = `
+                <div class="schedule-day today">
+                    <div>
+                        <span class="status-dot dot-current"></span>
+                        <span class="ff-sans-bolder">${todayName}</span>
+                    </div>
+                    <div>${todaySchedule.start_time} - ${todaySchedule.end_time}</div>
+                </div>
+            `;
+        } else if (todaySchedule.is_active) {
+            scheduleHTML = `
+                <div class="schedule-day today">
+                    <div>
+                        <span class="status-dot dot-current"></span>
+                        <span class="ff-sans-bolder">${todayName}</span>
+                    </div>
+                    <div>Open (no time restrictions)</div>
+                </div>
+            `;
+        } else {
+            scheduleHTML = `
+                <div class="schedule-day today">
+                    <div>
+                        <span class="status-dot dot-unavailable"></span>
+                        <span class="ff-sans-bolder">${todayName}</span>
+                    </div>
+                    <div>Closed</div>
+                </div>
+            `;
+        }
+
+        scheduleList.innerHTML = scheduleHTML;
+        scheduleSummary.style.display = 'block';
+    }
+
+    // Auto-focus on name field
+    document.getElementById('{{ form.student_name.id_for_label }}').focus();
+
+    // Initialize
+    updateCurrentTime();
+    checkScheduleStatus();
+
+    // Update time every minute
+    setInterval(updateCurrentTime, 60000);
+
+    // Check status every 5 minutes
+    setInterval(checkScheduleStatus, 300000);
+});
+</script>
+{% endblock %}

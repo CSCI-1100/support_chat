@@ -1,0 +1,356 @@
+:root{
+    /* Colors */
+    --clr-light: 43, 41%, 96%;
+    --clr-primary: 225, 44%, 34%;
+    --clr-primary-hover: 225, 51%, 44%;
+    --clr-secondary: 201, 34%, 40%;
+    --clr-secondary-hover: 201, 51%, 40%;
+    --clr-info: 209, 50%, 50%;
+    --clr-create: 171, 34%, 40%;
+    --clr-create-hover: 171, 25%, 40%;
+    --clr-spring-wood: 51, 30%, 95%;
+    --clr-snow: 0, 20%, 98%;
+    --clr-putty-yellow: 48, 62%, 71%;
+    --clr-putty-yellow-hover: 48, 53%, 68%;
+    --clr-etsu-yellow: 44, 96%, 71%;
+
+    /* Font-sizes */
+    --fs-900: 9.375rem;
+    --fs-850: 7.813rem;
+    --fs-800: 6.25rem;
+    --fs-750: 4.875rem;
+    --fs-700: 3.5rem;
+    --fs-650: 2.75rem;
+    --fs-600: 2rem;
+    --fs-550: 1.875rem;
+    --fs-500: 1.75rem;
+    --fs-450: 1.313rem;
+    --fs-400: 1.125rem;
+    --fs-350: 1.06rem;
+    --fs-300: 1rem;
+    --fs-250: 0.94rem;
+    --fs-200: 0.875rem;
+    --fs-150: 0.81rem;
+    --fs-100: 0.75rem;
+    --fs-0: 0.625rem;
+}
+
+/* Remove animations for those who have turned them off */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ---------- Start Typography ---------- */
+.fs-0 { font-size: var(--fs-0); }
+.fs-100 { font-size: var(--fs-100); }
+.fs-150 { font-size: var(--fs-150); }
+.fs-200 { font-size: var(--fs-200); }
+.fs-250 { font-size: var(--fs-250); }
+.fs-300 { font-size: var(--fs-300); }
+.fs-350 { font-size: var(--fs-350); }
+.fs-400 { font-size: var(--fs-400); }
+.fs-450 { font-size: var(--fs-450); }
+.fs-500 { font-size: var(--fs-500); }
+.fs-550 { font-size: var(--fs-550); }
+.fs-600 { font-size: var(--fs-600); }
+.fs-650 { font-size: var(--fs-650); }
+.fs-700 { font-size: var(--fs-700); }
+.fs-750 { font-size: var(--fs-750); }
+.fs-800 { font-size: var(--fs-800); }
+.fs-850 { font-size: var(--fs-850); }
+.fs-900 { font-size: var(--fs-900); }
+
+.ff-regular {
+    font-weight: 400;
+    font-style: normal;
+}
+
+.ff-semibold {
+    font-weight: 500;
+    font-style: normal;
+}
+
+.ff-bold {
+    font-weight: 600;
+    font-style: normal;
+}
+/* ---------- End Typography ----------- */
+
+/* ---------- Start BG Colors ---------- */
+.bg-light {
+    background-color: hsl(var(--clr-light))!important;
+}
+
+.bg-primary {
+    background-color: hsl(var(--clr-primary))!important;
+}
+
+.bg-info {
+    background-color: hsl(var(--clr-info))!important;
+}
+
+.bg-putty-yellow {
+    background-color: hsl(var(--clr-putty-yellow))!important;
+}
+
+.bg-etsu-yellow {
+    background-color: hsl(var(--clr-etsu-yellow))!important;
+}
+/* ---------- End BG Colors ----------- */
+
+/* --------- Start Text Colors -------- */
+.text-highlight-primary {
+    color: hsl(var(--clr-primary));
+}
+
+.text-putty-yellow {
+    color: hsl(var(--clr-putty-yellow));
+}
+/* --------- End Text Colors --------- */
+
+/* ----------- Start Buttons ---------- */
+.bttn-primary {
+    transition: 1s background;
+    background: linear-gradient(45deg, #398ccc 0%, #26ccd5 100%);
+    color: white!important;
+}
+
+.bttn-primary:hover {
+    background: linear-gradient(123deg, #398ccc 30%, #26ccd5 70%);
+    color: white!important;
+}
+
+.bttn-warning {
+    background-color: hsl(var(--clr-putty-yellow))!important;
+    color: #212529!important;
+}
+
+.bttn-warning:hover {
+    background-color: hsl(var(--clr-putty-yellow-hover))!important;
+    color: #212529!important;
+    font-weight: 500;
+}
+
+.bttn-create {
+    background-color: hsl(var(--clr-create))!important;
+    color: white!important;
+}
+
+.bttn-create:hover {
+    background-color: hsl(var(--clr-create-hover))!important;
+    color: white!important;
+    font-weight: 500!important;
+}
+
+.bttn-edit {
+    background-color: hsl(var(--clr-secondary))!important;
+    color: white!important;
+}
+
+.bttn-edit:hover {
+    background-color: hsl(var(--clr-secondary-hover))!important;
+    color: white!important;
+    font-weight: 500!important
+}
+
+.bttn-outline-edit {
+    background-color: none;
+    border: 1px solid hsl(var(--clr-secondary))!important;
+    color: hsl(var(--clr-secondary))!important;
+    color: #212529!important;
+    font-weight: 500!important;
+    transition-duration: 0.33s;
+}
+
+.bttn-outline-edit:hover {
+    background-color: hsl(var(--clr-secondary))!important;
+    border: hsl(var(--clr-secondary-hover))!important;
+    color: white!important;
+    font-weight: 500!important;
+}
+/* ----------- End Buttons ----------- */
+
+/* ----------- Start Reset ----------- */
+
+/* https://piccalil.li/blog/a-modern-css-reset/ */
+
+/* Box-sizing */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Reset margins */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+figure,
+picture {
+    margin: 0;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+/* ----------- End Reset ------------ */
+
+.body-light {
+    background-color: hsl(var(--clr-light))!important;
+}
+
+
+th, tr {
+    vertical-align: middle;
+}
+.badge {
+    vertical-align: top;
+}
+footer {
+    margin: 0;
+    bottom: 0!important;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+input[type=text], input[type=time], input[type=password], input[type=email], input[type='tel'], input[type=url] {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: hsl(var(--clr-snow));
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+select, textarea {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: hsl(var(--clr-snow))!important;
+    box-sizing: border-box;
+    resize: vertical;
+}
+  
+/* Enlarge the checkbox to make it more easily clickable. */
+input[type=checkbox] {
+    width: 2em;
+    height: 2em;
+    margin-right: 12px;
+    vertical-align: middle;
+}
+
+label, .forms-label {
+    color: #666;
+    padding: 5px 2px 2px 2px;
+    display: inline-block;
+    font-size: 1.1rem;
+}
+
+.shadow {
+    position: relative;
+    -webkit-box-shadow: 2px 15px 72px -5px rgba(0,0,0,0.8);
+    -moz-box-shadow: 2px 15px 72px -5px rgba(0,0,0,0.8);
+    box-shadow: 2px 15px 72px -5px rgba(0,0,0,0.8);
+}
+
+.centered-wrapper {
+    position: relative;
+}
+
+.centered {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 100%); /* Adjusts for the element's own size */
+}
+
+.h-centered {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+.form-container {
+    border-radius: 10px;
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    word-wrap: break-word;
+}
+
+.button-container {
+    border-radius: 10px;
+    background-color: rgba(228, 228, 228, 0.2);
+    padding: 16px 16px 0px 16px;
+    margin: 4vh auto 0;
+    border: 1px dotted #ccc;
+    word-wrap: break-word;
+}
+
+.password-reveal-wrapper {
+    margin-top: -2em;
+    width: min-content!important;
+    cursor: pointer;
+}
+
+.tos-box {
+    display: block;
+    padding: 1em;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    max-width: 800px;
+}
+
+.border-ccc {
+    border-color: #ccc !important;
+}
+
+.has-info {
+    background-color: #cff4fc;
+}
+
+#id_bitlocker_key::placeholder {
+    opacity: 0.4;
+}
+
+.translate-50-rev {
+    transform: translate(-50%, -55%);
+}
+
+/* Do not show numerical handles on numeric input */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.dropdown-item:hover {
+    border-radius: var(--bs-border-radius);
+}
+
+@media only screen and (max-width: 475px) {
+    .hide-when-small {
+        display: none;
+    }
+}

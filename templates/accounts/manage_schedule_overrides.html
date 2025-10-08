@@ -1,0 +1,288 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block title %}📅 Schedule Overrides - 💬 Chat Support{% endblock %}
+
+{% block extra_css %}
+<style>
+.override-card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.override-card.active {
+    border-left: 5px solid #28a745;
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(255, 255, 255, 0.9));
+}
+
+.override-card.inactive {
+    border-left: 5px solid #dc3545;
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(255, 255, 255, 0.9));
+}
+
+.override-form {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+}
+
+.date-badge {
+    background: linear-gradient(45deg, #17a2b8, #117a8b);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.reason-tag {
+    background: rgba(255, 193, 7, 0.2);
+    border: 1px solid #ffc107;
+    color: #856404;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+}
+
+.time-display {
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Messages -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-triangle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="bi bi-calendar-x"></i> Schedule Overrides</h2>
+                    <p class="text-muted"><span>Manage special schedules for holidays, events, and exceptions</span></p>
+                </div>
+                <a href="{% url 'manage_schedule' %}" class="btn btn-primary">
+                    <i class="bi bi-arrow-left"></i> Back to Schedule
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Create Override Form -->
+        <div class="col-lg-5 mb-4">
+            <div class="override-form">
+                <h4><i class="bi bi-plus-circle"></i> Create Override</h4>
+                <p class="mb-4">Set special hours for specific dates</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.date.id_for_label }}" class="form-label text-white">Date</label>
+                        {{ form.date }}
+                        {% if form.date.errors %}
+                            <div class="text-warning small mt-1">
+                                {{ form.date.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.reason.id_for_label }}" class="form-label text-white">Reason</label>
+                        {{ form.reason }}
+                        {% if form.reason.errors %}
+                            <div class="text-warning small mt-1">
+                                {{ form.reason.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-check mb-3">
+                        {{ form.is_active }}
+                        <label class="form-check-label text-white" for="{{ form.is_active.id_for_label }}">
+                            Support Available on This Date
+                        </label>
+                    </div>
+
+                    <div id="timeFields" style="{% if not form.instance.is_active %}display: none;{% endif %}">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.start_time.id_for_label }}" class="form-label text-white">Start Time</label>
+                                    {{ form.start_time }}
+                                    {% if form.start_time.errors %}
+                                        <div class="text-warning small mt-1">
+                                            {{ form.start_time.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.end_time.id_for_label }}" class="form-label text-white">End Time</label>
+                                    {{ form.end_time }}
+                                    {% if form.end_time.errors %}
+                                        <div class="text-warning small mt-1">
+                                            {{ form.end_time.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-light w-100">
+                        <i class="bi bi-calendar-plus"></i> Create Override
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Override Lists -->
+        <div class="col-lg-7">
+            <!-- Upcoming Overrides -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-event"></i> Upcoming Overrides
+                        <span class="badge bg-dark ms-2">{{ upcoming_overrides.count }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for override in upcoming_overrides %}
+                        <div class="override-card {% if override.is_active %}active{% else %}inactive{% endif %}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="date-badge me-3">
+                                                {{ override.date|date:"M d, Y" }}
+                                                <small class="ms-1">({{ override.date|date:"l" }})</small>
+                                            </span>
+                                            <span class="reason-tag">{{ override.reason }}</span>
+                                        </div>
+                                        
+                                        <div class="d-flex align-items-center">
+                                            {% if override.is_active %}
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                {% if override.start_time and override.end_time %}
+                                                    <span class="time-display">
+                                                        {{ override.start_time|time:"g:i A" }} - {{ override.end_time|time:"g:i A" }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="text-success">Open (no time restrictions)</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <i class="bi bi-x-circle text-danger me-2"></i>
+                                                <span class="text-danger">Closed</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ms-3">
+                                        <form method="post" action="{% url 'delete_schedule_override' override.id %}" 
+                                              class="d-inline"
+                                              onsubmit="return confirm('Delete this override?')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-calendar-check display-4"></i>
+                            <p class="mt-2"><span>No upcoming overrides scheduled</span></p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Past Overrides -->
+            {% if past_overrides %}
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h6 class="mb-0">
+                            <i class="bi bi-clock-history"></i> Recent Past Overrides
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        {% for override in past_overrides %}
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <div>
+                                    <strong>{{ override.date|date:"M d" }}</strong>
+                                    <span class="text-muted ms-2">{{ override.reason }}</span>
+                                </div>
+                                <div class="text-muted">
+                                    {% if override.is_active %}
+                                        {% if override.start_time and override.end_time %}
+                                            {{ override.start_time|time:"g:i A" }} - {{ override.end_time|time:"g:i A" }}
+                                        {% else %}
+                                            Open
+                                        {% endif %}
+                                    {% else %}
+                                        Closed
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const activeCheckbox = document.getElementById('{{ form.is_active.id_for_label }}');
+    const timeFields = document.getElementById('timeFields');
+    
+    if (activeCheckbox && timeFields) {
+        activeCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                timeFields.style.display = 'block';
+                // Make time fields required
+                document.querySelector('input[name="start_time"]').required = true;
+                document.querySelector('input[name="end_time"]').required = true;
+            } else {
+                timeFields.style.display = 'none';
+                // Remove required attribute
+                document.querySelector('input[name="start_time"]').required = false;
+                document.querySelector('input[name="end_time"]').required = false;
+            }
+        });
+    }
+    
+    // Add confirmation to delete buttons
+    document.querySelectorAll('form[action*="delete"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (!confirm('Are you sure you want to delete this schedule override?')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+db.sqlite3
+media/
+migrations/
+staticfiles/
+*pyc*
+*.sock
+.DS_Store
+.venv
+.env

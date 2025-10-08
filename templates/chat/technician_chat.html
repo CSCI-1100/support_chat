@@ -1,0 +1,1046 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}🔧 Chat {{ chat.chat_id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Mobile-first responsive design */
+    .tech-chat-container {
+        border-radius: 15px;
+        background: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .quick-actions {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .quick-action-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: black;
+        border-radius: 8px;
+        padding: 0.25rem 0.5rem;
+        margin: 0.125rem;
+        font-size: 0.8rem;
+        transition: all 0.2s ease;
+    }
+
+    .quick-action-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: black;
+    }
+
+    /* Dynamic height calculation for different screen sizes */
+    @media (min-width: 992px) {
+        /* Desktop: Use viewport height minus navbar/padding */
+        .tech-chat-container {
+            height: 85vh;
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        /* Mobile/Tablet: Use auto height with minimum constraints */
+        .tech-chat-container {
+            min-height: 60vh;
+            max-height: 70vh;
+        }
+    }
+
+    @media (max-width: 576px) {
+        /* Small mobile: Optimize for smaller screens */
+        .tech-chat-container {
+            min-height: 50vh;
+            max-height: 60vh;
+            margin-bottom: 1rem;
+        }
+    }
+
+    .tech-chat-header {
+        background: linear-gradient(45deg, #93edaa 0%, #80e097 100%);
+        color: black;
+        padding: 1rem;
+        border-radius: 15px 15px 0 0;
+        flex-shrink: 0;
+    }
+
+    /* Responsive header layout */
+    @media (max-width: 768px) {
+        .tech-chat-header {
+            padding: 0.75rem;
+        }
+
+        .tech-chat-header h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tech-chat-header .d-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .participant-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .chat-messages {
+            padding: 0.75rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .tech-input-area {
+            padding: 0.75rem;
+        }
+
+        .tech-input-area .input-group {
+            flex-wrap: wrap;
+        }
+
+        .tech-input-area textarea {
+            font-size: 16px; /* Prevents zoom on iOS */
+            min-height: 80px;
+        }
+    }
+
+    /* Quick actions responsive behavior */
+    .quick-actions {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .quick-actions {
+            padding: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-action-btn {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+            margin: 0.1rem;
+        }
+    }
+
+    /* Message styling remains the same but with mobile optimizations */
+    .message {
+        margin-bottom: 1rem;
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .message.student {
+        text-align: left;
+    }
+
+    .message.technician {
+        text-align: right;
+    }
+
+    .message.system {
+        text-align: center;
+    }
+
+    .message-bubble {
+        display: inline-block;
+        max-width: 75%;
+        padding: 0.875rem 1.125rem;
+        border-radius: 18px;
+        word-wrap: break-word;
+        position: relative;
+    }
+
+    @media (max-width: 768px) {
+        .message-bubble {
+            max-width: 85%;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    .student .message-bubble {
+        background: linear-gradient(145deg, #007bff, #0056b3);
+        color: white;
+        border-bottom-left-radius: 3px;
+    }
+
+    .technician .message-bubble {
+        background: linear-gradient(145deg, #acfabf, #a0e1af);
+        color: black;
+        border-bottom-right-radius: 3px;
+    }
+
+    /* Sidebar responsive behavior */
+    .chat-sidebar {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 991.98px) {
+        .chat-sidebar {
+            margin-top: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .chat-sidebar .card-body {
+            padding: 1rem;
+        }
+
+        .chat-sidebar dt {
+            font-size: 0.9rem;
+        }
+
+        .chat-sidebar dd {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    /* Button responsive behavior */
+    .submit-message-btn {
+        background: linear-gradient(45deg, #93edaa 0%, #80e097 100%);
+        border: 1px solid #6c757d;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-left-radius: 0px;
+    }
+
+    .submit-message-btn:hover {
+        background: linear-gradient(35deg, #9effb6 0%, #8ff8a7 100%);
+        color: #888686;
+    }
+
+    .attachment-btn {
+        background-color: #f4f5f6;
+        border: 1px solid #6c757d;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+
+    .close-chat-btn {
+        background: linear-gradient(45deg, #c84b58, #bf2f5f);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .close-chat-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    }
+
+    @media (max-width: 768px) {
+        .close-chat-btn {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+    }
+
+    /* Attachment grid responsive */
+    .attachment-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        color: #287ffc;
+    }
+
+    @media (max-width: 768px) {
+        .attachment-grid {
+            grid-template-columns: 1fr;
+            gap: 0.25rem;
+        }
+    }
+
+    .attachment-item {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        padding: 0.5rem;
+        border: 1px solid #dee2e6;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s ease;
+    }
+
+    .attachment-item:hover {
+        background: rgb(234, 234, 234);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Emoji picker responsive */
+    #techEmojiPicker {
+        position: relative;
+        z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+        .emoji-grid .row {
+            margin: 0;
+        }
+
+        .emoji-btn {
+            padding: 0.25rem;
+            font-size: 1.2rem;
+        }
+    }
+
+    /* Modal responsive fixes */
+    .modal {
+        z-index: 99999 !important;
+    }
+
+    .modal-backdrop {
+        z-index: 99998 !important;
+    }
+
+    @media (max-width: 576px) {
+        .modal-dialog {
+            margin: 1rem;
+            max-width: calc(100% - 2rem);
+        }
+
+        .modal-body {
+            padding: 1rem;
+        }
+
+        .modal-footer {
+            padding: 0.75rem 1rem;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .modal-footer button {
+            width: 100%;
+        }
+    }
+
+    /* Utility classes for responsive spacing */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+    }
+
+    /* Fix for very small screens */
+    @media (max-width: 400px) {
+        .tech-chat-header h4 {
+            font-size: 1rem;
+        }
+
+        .message-bubble {
+            max-width: 90%;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .quick-action-btn {
+            font-size: 0.6rem;
+            padding: 0.15rem 0.3rem;
+        }
+    }
+
+    /* Ensure proper scrolling on iOS */
+    .chat-messages {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Fix input zoom on iOS */
+    @media screen and (max-width: 768px) {
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        textarea,
+        select {
+            font-size: 16px !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="centered-wrapper">
+    <div class="h-centered" style="max-width: 1900px;">
+        <div class="container-fluid py-3">
+            <button id="audio-toggle" class="btn btn-sm btn-outline-secondary">
+                🔊 Enable Notification Audio
+            </button>
+            <div class="row mt-1">
+                <div class="col-lg-9">
+                    <div class="tech-chat-container">
+                        <!-- 🌟 Enhanced Chat Header -->
+                        <div class="tech-chat-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-1 text-dark">
+                                        <i class="bi bi-chat-heart"></i>
+                                        Chat {{ chat.chat_id }}
+                                    </h4>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge bg-light text-dark">
+                                            👨‍🎓 {{ chat.student_name }}
+                                        </span>
+                                        <small>Started {{ chat.created_at|timesince }} ago</small>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <!-- Participating Technicians -->
+                                    <div class="d-flex flex-wrap">
+                                        {% for tech in chat.technicians.all %}
+                                            <span class="participant-badge">
+                                                <i class="bi bi-person-check"></i> {{ tech.get_full_name }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+
+                                    <!-- Close Chat Button -->
+                                    <button type="button" class="btn close-chat-btn text-white"
+                                            data-bs-toggle="modal" data-bs-target="#closeChatModal">
+                                        <i class="bi bi-x-circle"></i> Close Chat
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div class="quick-actions mt-2">
+                                <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Thanks for contacting support! I\'ll help you with that.')">
+                                    👋 Greeting
+                                </button>
+                                <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Can you provide more details about the issue?')">
+                                    ❓ More Info
+                                </button>
+                                <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Let me check that for you...')">
+                                    🔍 Checking
+                                </button>
+                                <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Is this issue resolved for you?')">
+                                    ✅ Resolution Check
+                                </button>
+                                <button type="button" class="quick-action-btn" onclick="insertQuickMessage('Is there anything else I can help you with today?')">
+                                    🤝 Additional Help
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 📡 Messages Area -->
+                        <div class="chat-messages" id="messagesContainer">
+                            {% for message in messages %}
+                                <div class="message {% if message.is_from_student %}student{% elif message.message_type == 'system' %}system{% else %}technician{% endif %}">
+                                    <div class="message-bubble">
+                                        <div class="message-sender mb-1">
+                                            <strong>
+                                                {% if message.is_from_student %}
+                                                    👨‍🎓 {{ message.sender_name }}
+                                                {% elif message.message_type == 'system' %}
+                                                    🤖 System
+                                                {% else %}
+                                                    🔧 {{ message.sender_name }}
+                                                {% endif %}
+                                            </strong>
+                                        </div>
+
+                                        <div class="message-content">
+                                            {{ message.content|linebreaks }}
+                                        </div>
+
+                                        {% if message.attachments.exists %}
+                                            <div class="attachment-grid">
+                                                {% for attachment in message.attachments.all %}
+                                                    <a href="{% url 'chat:download_attachment' attachment.id %}"
+                                                       class="attachment-item" target="_blank">
+                                                        <div class="d-flex align-items-center">
+                                                            {% if attachment.is_image %}
+                                                                <i class="bi bi-image text-primary me-2"></i>
+                                                            {% else %}
+                                                                <i class="bi bi-file-earmark text-secondary me-2"></i>
+                                                            {% endif %}
+                                                            <div class="flex-grow-1">
+                                                                <div class="text-truncate">
+                                                                    {{ attachment.original_filename }}
+                                                                </div>
+                                                                <div class="text-muted" style="font-size: 0.7rem;">
+                                                                    {{ attachment.display_size }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+
+                                        <div class="message-time small mt-2">
+                                            {{ message.timestamp|date:"H:i" }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- 💬 FIXED TECHNICIAN INPUT AREA -->
+                        <div class="tech-input-area">
+                            <form method="post" enctype="multipart/form-data" id="techMessageForm">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="send_message">
+
+                                <div class="input-group">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            onclick="toggleEmojiPicker()" title="Add emoji 😊">
+                                        😊
+                                    </button>
+
+                                    <!-- 🔧 EXPLICIT TEXTAREA MANIFESTATION -->
+                                    <textarea name="content"
+                                              id="id_content"
+                                              class="form-control shadow-none"
+                                              rows="3"
+                                              maxlength="2000"
+                                              placeholder="💬 Type your response... (Use Ctrl+Enter to send)"
+                                              style="resize: none;"
+                                              required></textarea>
+
+                                    <div style="display: grid; grid-template-columns: 1fr;">
+                                        <button type="button" class="btn attachment-btn"
+                                            onclick="document.getElementById('id_attachments').click()"
+                                            title="Attach files 📎">
+                                            <i class="bi bi-paperclip"></i>
+                                        </button>
+
+                                        <button type="submit" class="btn submit-message-btn">
+                                            <i class="bi bi-send" title="Send"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 📎 File Input -->
+                                <input type="file"
+                                       name="attachments"
+                                       id="id_attachments"
+                                       class="form-control d-none"
+                                       multiple
+                                       accept=".png,.jpg,.jpeg,.webp,.gif,.pdf,.odt,.doc,.docx,.rtf,.txt,.py,.cs,.js,.html,.css,.json,.zip">
+
+                                <div id="techFilePreview" class="mt-2"></div>
+                            </form>
+
+                            <!-- 😊 Emoji Picker -->
+                            <div id="techEmojiPicker" class="mt-2" style="display: none;">
+                                <div class="emoji-grid p-2 rounded shadow">
+                                    <div class="row g-1">
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('😊')">😊</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('👍')">👍</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('✅')">✅</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🔧')">🔧</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('💡')">💡</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🚀')">🚀</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('⭐')">⭐</button></div>
+                                        <div class="col-auto"><button type="button" class="emoji-btn btn btn-sm" onclick="insertTechEmoji('🎉')">🎉</button></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 📊 Chat Info Sidebar -->
+                <div class="col-lg-3">
+                    <div class="card h-100" style="border-radius: 15px;">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">
+                                <i class="bi bi-info-circle"></i> Chat Information
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <dl>
+                                <dt><i class="bi bi-person"></i> Student:</dt>
+                                <dd>{{ chat.student_name }}</dd>
+
+                                <dt><i class="bi bi-clock"></i> Started:</dt>
+                                <dd>{{ chat.created_at|date:"M d, Y H:i" }}</dd>
+
+                                <dt><i class="bi bi-chat-dots"></i> Status:</dt>
+                                <dd>
+                                    <span class="badge bg-success">Active Chat</span>
+                                </dd>
+
+                                <dt><i class="bi bi-people"></i> Technicians:</dt>
+                                <dd>
+                                    {% for tech in chat.technicians.all %}
+                                        <div class="badge bg-secondary mb-1">
+                                            {{ tech.get_full_name }}
+                                        </div>
+                                    {% endfor %}
+                                </dd>
+                            </dl>
+
+                            <div class="mt-4">
+                                <h6><i class="bi bi-chat-quote"></i> Initial Request:</h6>
+                                <div class="alert alert-light small">
+                                    {{ chat.initial_message }}
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <a href="{% url 'chat:technician_dashboard' %}" class="btn btn-outline-primary">
+                                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🔒 Close Chat Modal -->
+<div class="modal fade" id="closeChatModal" tabindex="-1" aria-labelledby="closeChatModalLabel" aria-hidden="true"
+     style="position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 2147483647 !important;
+            background-color: rgba(0, 0, 0, 0.6) !important;
+            display: none;">
+    <div class="modal-dialog"
+         style="position: absolute !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                z-index: 2147483647 !important;
+                margin: 0 !important;
+                width: 90% !important;
+                max-width: 500px !important;">
+        <div class="modal-content"
+             style="z-index: 2147483647 !important;
+                    position: relative !important;
+                    background-color: #fff !important;
+                    border-radius: 0.5rem !important;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.8) !important;">
+            <div class="modal-header bg-danger text-white"
+                 style="z-index: 2147483647 !important;
+                        position: relative !important;
+                        pointer-events: auto !important;">
+                <h5 class="modal-title" id="closeChatModalLabel">
+                    <i class="bi bi-exclamation-triangle"></i> Close Chat Session
+                </h5>
+                <button type="button" class="btn-close btn-close-white nuclear-close-btn"
+                        style="z-index: 2147483647 !important;
+                               position: relative !important;
+                               pointer-events: auto !important;
+                               background-color: white !important;
+                               border-radius: 50% !important;
+                               padding: 0.5rem !important;">
+                    ❌
+                </button>
+            </div>
+            <div class="modal-body"
+                 style="z-index: 2147483647 !important;
+                        position: relative !important;
+                        pointer-events: auto !important;
+                        padding: 2rem !important;">
+                <p style="color: black;"><strong>⚠️ Warning:</strong> This action will permanently close the chat and delete all messages and files.</p>
+                <p style="color: black;">Are you sure you want to close this chat session with <strong>{{ chat.student_name }}</strong>?</p>
+            </div>
+            <div class="modal-footer"
+                 style="z-index: 2147483647 !important;
+                        position: relative !important;
+                        pointer-events: auto !important;
+                        padding: 1rem 2rem !important;">
+                <button type="button" class="btn btn-secondary nuclear-cancel-btn"
+                        style="z-index: 2147483647 !important;
+                               position: relative !important;
+                               pointer-events: auto !important;
+                               margin-right: 1rem !important;
+                               padding: 0.75rem 1.5rem !important;">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-danger nuclear-confirm-btn"
+                        style="z-index: 2147483647 !important;
+                               position: relative !important;
+                               pointer-events: auto !important;
+                               padding: 0.75rem 1.5rem !important;">
+                    <i class="bi bi-trash"></i> Close & Delete Chat
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+class AudioPlayer {
+    constructor(src, volume = 100) {
+        this.audio = new Audio(src);
+        this.audio.volume = volume / 100;
+        this.audio.preload = 'auto';
+    }
+
+    play() {
+        try {
+            this.audio.currentTime = 0;
+            this.audio.play();
+            return true;
+        } catch {
+            return false;
+        }
+    }
+}
+
+const sounds = {
+    sent: "https://csci-1100.github.io/class_resources_public/assets/audio/message-sent.mp3",
+    received: "https://csci-1100.github.io/class_resources_public/assets/audio/message-received.mp3"
+};
+
+const sentPlayer = new AudioPlayer(sounds.sent, 50);
+const receivedPlayer = new AudioPlayer(sounds.received);
+
+document.getElementById('audio-toggle').addEventListener('click', (e) => {
+    let btn = e.target;
+    let enabled = localStorage.getItem('audioEnabled') === 'true';
+
+    if (!enabled) {
+        localStorage.setItem('audioEnabled', 'true');
+        btn.textContent = '🔊 Notification Audio On';
+        btn.className = 'btn btn-sm btn-success';
+    } else {
+        localStorage.setItem('audioEnabled', 'false');
+        btn.textContent = '🔇 Notification Audio Off';
+        btn.className = 'btn btn-sm btn-outline-secondary';
+    }
+});
+
+function scrollToBottom() {
+    const container = document.getElementById('messagesContainer');
+    container.scrollTop = container.scrollHeight;
+}
+
+function toggleEmojiPicker() {
+    const picker = document.getElementById('techEmojiPicker');
+    picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+}
+
+function insertTechEmoji(emoji) {
+    const textarea = document.getElementById('id_content'); // 🔧 FIXED ID REFERENCE
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    textarea.value = text.substring(0, start) + emoji + text.substring(end);
+    textarea.focus();
+    textarea.setSelectionRange(start + emoji.length, start + emoji.length);
+    toggleEmojiPicker();
+}
+
+function insertQuickMessage(message) {
+    const textarea = document.getElementById('id_content'); // 🔧 FIXED ID REFERENCE
+    textarea.value = message;
+    textarea.focus();
+}
+
+// 📎 File preview for technician uploads
+document.getElementById('id_attachments').addEventListener('change', function(e) {
+    const preview = document.getElementById('techFilePreview');
+    preview.innerHTML = '';
+
+    for (let file of e.target.files) {
+        const fileDiv = document.createElement('div');
+        fileDiv.className = 'alert alert-success small d-flex justify-content-between align-items-center';
+        fileDiv.innerHTML = `
+            <span><i class="bi bi-paperclip"></i> ${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">
+                <i class="bi bi-x"></i>
+            </button>
+        `;
+        preview.appendChild(fileDiv);
+    }
+});
+
+// 🌊 Enhanced form submission with DEBUG
+document.getElementById('techMessageForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const textarea = document.getElementById('id_content');
+    const originalText = submitBtn.innerHTML;
+
+    // 🚨 DEBUG: Check form data
+    console.log('🔧 Form submission data:');
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
+
+    if (!textarea.value.trim()) {
+        alert('🚫 Please enter a message before sending!');
+        return;
+    }
+
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
+    submitBtn.disabled = true;
+
+    fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('📡 Server response:', data);
+
+        if (data.status === 'success') {
+            // Clear form
+            textarea.value = '';
+            document.getElementById('id_attachments').value = '';
+            document.getElementById('techFilePreview').innerHTML = '';
+            // Play notification sound
+            setTimeout(() => {
+                location.reload();
+            }, 820); // Increase timeout if using a longer notification sound
+            if (localStorage.getItem('audioEnabled') == 'true')
+                sentPlayer.play();
+        } else {
+            console.error('🚨 Form errors:', data.errors);
+            alert('❌ Error sending message: ' + JSON.stringify(data.errors));
+        }
+    })
+    .catch(error => {
+        console.error('🌊 Network error:', error);
+        alert('🌐 Network error occurred');
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+});
+
+// ⌨️ Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + Enter to send message
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('techMessageForm').dispatchEvent(new Event('submit'));
+    }
+});
+
+// 🎯 Teal-time updates
+document.addEventListener('DOMContentLoaded', function() {
+    let enabled = localStorage.getItem('audioEnabled') === 'true';
+    let btn = document.getElementById('audio-toggle');
+    if (enabled) {
+        btn.textContent = '🔊 Notification Audio On';
+        btn.className = 'btn btn-sm btn-success';
+    } else {
+        btn.textContent = '🔇 Notification Audio Off';
+        btn.className = 'btn btn-sm btn-outline-secondary';
+    }
+
+    scrollToBottom();
+
+    // 💥 NUCLEAR MODAL VARIABLES
+    const modal = document.getElementById('closeChatModal');
+    const openBtn = document.querySelector('[data-bs-target="#closeChatModal"]');
+    const closeBtn = document.querySelector('.nuclear-close-btn');
+    const cancelBtn = document.querySelector('.nuclear-cancel-btn');
+    const confirmBtn = document.querySelector('.nuclear-confirm-btn');
+
+    scrollToBottom();
+
+    // Focus on textarea
+    document.getElementById('id_content').focus();
+
+    // Auto-refresh messages every 3 seconds
+    setInterval(function() {
+        fetch(`/chat/api/messages/{{ chat.chat_id }}/`)
+            .then(response => response.json())
+            .then(data => {
+                const currentMessageCount = document.querySelectorAll('.message').length;
+
+                if (data.messages.length > currentMessageCount) {
+                    // Play notification sound
+                    setTimeout(() => {
+                        location.reload();
+                    }, 900); // Increase timeout if using a longer notification sound
+
+                    if (data.messages[currentMessageCount-1].is_from_student) {
+                        if (localStorage.getItem('audioEnabled') == 'true')
+                            receivedPlayer.play();
+                    }
+                }
+            })
+            .catch(console.error);
+    }, 3000);
+
+    // 🔥 NUCLEAR OPEN FUNCTION
+    function nuclearOpenModal() {
+        console.log('💥 NUCLEAR MODAL OPEN INITIATED');
+
+        if (modal) {
+            // Remove all other modals and backdrops
+            document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+            document.querySelectorAll('.modal.show').forEach(m => {
+                if (m !== modal) {
+                    m.style.display = 'none';
+                    m.classList.remove('show');
+                }
+            });
+
+            // Force modal to highest possible position
+            modal.style.display = 'block';
+            modal.style.zIndex = '2147483647';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+            modal.classList.add('show');
+
+            // Ensure all child elements have proper z-index
+            const allChildren = modal.querySelectorAll('*');
+            allChildren.forEach(child => {
+                child.style.zIndex = '2147483647';
+                child.style.position = 'relative';
+                child.style.pointerEvents = 'auto';
+            });
+
+            // Lock body scroll
+            document.body.style.overflow = 'hidden';
+
+            console.log('✅ NUCLEAR MODAL OPENED');
+        }
+    }
+
+    // 🌊 NUCLEAR CLOSE FUNCTION
+    function nuclearCloseModal() {
+        console.log('💀 NUCLEAR MODAL CLOSE INITIATED');
+
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+
+            // Unlock body scroll
+            document.body.style.overflow = '';
+
+            console.log('✅ NUCLEAR MODAL CLOSED');
+        }
+    }
+
+    // 🎯 NUCLEAR EVENT LISTENERS
+    if (openBtn) {
+        openBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🎯 Open button clicked');
+            nuclearOpenModal();
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('❌ Close button clicked');
+            nuclearCloseModal();
+        });
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🚫 Cancel button clicked');
+            nuclearCloseModal();
+        });
+    }
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🗑️ Confirm button clicked');
+
+            // Show loading state
+            this.innerHTML = '<i class="bi bi-hourglass-split"></i> Closing...';
+            this.disabled = true;
+
+            // Create and submit form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = window.location.href;
+
+            // Add CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+
+            // Add action
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = 'close_chat';
+            form.appendChild(actionInput);
+
+            // Submit form
+            document.body.appendChild(form);
+            form.submit();
+        });
+    }
+
+    // 🌊 CLOSE ON BACKDROP CLICK
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                console.log('🎭 Backdrop clicked');
+                nuclearCloseModal();
+            }
+        });
+    }
+
+    // 🔥 EMERGENCY FUNCTIONS
+    window.forceOpenNuclearModal = nuclearOpenModal;
+    window.forceCloseNuclearModal = nuclearCloseModal;
+
+    // 🚨 PERIODIC Z-INDEX ENFORCEMENT
+    setInterval(function() {
+        if (modal && modal.classList.contains('show')) {
+            modal.style.zIndex = '2147483647';
+            const allChildren = modal.querySelectorAll('*');
+            allChildren.forEach(child => {
+                child.style.zIndex = '2147483647';
+                child.style.pointerEvents = 'auto';
+            });
+        }
+    }, 500);
+});
+</script>
+{% endblock %}

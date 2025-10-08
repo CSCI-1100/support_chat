@@ -1,0 +1,443 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block title %}📅 Manage Schedule - 💬 Chat Support{% endblock %}
+
+{% block extra_css %}
+<style>
+.schedule-card {
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.schedule-card.active {
+    border-color: #28a745;
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(32, 201, 151, 0.1));
+}
+
+.schedule-card.inactive {
+    border-color: #6c757d;
+    background: rgba(108, 117, 125, 0.1);
+}
+
+.day-header {
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 1rem;
+    border-radius: 15px 15px 0 0;
+}
+
+.day-header.active {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    color: white;
+}
+
+.day-header.inactive {
+    background: #6c757d;
+    color: white;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.status-available { background: #28a745; }
+.status-unavailable { background: #dc3545; }
+.status-override { background: #ffc107; }
+
+.preset-selector {
+    background: linear-gradient(135deg, #3695fb, #0d5eb5);
+    color: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.current-status {
+    background: linear-gradient(135deg, #17a2b8, #117a8b);
+    color: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+}
+
+.override-item {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid #ffc107;
+    border-radius: 10px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .schedule-grid {
+        display: block;
+    }
+    
+    .schedule-card {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 📡 Messages -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-triangle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-calendar-check"></i> Helpdesk Schedule Management</h2>
+            <p class="text-muted"><span>Configure when live chat support is available</span></p>
+        </div>
+    </div>
+
+    <!-- Current Status -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="current-status">
+                <h5><i class="bi bi-clock"></i> Current Status</h5>
+                <div class="d-flex align-items-center">
+                    <span class="status-indicator {% if is_currently_available %}status-available{% else %}status-unavailable{% endif %}"></span>
+                    <span class="me-3">{{ availability_message }}</span>
+                    {% if not is_currently_available %}
+                        <small>Next available: {{ next_available }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Upcoming Overrides</h6>
+                </div>
+                <div class="card-body">
+                    {% for override in upcoming_overrides %}
+                        <div class="override-item">
+                            <strong>{{ override.date|date:"M d" }}</strong><br>
+                            <small>{{ override.reason }}</small>
+                        </div>
+                    {% empty %}
+                        <small class="text-muted"><span>No upcoming overrides</span></small>
+                    {% endfor %}
+                    <a href="{% url 'manage_schedule_overrides' %}" class="btn btn-sm btn-outline-primary mt-2">
+                        <i class="bi bi-plus-circle"></i> Manage Overrides
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Preset Selector -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="preset-selector">
+                <h5><i class="bi bi-lightning"></i> Quick Presets</h5>
+                <form method="post" id="bulkScheduleForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="bulk_action" value="1">
+                    
+                    <div class="row align-items-end">
+                        <div class="col-md-4">
+                            <label for="{{ bulk_form.preset.id_for_label }}" class="forms-label text-white">Preset Schedule</label>
+                            {{ bulk_form.preset }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="forms-label text-white">Apply to Days</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for choice in bulk_form.apply_to_days %}
+                                    <div class="form-check form-check-inline">
+                                        {{ choice.tag }}
+                                        <label class="form-check-label text-white" for="{{ choice.id_for_label }}">
+                                            {{ choice.choice_label }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-light">
+                                <i class="bi bi-check2-all"></i> Apply
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Schedule Grid -->
+    <div class="row">
+        <div class="col-12">
+            <h4><i class="bi bi-calendar-week"></i> Weekly Schedule</h4>
+            <div class="schedule-grid row g-3">
+                {% for schedule in schedules %}
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="schedule-card {% if schedule.is_active %}active{% else %}inactive{% endif %}" 
+                             data-day="{{ schedule.day_of_week }}">
+                            
+                            <div class="day-header {% if schedule.is_active %}active{% else %}inactive{% endif %} text-center">
+                                <i class="bi bi-{% if schedule.is_active %}check-circle{% else %}x-circle{% endif %}"></i>
+                                {{ schedule.get_day_of_week_display }}
+                            </div>
+                            
+                            <div class="card-body">
+                                <form class="day-schedule-form" data-day="{{ schedule.day_of_week }}">
+                                    {% csrf_token %}
+                                    
+                                    <!-- Active Toggle -->
+                                    <div class="form-check mb-3">
+                                        <input type="checkbox" 
+                                               class="form-check-input day-active-checkbox" 
+                                               id="active_{{ schedule.day_of_week }}"
+                                               name="is_active"
+                                               data-day="{{ schedule.day_of_week }}"
+                                               {% if schedule.is_active %}checked{% endif %}>
+                                        <label class="form-check-label fw-bold" for="active_{{ schedule.day_of_week }}">
+                                            Support Available
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- Time Inputs -->
+                                    <div class="time-input-group" id="times_{{ schedule.day_of_week }}" 
+                                         {% if not schedule.is_active %}style="display: none;"{% endif %}>
+                                        
+                                        <div class="mb-3">
+                                            <label class="forms-label">Start Time</label>
+                                            <input type="time" 
+                                                   class="form-control" 
+                                                   name="start_time"
+                                                   value="{% if schedule.start_time %}{{ schedule.start_time|time:'H:i' }}{% endif %}"
+                                                   step="900">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="forms-label">End Time</label>
+                                            <input type="time" 
+                                                   class="form-control" 
+                                                   name="end_time"
+                                                   value="{% if schedule.end_time %}{{ schedule.end_time|time:'H:i' }}{% endif %}"
+                                                   step="900">
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary btn-sm w-100">
+                                            <i class="bi bi-check2"></i> Save
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Hidden fields -->
+                                    <input type="hidden" name="day_of_week" value="{{ schedule.day_of_week }}">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Schedule Summary -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-list-check"></i> Current Schedule Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for schedule in schedules %}
+                            <div class="col-md-6 col-lg-4 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <span class="status-indicator {% if schedule.is_active %}status-available{% else %}status-unavailable{% endif %}"></span>
+                                    <strong>{{ schedule.get_day_of_week_display }}:</strong>
+                                    <span class="ms-2">
+                                        {% if schedule.is_active and schedule.start_time and schedule.end_time %}
+                                            {{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}
+                                        {% elif schedule.is_active %}
+                                            Active (no time limits)
+                                        {% else %}
+                                            Closed
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Handle active checkbox changes
+    document.querySelectorAll('.day-active-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const day = this.dataset.day;
+            const timesContainer = document.getElementById(`times_${day}`);
+            const card = this.closest('.schedule-card');
+            const header = card.querySelector('.day-header');
+            const icon = header.querySelector('i');
+            
+            if (this.checked) {
+                timesContainer.style.display = 'block';
+                card.classList.remove('inactive');
+                card.classList.add('active');
+                header.classList.remove('inactive');
+                header.classList.add('active');
+                icon.className = 'bi bi-check-circle';
+            } else {
+                timesContainer.style.display = 'none';
+                card.classList.remove('active');
+                card.classList.add('inactive');
+                header.classList.remove('active');
+                header.classList.add('inactive');
+                icon.className = 'bi bi-x-circle';
+                
+                // Auto-save when disabling
+                submitDaySchedule(day);
+            }
+        });
+    });
+    
+    // Handle form submissions
+    document.querySelectorAll('.day-schedule-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const day = this.dataset.day;
+            submitDaySchedule(day);
+        });
+    });
+    
+    function submitDaySchedule(day) {
+        const form = document.querySelector(`.day-schedule-form[data-day="${day}"]`);
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+            submitBtn.disabled = true;
+        }
+        
+        fetch(`/accounts/schedule/update/${day}/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                showNotification(data.message, 'success');
+                
+                // Update schedule summary if needed
+                updateScheduleSummary();
+            } else {
+                showNotification(data.message || 'Error saving schedule', 'error');
+                console.error('Validation errors:', data.errors);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Network error occurred', 'error');
+        })
+        .finally(() => {
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="bi bi-check2"></i> Save';
+                submitBtn.disabled = false;
+            }
+        });
+    }
+    
+    function showNotification(message, type) {
+        // Create a temporary alert
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+        alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alert);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.remove();
+            }
+        }, 5000);
+    }
+    
+    function updateScheduleSummary() {
+        // Refresh the current status
+        fetch('/accounts/schedule/status/')
+            .then(response => response.json())
+            .then(data => {
+                // Update status indicator and message
+                const statusIndicator = document.querySelector('.current-status .status-indicator');
+                const statusMessage = document.querySelector('.current-status span:not(.status-indicator)');
+                
+                if (statusIndicator && statusMessage) {
+                    statusIndicator.className = `status-indicator ${data.is_available ? 'status-available' : 'status-unavailable'}`;
+                    statusMessage.textContent = data.message;
+                }
+            })
+            .catch(console.error);
+    }
+    
+    // Handle preset selector
+    const presetSelector = document.getElementById('id_preset');
+    if (presetSelector) {
+        presetSelector.addEventListener('change', function() {
+            // Auto-select appropriate days based on preset
+            const preset = this.value;
+            const dayCheckboxes = document.querySelectorAll('input[name="apply_to_days"]');
+            
+            // Clear all selections first
+            dayCheckboxes.forEach(cb => cb.checked = false);
+            
+            if (preset === 'business_hours' || preset === 'extended_hours' || preset === 'finals_week') {
+                // Select Monday-Friday (0-4)
+                dayCheckboxes.forEach(cb => {
+                    if (['0', '1', '2', '3', '4'].includes(cb.value)) {
+                        cb.checked = true;
+                    }
+                });
+            } else if (preset === 'weekend_support') {
+                // Select Saturday-Sunday (5-6)  
+                dayCheckboxes.forEach(cb => {
+                    if (['5', '6'].includes(cb.value)) {
+                        cb.checked = true;
+                    }
+                });
+            } else if (preset === 'all_closed') {
+                // Select all days
+                dayCheckboxes.forEach(cb => cb.checked = true);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

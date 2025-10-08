@@ -1,0 +1,65 @@
+{% extends '../base.html' %}
+
+{% block title %}Delete User - 💬 Chat Support{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h2 class="card-title m-0">Confirm User Deletion</h2>
+            </div>
+            <div class="card-body d-flex flex-column gap-3">
+                <div class="lead">Are you sure you want to delete the following user?</div>
+                
+                <div class="alert alert-warning d-flex flex-column gap-2">
+                    <div class="row"><span class="col-4 col-xl-2"><strong>Username:</strong></span><span class="col-8 col-xl-10">{{ user_to_delete.username }}</span></div>
+                    <div class="row"><span class="col-4 col-xl-2"><strong>Name:</strong></span><span class="col-8 col-xl-10">{{ user_to_delete.get_full_name }}</span></div>
+                    <div class="row"><span class="col-4 col-xl-2"><strong>Email:</strong></span><span class="col-8 col-xl-10">{{ user_to_delete.email }}</span></div>
+                    <div class="row"><span class="col-4 col-xl-2"><strong>Type:</strong></span><span class="col-8 col-xl-10">{{ user_to_delete.get_user_type_display }}</span></div>
+                </div>
+                
+                <div><span class="text-warning-emphasis"><strong>Warning:</strong></span> This action cannot be undone. The user account will be permanently deleted.</div>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="confirm_delete">
+                    <div class="d-flex gap-1 justify-content-end">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i>
+                            Delete User
+                        </button>
+                        <a href="{% url 'manage_users' %}" class="btn bttn-outline-edit">
+                            <i class="bi bi-box-arrow-left"></i>
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle technician select activation/deactivation
+    const reassignRadio = document.getElementById('reassign');
+    const unassignRadio = document.getElementById('unassign');
+    const technicianSelect = document.getElementById('new_technician');
+    
+    if (reassignRadio && unassignRadio && technicianSelect) {
+        function updateSelectState() {
+            technicianSelect.disabled = !reassignRadio.checked;
+        }
+        
+        // Initial state
+        updateSelectState();
+        
+        // Add event listeners
+        reassignRadio.addEventListener('change', updateSelectState);
+        unassignRadio.addEventListener('change', updateSelectState);
+    }
+});
+</script>
+{% endblock %}
