@@ -328,7 +328,57 @@ bash
     sudo systemctl enable support_chat
 ```
 
-16. **Troubleshooting**
+## Security Considerations
+
+- Always use strong secret keys in production
+- Enable HTTPS with TLS certificates
+- Keep Django and dependencies updated
+- Regular database backups recommended
+- File uploads are validated and sanitized
+- CSRF protection enabled
+- Session hijacking protection via HTTP-only cookies
+
+## Troubleshooting
+
+### Static files not loading in production
+
+bash
+
+```bash
+python manage.py collectstatic --clear --noinput
+sudo systemctl restart support_chat
+```
+
+### Database connection issues
+
+Check environment variables and PostgreSQL service status:
+
+bash
+
+```bash
+sudo systemctl status postgresql
+```
+
+### Gunicorn socket errors
+
+bash
+
+```bash
+sudo systemctl status support_chat.socket
+sudo systemctl status support_chat.service
+sudo journalctl -u support_chat.service
+```
+
+### Permission issues with media files
+
+bash
+
+```bash
+sudo chown -R www-data:www-data /var/www/media
+sudo chmod -R 755 /var/www/media
+```
+
+## General problems with services
 
 Check the status of services using `systemctl status`. When you see errors, use `journalctl`
 for more info. To ensure you can read logs with `journalctl` add your server's user account
@@ -342,3 +392,6 @@ groups username
 Let's say, for example, that when you run `systemctl status gunicorn`, you find that it exited
 with an error. You can then check the log `journalctl -e -u gunicorn` to figure out more detail
 so you can search the error and correct it.
+
+Use the systemctl `start`, `stop`, and `restart` to start and stop services.
+Use `sudo systemctl daemon-reload` after you make a change to an enabled service file.
