@@ -217,8 +217,6 @@ Located in `settings.py` and `settings_dev.py`:
 
 ### Running Tests
 
-bash
-
 ```bash
 python manage.py test --settings=support_chat.settings_dev
 ```
@@ -227,18 +225,13 @@ python manage.py test --settings=support_chat.settings_dev
 
 The `dev_runserver.sh` script automatically uses development settings:
 
-bash
-
 ```bash
-chmod +x dev_runserver.sh
 ./dev_runserver.sh
 ```
 
 ### Database Migrations
 
 When making model changes:
-
-bash
 
 ```bash
 python manage.py makemigrations --settings=support_chat.settings_dev
