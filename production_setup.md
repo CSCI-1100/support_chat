@@ -380,7 +380,7 @@ sudo chown -R www-data:www-data /var/www/media
 sudo chmod -R 755 /var/www/media
 ```
 
-## General problems with services
+### General problems with services
 
 Check the status of services using `systemctl status`. When you see errors, use `journalctl`
 for more info. To ensure you can read logs with `journalctl` add your server's user account
