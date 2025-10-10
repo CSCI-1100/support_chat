@@ -1,18 +1,18 @@
 # Support Chat Production Setup Guide
 
-1. **Install production dependencies**
+## 1. **Install production dependencies**
 
 ```bash
    pip install -r requirements_prod.txt
 ```
 
-2. **Create environment file**
+## 2. **Create environment file**
 
 ```bash
    cp .env.example .env
 ```
 
-3. **Configure environment variables in `.env`**
+## 3. **Configure environment variables in `.env`**
 
 ```bash
    SUPPORT_CHAT_SECRET_KEY=your-secret-key-here
@@ -24,7 +24,7 @@
    SUPPORT_CHAT_DB_PORT=5432
 ```
 
-4. **Set up PostgreSQL database**
+## 4. **Set up PostgreSQL database**
 
 ```bash
    sudo -u postgres psql
@@ -38,13 +38,13 @@
    \q
 ```
 
-5. **Run migrations**
+## 5. **Run migrations**
 
 ```bash
    python manage.py migrate
 ```
 
-6. **Create initial system manager**
+## 6. **Create initial system manager**
 
 ```bash
    python manage.py create_system_manager \
@@ -52,13 +52,15 @@
        "First" "Last" "System Manager" "Computing"
 ```
 
-7. **Collect static files**
+## 7. **Collect static files**
 
 ```bash
    python manage.py collectstatic --noinput
 ```
 
-8. **Configure Gunicorn systemd service** Create `/etc/systemd/system/support_chat.socket`:
+## 8. **Configure Gunicorn systemd service**
+
+Create `/etc/systemd/system/support_chat.socket`:
 
 ```ini
    [Unit]
@@ -94,7 +96,7 @@ Create `/etc/systemd/system/support_chat.service`:
    WantedBy=multi-user.target
 ```
 
-9. **Configure Nginx** Create `/etc/nginx/sites-available/support_chat`:
+## 9. **Configure Nginx** Create `/etc/nginx/sites-available/support_chat`:
 
 ```nginx
    server {
@@ -122,8 +124,6 @@ Create `/etc/systemd/system/support_chat.service`:
 
 Enable the site:
 
-bash
-
 ```bash
    sudo ln -s /etc/nginx/sites-available/support_chat /etc/nginx/sites-enabled
    sudo nginx -t
@@ -133,7 +133,8 @@ bash
 
 * NOTE: This might not work unless you run `sudo ufw allow 'Nginx HTTP'` (assuming you use Uncomplicated Firewall/ufw)
 
-10.  **Configure your web domain (if not already done)**
+## 10.  **Configure your web domain (if not already done)**
+
 Log into domain registrar site and go to DNS settings.
 Find out [which nameservers your Domain Registrar uses](https://www.bluehost.com/help/article/modify-nameservers-other-registrars).
 
@@ -173,7 +174,8 @@ your Nginx configuration will basically be able to accept traffic arriving
 at your domain name on port 80 (otherwise, Nginx would need your public IP
 address in the server_name field).
 
-11. **Set Up HTTPS**!
+## 11. **Set Up HTTPS**!
+
 Of course, you can't log in and interact securely over port 80, so you will next
 need to encrypt your shit. I HATE setting up TLS and writing all the Nginx
 configuration, so I use certbot to make my life easy! Here's a rundown:
@@ -210,7 +212,7 @@ sudo systemctl status certbot.timer
 sudo certbot renew --dry-run
 ```
 
-12. **Secure SSH**
+## 12. **Secure SSH**
 
 **Create an RSA keypair**
 
@@ -272,7 +274,7 @@ machine to your server. Make sure you have some backup way of getting into your 
 admin console or something) in case you bork your local machine or bork your server's ssh service or
 something.
 
-13. **Configure Fail2Ban**
+## 13. **Configure Fail2Ban**
 
 You should set up fail2ban to monitor any exposed ports (like 443 and your SSH port).
 Just find a tutorial. I'm too lazy and not a cybersecurity professional.
@@ -290,7 +292,7 @@ sudo systemctl restart fail2ban
 systemctl status fail2ban
 
 
-14. **Increase the SSH Timeout**
+## 14. **Increase the SSH Timeout**
 
 Servers apparently have a default timeout of about 15 minutes. This is not
 good if you are running a major system upgrade. I have had an upgrade
@@ -317,7 +319,7 @@ apply your changes:
 
 `sudo systemctl restart ssh`
 
-15. **Start and enable services**
+## 15. **Start and enable services**
 
 bash
 
