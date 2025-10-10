@@ -7,3 +7,4 @@ staticfiles/
 .DS_Store
 .venv
 .env
+!.env.example
