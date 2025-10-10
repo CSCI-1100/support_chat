@@ -46,16 +46,12 @@ support_chat/
 
 1. **Clone the repository**
 
-bash
-
 ```bash
    git clone <repository-url>
    cd support_chat
 ```
 
 2. **Create a virtual environment**
-
-bash
 
 ```bash
    python -m venv .venv
@@ -64,23 +60,17 @@ bash
 
 3. **Install dependencies**
 
-bash
-
 ```bash
    pip install -r requirements.txt
 ```
 
 4. **Run migrations**
 
-bash
-
 ```bash
    python manage.py migrate --settings=support_chat.settings_dev
 ```
 
 5. **Create a system manager account**
-
-bash
 
 ```bash
    python manage.py create_system_manager \
@@ -96,15 +86,11 @@ bash
 
 6. **Initialize default schedule (optional)**
 
-bash
-
 ```bash
    python manage.py init_schedule --settings=support_chat.settings_dev
 ```
 
 7. **Run the development server**
-
-bash
 
 ```bash
    ./dev_runserver.sh
@@ -125,16 +111,12 @@ See [Production Setup Guide](./production_setup.md)
 
 ### Create System Manager
 
-bash
-
 ```bash
 python manage.py create_system_manager [--settings=support_chat.settings_dev] \
     username email@etsu.edu password "First" "Last" "Job Title" "Departments"
 ```
 
 ### Initialize Default Schedule
-
-bash
 
 ```bash
 # Business hours (9 AM - 4:30 PM, Mon-Fri)
@@ -151,8 +133,6 @@ python manage.py init_schedule --force [--settings=support_chat.settings_dev]
 ```
 
 ### Clean Up Old Chats
-
-bash
 
 ```bash
 # Delete closed chats older than 7 days (dry run)
