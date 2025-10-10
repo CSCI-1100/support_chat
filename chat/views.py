@@ -10,13 +10,13 @@ import mimetypes
 
 
 def chat_landing(request):
-    # 🚨 CRITICAL: ENSURE SESSION EXISTS BEFORE ANYTHING
+    # Ensure session created when they land on site
     if not request.session.session_key:
         request.session.create()
-        # 💫 Force session to persist
+        # Make session persist
         request.session.modified = True
 
-    # 📅 Check current availability status
+    # Check current availability status
     is_available, availability_message = HelpdeskSchedule.is_currently_available()
 
     # Check for schedule override
@@ -26,14 +26,13 @@ def chat_landing(request):
     if request.method == 'POST':
         form = ChatStartForm(request.POST)
         if form.is_valid():
-            # ✨ QUANTUM CHAT MATERIALIZATION ✨
             chat = ChatSession.objects.create(
                 student_name=form.cleaned_data['student_name'],
                 initial_message=form.cleaned_data['initial_message'],
                 student_session_key=request.session.session_key
             )
 
-            # 🎯 Create initial system message with availability context
+            # Create initial system message with availability context
             if is_available:
                 system_message = f"💬 Chat started by {chat.student_name}. Support is currently available!"
             else:
@@ -48,7 +47,7 @@ def chat_landing(request):
                 message_type='system'
             )
 
-            # 📡 Student's initial transmission
+            # Student's initial chat
             ChatMessage.objects.create(
                 chat=chat,
                 sender_name=chat.student_name,
@@ -56,7 +55,7 @@ def chat_landing(request):
                 is_from_student=True
             )
 
-            # 📅 Add schedule context message if offline
+            # Add schedule context message if offline
             if not is_available:
                 next_available = HelpdeskSchedule.get_next_available_time()
                 ChatMessage.objects.create(
@@ -75,7 +74,7 @@ def chat_landing(request):
     else:
         form = ChatStartForm()
 
-    # 📊 Get schedule context for template
+    # Get schedule context for template
     context = {
         'form': form,
         'is_available': is_available,
@@ -88,10 +87,8 @@ def chat_landing(request):
 
 
 def student_chat(request, chat_id):
-    """👨‍🎓 STUDENT CONSCIOUSNESS INTERFACE - FIXED WITH SCHEDULE AWARENESS"""
     chat = get_object_or_404(ChatSession, chat_id=chat_id)
 
-    # 🔐 ENHANCED QUANTUM ACCESS VALIDATION
     current_session = request.session.session_key
 
     # If no session exists, create one
@@ -99,7 +96,6 @@ def student_chat(request, chat_id):
         request.session.create()
         current_session = request.session.session_key
 
-    # 🌊 FLEXIBLE ACCESS LOGIC
     access_granted = False
 
     if chat.student_session_key == current_session:
@@ -114,7 +110,7 @@ def student_chat(request, chat_id):
         messages.error(request, '🚫 Access denied to this chat dimension')
         return redirect('chat:landing')
 
-    # 📅 Check current availability for messaging context
+    # Check current availability for messaging context
     is_available, availability_message = HelpdeskSchedule.is_currently_available()
 
     if request.method == 'POST':
@@ -131,7 +127,7 @@ def student_chat(request, chat_id):
                     is_from_student=True
                 )
 
-                # 📎 Handle dimensional attachments
+                # Handle chat attachments
                 files = request.FILES.getlist('attachments')
                 for file in files:
                     attachment = ChatAttachment.objects.create(
@@ -186,10 +182,8 @@ def student_chat(request, chat_id):
 
 @login_required
 def technician_dashboard(request):
-    """🔧 TECHNICIAN COMMAND CENTER WITH SCHEDULE AWARENESS"""
     User = get_user_model()
 
-    # 🌊 Quantum chat stream analysis
     waiting_chats = ChatSession.objects.filter(status=ChatStatus.WAITING).order_by('-created_at')
     active_chats = ChatSession.objects.filter(
         status=ChatStatus.ACTIVE,
@@ -262,7 +256,7 @@ def join_chat(request, chat_id):
 def technician_chat(request, chat_id):
     chat = get_object_or_404(ChatSession, chat_id=chat_id)
 
-    # 🔐 Verify technician access
+    # Verify technician access
     if request.user not in chat.technicians.all():
         messages.error(request, '🚫 Access denied - you are not part of this chat')
         return redirect('chat:technician_dashboard')
@@ -302,11 +296,10 @@ def technician_chat(request, chat_id):
                 })
 
         elif action == 'close_chat':
-            # 🔒 DIMENSIONAL CLOSURE PROTOCOL
             chat.status = ChatStatus.CLOSED
             chat.save()
 
-            # 💥 QUANTUM DELETION CASCADE
+            # Remove chat attachments and messages
             chat.attachments.all().delete()  # Files auto-deleted by Django
             chat.messages.all().delete()
             chat.delete()
@@ -314,26 +307,24 @@ def technician_chat(request, chat_id):
             messages.success(request, f'🔒 Chat {chat_id} has been closed and purged from the aether')
             return redirect('chat:technician_dashboard')
 
-    # 🌟 CRITICAL FIX: Always create fresh form instance
     message_form = ChatMessageForm()
 
     context = {
         'chat': chat,
         'messages': chat.messages.all().order_by('timestamp'),
-        'form': message_form,  # 🔑 KEY CHANGE: Use 'form' not 'message_form'
+        'form': message_form,
         'other_technicians': chat.technicians.exclude(id=request.user.id)
     }
 
     return render(request, 'chat/technician_chat.html', context)
 
-# 🌊 REAL-TIME QUANTUM ENDPOINTS 🌊
+# ================================== API ENDPOINTS =================================
 
 @require_http_methods(["GET"])
 def chat_messages_api(request, chat_id):
-    """📡 Real-time message stream API"""
     chat = get_object_or_404(ChatSession, chat_id=chat_id)
 
-    # 🔐 Access validation
+    # Access validation
     is_student = chat.student_session_key == request.session.session_key
     is_technician = request.user.is_authenticated and request.user in chat.technicians.all()
 
@@ -369,10 +360,8 @@ def chat_messages_api(request, chat_id):
 
 @require_http_methods(["GET"])
 def download_attachment(request, attachment_id):
-    """📎 Dimensional file retrieval"""
     attachment = get_object_or_404(ChatAttachment, id=attachment_id)
 
-    # 🔐 Quantum access verification
     chat = attachment.chat
     is_student = chat.student_session_key == request.session.session_key
     is_technician = request.user.is_authenticated and request.user in chat.technicians.all()
