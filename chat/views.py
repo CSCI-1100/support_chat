@@ -119,7 +119,6 @@ def student_chat(request, chat_id):
         if action == 'send_message':
             message_form = ChatMessageForm(request.POST, request.FILES)
             if message_form.is_valid() and chat.status != ChatStatus.STUDENT_LEFT:
-                # 📡 Transmit student consciousness
                 message = ChatMessage.objects.create(
                     chat=chat,
                     sender_name=chat.student_name,
@@ -289,7 +288,6 @@ def technician_chat(request, chat_id):
 
                 return JsonResponse({'status': 'success'})
             else:
-                # 🚨 Return form errors for debugging
                 return JsonResponse({
                     'status': 'error',
                     'errors': message_form.errors.as_json()
