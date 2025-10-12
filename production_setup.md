@@ -321,8 +321,6 @@ apply your changes:
 
 ## 15. **Start and enable services**
 
-bash
-
 ```bash
     sudo systemctl start support_chat.socket
     sudo systemctl enable support_chat.socket
@@ -344,8 +342,6 @@ bash
 
 ### Static files not loading in production
 
-bash
-
 ```bash
 python manage.py collectstatic --clear --noinput
 sudo systemctl restart support_chat
@@ -355,15 +351,11 @@ sudo systemctl restart support_chat
 
 Check environment variables and PostgreSQL service status:
 
-bash
-
 ```bash
 sudo systemctl status postgresql
 ```
 
 ### Gunicorn socket errors
-
-bash
 
 ```bash
 sudo systemctl status support_chat.socket
@@ -372,8 +364,6 @@ sudo journalctl -u support_chat.service
 ```
 
 ### Permission issues with media files
-
-bash
 
 ```bash
 sudo chown -R www-data:www-data /var/www/media
