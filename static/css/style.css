@@ -116,30 +116,6 @@
 /* --------- End Text Colors --------- */
 
 /* ----------- Start Buttons ---------- */
-.bttn-primary {
-    display: inline-block;
-    justify-content: center;
-    vertical-align: middle;
-    align-items: center;
-    text-align: center;
-    background: linear-gradient(45deg, #2080ca 0%, #26ccd5 100%);
-    color: white!important;
-    border: none;
-    border-radius: 15px;
-    font-weight: 500;
-    font-size: 1.2rem;
-    padding: 0.4rem 0.26rem;
-    transition-duration: 0.2s;
-    cursor: pointer;
-}
-
-.bttn-primary:hover {
-    text-decoration: none;
-    background: linear-gradient(123deg, #2080ca 30%, #26ccd5 70%);
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;
-    color: white!important;
-}
-
 .bttn-warning {
     background-color: hsl(var(--clr-putty-yellow))!important;
     color: #212529!important;
