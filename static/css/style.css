@@ -117,13 +117,21 @@
 
 /* ----------- Start Buttons ---------- */
 .bttn-primary {
-    transition: 1s background;
-    background: linear-gradient(45deg, #398ccc 0%, #26ccd5 100%);
-    color: white!important;
+    border: 1px solid white;
+    background: linear-gradient(45deg, #2080ca 0%, #26ccd5 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 9px 12px 9px 12px;
+    font-weight: 600;
+    font-size: 1.3rem;
+    text-align: center;
+    transition-duration: 0.2s;
+    cursor: pointer;
 }
 
 .bttn-primary:hover {
-    background: linear-gradient(123deg, #398ccc 30%, #26ccd5 70%);
+    text-decoration: none;
+    background: linear-gradient(123deg, #2080ca 30%, #26ccd5 70%);
     color: white!important;
 }
 
