@@ -1,6 +1,6 @@
 # Support Chat - Django Live Chat Application
 
-See it deployed at: https://classmanager.co/chat/
+| See it deployed at: https://classmanager.co/chat/
 A real-time chat support system built with Django for CSCI 1100 course assistants to provide live help to students.
 
 <img src="./assets/showcase.png" alt="Support Chat showcase" width="700">
