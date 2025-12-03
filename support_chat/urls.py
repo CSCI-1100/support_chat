@@ -3,6 +3,9 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import redirect
+from chat import views
+
+handler404 = 'chat.views.handle_404'
 
 def smart_root_redirect(request):
     """🧠 Intelligent routing based on user type"""

@@ -496,15 +496,15 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <!-- Status badge -->
                                     {% if chat.status == 'WAIT' %}
-                                        <span class="status-badge bg-warning text-dark">
+                                        <span class="status-badge bg-warning text-dark p-2 rounded-4">
                                             <i class="bi bi-hourglass-split"></i> ⏳ Waiting for course assistant...
                                         </span>
                                     {% elif chat.status == 'ACTV' %}
-                                        <span class="status-badge text-dark" style="background: linear-gradient(145deg, #acfabf, #a0e1af);">
+                                        <span class="status-badge text-dark p-2 rounded-4" style="background: linear-gradient(145deg, #acfabf, #a0e1af);">
                                             <i class="bi bi-person-check"></i> 🔧 Assistant connected!
                                         </span>
                                     {% elif chat.status == 'LEFT' %}
-                                        <span class="status-badge bg-secondary">
+                                        <span class="status-badge bg-secondary p-2 rounded-4">
                                             <i class="bi bi-door-open"></i> 👋 You left the chat
                                         </span>
                                     {% endif %}

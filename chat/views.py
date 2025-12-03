@@ -370,3 +370,7 @@ def download_attachment(request, attachment_id):
     response = HttpResponse(attachment.file.read(), content_type=attachment.mime_type)
     response['Content-Disposition'] = f'attachment; filename="{attachment.original_filename}"'
     return response
+
+# ================================== 404 HANDLER =================================
+def handle_404(request, exception):
+    return redirect('chat:landing')
