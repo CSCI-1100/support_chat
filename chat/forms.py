@@ -83,7 +83,7 @@ class ChatMessageForm(forms.Form):
                     # 🖼️ Images
                     'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp',
                     # 📄 Documents  
-                    'doc', 'docx', 'odp', 'ods', 'odt', 'pdf', 'txt', 'rtf', 'xls', 'xlsx'
+                    'doc', 'docx', 'odp', 'ods', 'odt', 'pdf', 'txt', 'rtf', 'xls', 'xlsx',
                     # 💾 Code & Data
                     'py', 'js', 'html', 'css', 'json', 'csv',
                     # 🎵 Media
