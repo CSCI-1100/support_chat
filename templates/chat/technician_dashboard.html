@@ -35,7 +35,7 @@
 }
 
 .new-chat-alert {
-    background: linear-gradient(45deg, rgba(240, 85, 85, 0.8), rgba(240, 187, 72, 0.8));
+    background: linear-gradient(45deg, rgba(250, 84, 145, 0.55), rgba(240, 187, 72, 0.55));
     border-radius: 10px;
     animation: glow 2s ease-in-out infinite alternate;
 }
@@ -59,17 +59,15 @@
 
 .chat-timestamp {
     font-size: 0.8rem;
-    color: #ffffff;
 }
 
 .notification-badge {
     background: #ff6b6b;
     color: white;
     border-radius: 50%;
-    padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0.7rem;
     font-size: 0.75rem;
     position: absolute;
-    top: -8px;
     right: -8px;
 }
 </style>
@@ -135,7 +133,8 @@
                 <!-- Waiting Queue -->
                 <div class="col-lg-6 mb-4">
                     <div class="card chat-item h-100">
-                        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                        <div class="card-header text-white d-flex justify-content-between align-items-center"
+                         style="background: linear-gradient(135deg, rgba(250, 84, 145, 0.9), rgba(240, 187, 72, 0.9));">
                             <h5 class="mb-0">
                                 <i class="bi bi-hourglass-split"></i> Students Waiting for Help
                             </h5>
@@ -180,7 +179,8 @@
                 <!-- Active Chats -->
                 <div class="col-lg-6 mb-4">
                     <div class="card chat-item h-100">
-                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <div class="card-header text-white d-flex justify-content-between align-items-center"
+                            style="background: linear-gradient(135deg, #58b86b, #6bcf7f);">
                             <h5 class="mb-0">
                                 <i class="bi bi-chat-dots"></i> Your Active Chats
                             </h5>

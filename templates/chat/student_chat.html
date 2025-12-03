@@ -9,6 +9,7 @@
     .chat-container {
         background-color: none;
         border-radius: 20px;
+        border: 1px solid #5484d2;
         display: flex;
         flex-direction: column;
     }
@@ -193,7 +194,7 @@
     }
 
     .student-input-group {
-        background: rgba(255, 255, 255, 0.1);
+        background: #1adcfe61;
         border-bottom-left-radius: 25px;
         border-bottom-right-radius: 25px;
         padding: 0.5rem;
@@ -215,8 +216,8 @@
     }
 
     .emoji-btn {
-        background: linear-gradient(135deg, #f6e1b4, #7de8fb);
-        border: none;
+        background: linear-gradient(135deg, #f6e1b4cc, #a9f0fc80);
+        border: 1px solid #39befb;
         font-size: 1.3rem;
         padding: 0.5rem;
         border-radius: 45%;
@@ -228,7 +229,7 @@
     /* Button responsive behavior */
     .submit-message-btn {
         background: linear-gradient(45deg, #007bff 0%, #3995f8 100%);
-        border: 1px solid #6c757d;
+        border: 1px solid #39befb;
         border-top-left-radius: 0px;
         border-bottom-left-radius: 0px;
         border-bottom-right-radius: 0px;
@@ -242,7 +243,7 @@
 
     .attachment-btn {
         background: linear-gradient(45deg, #007bff 0%, #3995f8 100%);
-        border: 1px solid #6c757d;
+        border: 1px solid #39befb;
         border-top-left-radius: 0px;
         border-top-right-radius: 0px;
         border-bottom-left-radius: 0px;
@@ -497,11 +498,11 @@
                                     <!-- Status badge -->
                                     {% if chat.status == 'WAIT' %}
                                         <span class="status-badge bg-warning text-dark p-2 rounded-4">
-                                            <i class="bi bi-hourglass-split"></i> ⏳ Waiting for course assistant...
+                                            <i class="bi bi-hourglass-split"></i> Waiting for course assistant...
                                         </span>
                                     {% elif chat.status == 'ACTV' %}
-                                        <span class="status-badge text-dark p-2 rounded-4" style="background: linear-gradient(145deg, #acfabf, #a0e1af);">
-                                            <i class="bi bi-person-check"></i> 🔧 Assistant connected!
+                                        <span class="status-badge text-dark p-2 rounded-4" style="background-color: #acfabf;">
+                                            <i class="bi bi-person-check"></i> Assistant connected!
                                         </span>
                                     {% elif chat.status == 'LEFT' %}
                                         <span class="status-badge bg-secondary p-2 rounded-4">
@@ -568,7 +569,8 @@
                         <!-- Message input -->
                         {% if can_message %}
                             <div class="chat-input">
-                                <form method="post" enctype="multipart/form-data" id="studentMessageForm">
+                                <form method="post" enctype="multipart/form-data" id="studentMessageForm"
+                                    style="border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; background: #1adcfea4;">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="send_message">
 
@@ -588,8 +590,6 @@
                                                       placeholder="💬 Ask your CSCI 1100 question here... (Press Ctrl+Enter to send)"
                                                       style="resize: none; border: 2px solid rgba(79, 172, 254, 0.3);"
                                                       required></textarea>
-
-
                                             </button>
 
                                             <div style="display: grid; grid-template-columns: 1fr;">
@@ -617,7 +617,7 @@
                                 </form>
 
                                 <!-- Emoji picker -->
-                                <div id="studentEmojiPicker" class="mt-3" style="display: none;">
+                                <div class="mt-2" id="studentEmojiPicker" style="display: none;">
                                     <div class="emoji-grid p-3 rounded-3 shadow-lg">
                                         <div class="text-muted text-center mb-3"><span>Choose an emoji:</span></div>
                                         <div class="row g-2">
