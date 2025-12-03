@@ -95,7 +95,7 @@ class ChatMessageForm(forms.Form):
         ],
         widget=MultipleFileInput(attrs={
             'class': 'form-control shadow-none',
-            'accept': '.png,.jpg,.jpeg,.gif,.doc,.docx,.odp,.ods,.odt,.pdf,.txt,.py,.java,.cpp,.js,.html,.css,.json,.zip,.7z',
+            'accept': '.png,.jpg,.jpeg,.gif,.bmp,.webp,.doc,.docx,.odp,.ods,.odt,.pdf,.txt,.rtf,.xls,.xlsx,.py,.js,.html,.css,.json,.csv,.mp3,.wav,.mp4,.avi,.mov,.zip,.7z',
             'multiple': True
         }),
         help_text='📎 Max 5MB per file. Supported: Images, Documents, Code files, Media, Archives'
