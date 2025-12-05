@@ -693,8 +693,8 @@ const sounds = {
     received: "https://csci-1100.github.io/class_resources_public/assets/audio/message-received.mp3"
 };
 
-const sentPlayer = new AudioPlayer(sounds.sent, 15);
-const receivedPlayer = new AudioPlayer(sounds.received);
+const sentPlayer = new AudioPlayer(sounds.sent, 50);
+const receivedPlayer = new AudioPlayer(sounds.received, 50);
 
 document.getElementById('audio-toggle').addEventListener('click', (e) => {
     let btn = e.target;
@@ -807,7 +807,6 @@ document.getElementById('studentMessageForm').addEventListener('submit', functio
             }, 820); // Increase timeout if using a longer notification sound
             if (localStorage.getItem('audioEnabled') == 'true')
                 sentPlayer.play();
-
         } else {
             console.error('🚨 Form errors:', data.errors);
             alert('❌ Error sending message. Please try again!');
@@ -853,9 +852,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Play notification sound
                     setTimeout(() => {
                         location.reload();
-                    }, 900); // Increase timeout if using a longer notification sound
+                    }, 600); // Increase timeout if using a longer notification sound
 
-                    if (!data.messages[currentMessageCount-1].is_from_student) {
+                    // Current message count is actually the index of the newest message!
+                    let newMessage = data.messages[currentMessageCount];
+                    if (!newMessage.is_from_student) {
                         if (localStorage.getItem('audioEnabled') == 'true')
                             receivedPlayer.play();
                     }
