@@ -5,7 +5,10 @@
 
 {% block extra_css %}
 <style>
-    /* Mobile-first responsive design */
+    .btn-green {
+        color: #5ebf71;
+    }
+
     .tech-chat-container {
         border-radius: 15px;
         background: #fff;
@@ -727,7 +730,7 @@ document.getElementById('audio-toggle').addEventListener('click', (e) => {
     if (!enabled) {
         localStorage.setItem('audioEnabled', 'true');
         btn.textContent = '🔊 Notification Audio On';
-        btn.className = 'btn btn-sm btn-success';
+        btn.className = 'btn btn-sm btn-green';
     } else {
         localStorage.setItem('audioEnabled', 'false');
         btn.textContent = '🔇 Notification Audio Off';

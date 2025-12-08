@@ -5,7 +5,10 @@
 
 {% block extra_css %}
 <style>
-    /* Responsive chat container */
+    .btn-green {
+        color: #5ebf71;
+    }
+
     .chat-container {
         background-color: none;
         border-radius: 20px;
@@ -703,7 +706,7 @@ document.getElementById('audio-toggle').addEventListener('click', (e) => {
     if (!enabled) {
         localStorage.setItem('audioEnabled', 'true');
         btn.textContent = '🔊 Notification Audio On';
-        btn.className = 'btn btn-sm btn-success';
+        btn.className = 'btn btn-sm btn-green';
     } else {
         localStorage.setItem('audioEnabled', 'false');
         btn.textContent = '🔇 Notification Audio Off';
