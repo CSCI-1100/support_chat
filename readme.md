@@ -99,9 +99,9 @@ support_chat/
 ```
 
 8. **Access the application**
-    - Student interface: [http://localhost:8000/](http://localhost:8000/)
-    - Staff login: [http://localhost:8000/accounts/login/](http://localhost:8000/accounts/login/)
-    - Admin interface: [http://localhost:8000/admin/](http://localhost:8000/admin/)
+    - Student interface: `/` (redirects to /chat/)
+    - Staff login: `/accounts/login/`
+    - Admin interface: `/admin/`
 
 ### Production Setup
 
