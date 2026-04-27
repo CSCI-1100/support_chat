@@ -4,6 +4,31 @@ A real-time chat support system built with Django for CSCI 1100 course assistant
 
 <img src="./assets/showcase.png" alt="Support Chat showcase" width="700">
 
+- [Support Chat - Django Live Chat Application](#support-chat---django-live-chat-application)
+  - [Features](#features)
+  - [Technology Stack](#technology-stack)
+  - [Project Structure](#project-structure)
+  - [Installation](#installation)
+    - [Development Setup](#development-setup)
+    - [Production Setup](#production-setup)
+  - [Management Commands](#management-commands)
+    - [Create System Manager](#create-system-manager)
+    - [Initialize Default Schedule](#initialize-default-schedule)
+    - [Clean Up Old Chats](#clean-up-old-chats)
+  - [User Roles](#user-roles)
+    - [System Manager](#system-manager)
+    - [Technician (Course Assistant)](#technician-course-assistant)
+    - [Student](#student)
+  - [Configuration](#configuration)
+    - [File Upload Settings](#file-upload-settings)
+    - [Session Settings](#session-settings)
+    - [Schedule Management](#schedule-management)
+  - [Development Notes](#development-notes)
+    - [Running Tests](#running-tests)
+    - [Development Server Script](#development-server-script)
+    - [Database Migrations](#database-migrations)
+  - [License](#license)
+
 ## Features
 
 - **Student Interface**: Students can initiate chat sessions without authentication
