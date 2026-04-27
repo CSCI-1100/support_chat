@@ -248,8 +248,7 @@ Common ports:
 ```
 
 `sudo nano /etc/ssh/sshd_config`
-
--- Change the line "Port 22" to your port.
+With sshd_config open in the nano editor, press `Ctrl-W` and search `Port 22` Change "Port 22" to your port.
 
 **Create SSH Config File:**
 
@@ -261,7 +260,7 @@ Example local `.ssh/config` file:
 
 ```
 Host example.com
-    Hostname <ip_address> # (I prefer IP over domain name in case their is a problem with resolution)
+    Hostname <ip_address> # (I prefer IP over domain name in case there is a problem with resolution)
     Port 4858 # (whatever port you chose in sshd_config)
     User ryan
     IdentityFile ~/.ssh/private_key_name
@@ -274,6 +273,9 @@ sudo ufw allow <new_port>/tcp comment 'SSH port'
 sudo ufw delete allow "OpenSSH"
 sudo ufw status
 ```
+
+> Keep your current SSH session open and open a new shell to test your new connection, so if there is
+> a problem you can re-enable the port 22 configuration until you sort it out.
 
 Now you can test your SSH connection - `ssh example.com` - to make sure you can ssh from your local
 machine to your server. Make sure you have some backup way of getting into your server (like a web-based
@@ -294,9 +296,10 @@ sudo nano jail.local
 
 Set rules for SSH as part of the [DEFAULT] config.
 
+```bash
 sudo systemctl restart fail2ban
 systemctl status fail2ban
-
+```
 
 ## 14. **Increase the SSH Timeout**
 
@@ -305,7 +308,7 @@ good if you are running a major system upgrade. I have had an upgrade
 interrupted and it caused breakage that made my webserver go down until I
 cleaned up the mess and reinstalled everything.
 
-sudo nano /etc/ssh/sshd_config
+`sudo nano /etc/ssh/sshd_config`
 
 Find the (perhaps commented) lines, `ClientAliveInterval` and `ClientAliveCountMax`.
 The alive interval is the amount of time that elapses in seconds before the host
@@ -382,10 +385,8 @@ Check the status of services using `systemctl status`. When you see errors, use 
 for more info. To ensure you can read logs with `journalctl` add your server's user account
 to the correct groups:
 
-```
-usermod -aG sudo,adm,systemd-journal username
-groups username
-```
+- Add user to groups: `usermod -aG sudo,adm,systemd-journal username`
+- Verify user's group membership: `groups username`
 
 Let's say, for example, that when you run `systemctl status gunicorn`, you find that it exited
 with an error. You can then check the log `journalctl -e -u gunicorn` to figure out more detail
