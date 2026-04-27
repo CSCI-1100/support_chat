@@ -177,7 +177,7 @@ address in the server_name field).
 ## 11. **Set Up HTTPS**!
 
 Of course, you can't log in and interact securely over port 80, so you will next
-need to encrypt your shit. I HATE setting up TLS and writing all the Nginx
+need to encrypt your connection. I hate setting up TLS and writing all the Nginx
 configuration, so I use certbot to make my life easy! Here's a rundown:
 
 `sudo apt install certbot python3-certbot-nginx` (If you're not using Ubuntu/Debian, screw you)
