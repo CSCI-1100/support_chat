@@ -219,6 +219,12 @@ sudo certbot renew --dry-run
 a. On your local machine: `ssh-keygen -t rsa -b 4096`
 b. View your public key: `cat ~/.ssh/<name_of_key>.pub`
 c. On your server: save the public key in the `~/.ssh/authorized_keys` file (create the file if it doesn't exist).
+d. Ensure the .ssh and authorized_keys file are only available to the file owner:
+
+```bash
+sudo chmod 700 .ssh
+sudo chmod 600 .ssh/authorized_keys
+```
 
 **Change the Default Port**
 
