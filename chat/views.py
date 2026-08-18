@@ -23,6 +23,9 @@ def chat_landing(request):
     today = timezone.now().date()
     override = ScheduleOverride.get_override_for_date(today)
 
+    if request.GET.get('chat_closed'):
+        messages.info(request, '🔒 The course assistant has closed your chat.')
+
     if request.method == 'POST':
         form = ChatStartForm(request.POST)
         if form.is_valid():

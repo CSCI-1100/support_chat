@@ -3,475 +3,9 @@
 
 {% block title %}💬 Chat {{ chat.chat_id }}{% endblock %}
 
-{% block extra_css %}
-<style>
-    .btn-green {
-        color: #5ebf71;
-    }
-
-    .chat-container {
-        background-color: none;
-        border-radius: 20px;
-        border: 1px solid #5484d2;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Dynamic height calculation for different screen sizes */
-    @media (min-width: 992px) {
-        /* Desktop: Use viewport height minus navbar/padding */
-        .chat-container {
-            height: 85vh;
-        }
-    }
-
-    @media (max-width: 991.98px) {
-        /* Mobile/Tablet: Use auto height with minimum constraints */
-        .chat-container {
-            min-height: 60vh;
-            max-height: 70vh;
-            margin-bottom: 2rem; /* Extra space to prevent footer overlap */
-        }
-    }
-
-    @media (max-width: 576px) {
-        /* Small mobile: Optimize for smaller screens */
-        .chat-container {
-            min-height: 50vh;
-            max-height: 75vh;
-            margin-bottom: 3rem; /* More space on small screens */
-            border-radius: 15px; /* Slightly smaller border radius */
-        }
-    }
-
-    .chat-header {
-        background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
-        border-radius: 20px 20px 0 0;
-        color: white;
-        padding: 1.5rem;
-        box-shadow: 0 4px 20px rgba(79, 172, 254, 0.3);
-        flex-shrink: 0; /* Prevent header from shrinking */
-    }
-
-    /* Responsive header layout */
-    @media (max-width: 768px) {
-        .chat-header {
-            padding: 1rem;
-            border-radius: 15px 15px 0 0;
-        }
-
-        .chat-header h3 {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .chat-header .d-flex {
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .status-badge {
-            font-size: 0.8rem;
-            padding: 0.4rem 0.8rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .chat-header {
-            padding: 0.75rem;
-        }
-
-        .chat-header h3 {
-            font-size: 1.1rem;
-        }
-
-        .status-badge {
-            font-size: 0.7rem;
-            padding: 0.3rem 0.6rem;
-        }
-    }
-
-    /* Responsive messages area */
-    @media (max-width: 768px) {
-        .chat-messages {
-            padding: 1rem;
-            height: auto; /* Let flex handle the height */
-        }
-    }
-
-    @media (max-width: 576px) {
-        .chat-messages {
-            padding: 0.75rem;
-        }
-    }
-
-    .message {
-        margin-bottom: 1.2rem;
-        animation: studentMessageSlide 0.4s ease-out;
-    }
-
-    @media (max-width: 768px) {
-        .message {
-            margin-bottom: 1rem;
-        }
-    }
-
-    .message.student {
-        text-align: right;
-    }
-
-    .message.technician {
-        text-align: left;
-    }
-
-    .message.system {
-        text-align: center;
-    }
-
-    .message-bubble {
-        display: inline-block;
-        max-width: 75%;
-        padding: 1rem 1.25rem;
-        border-radius: 20px;
-        word-wrap: break-word;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        position: relative;
-    }
-
-    .student .message-bubble {
-        background: linear-gradient(145deg, #007bff, #0056b3);
-        color: white;
-        border-bottom-right-radius: 3px;
-    }
-
-    .technician .message-bubble {
-        background: linear-gradient(145deg, #acfabf, #a0e1af);
-        color: black;
-        border-bottom-left-radius: 3px;
-    }
-
-    @media (max-width: 768px) {
-        .message-bubble {
-            max-width: 85%;
-            padding: 0.875rem 1.125rem;
-            font-size: 0.9rem;
-            border-radius: 18px;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .message-bubble {
-            max-width: 90%;
-            padding: 0.75rem 1rem;
-            font-size: 0.85rem;
-            border-radius: 15px;
-        }
-    }
-
-    /* Responsive input area */
-    @media (max-width: 768px) {
-        .chat-input {
-            padding: 1rem;
-            border-radius: 0 0 15px 15px;
-        }
-
-        .chat-input .input-group {
-            flex-wrap: wrap;
-        }
-
-        .chat-input textarea {
-            font-size: 16px; /* Prevents zoom on iOS */
-            min-height: 80px;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .chat-input {
-            padding: 0.75rem;
-        }
-
-        .chat-input textarea {
-            min-height: 70px;
-            font-size: 16px;
-        }
-    }
-
-    .student-input-group {
-        background: #1adcfe61;
-        border-bottom-left-radius: 25px;
-        border-bottom-right-radius: 25px;
-        padding: 0.5rem;
-        height: fit-content;
-    }
-
-    @media (max-width: 768px) {
-        .student-input-group {
-            border-radius: 20px;
-            padding: 0.4rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .student-input-group {
-            border-radius: 15px;
-            padding: 0.3rem;
-        }
-    }
-
-    .emoji-btn {
-        background: linear-gradient(135deg, #f6e1b4cc, #a9f0fc80);
-        border: 1px solid #39befb;
-        font-size: 1.3rem;
-        padding: 0.5rem;
-        border-radius: 45%;
-        transition: all 0.3s ease;
-        width: 45px;
-        height: 45px;
-    }
-
-    /* Button responsive behavior */
-    .submit-message-btn {
-        background: linear-gradient(45deg, #007bff 0%, #3995f8 100%);
-        border: 1px solid #39befb;
-        border-top-left-radius: 0px;
-        border-bottom-left-radius: 0px;
-        border-bottom-right-radius: 0px;
-        color: white;
-    }
-
-    .submit-message-btn:hover {
-        background: linear-gradient(35deg, #006cde 0%, #308cef 100%);
-        color: #d1d0d0;
-    }
-
-    .attachment-btn {
-        background: linear-gradient(45deg, #007bff 0%, #3995f8 100%);
-        border: 1px solid #39befb;
-        border-top-left-radius: 0px;
-        border-top-right-radius: 0px;
-        border-bottom-left-radius: 0px;
-        color: white;
-    }
-
-    .attachment-btn:hover {
-        background: linear-gradient(35deg, #006cde 0%, #308cef 100%);
-        color: #d1d0d0;
-    }
-
-    @media (max-width: 768px) {
-        .emoji-btn {
-            width: 40px;
-            height: 40px;
-            font-size: 1.2rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .emoji-btn {
-            width: 35px;
-            height: 35px;
-            font-size: 1.1rem;
-            padding: 0.3rem;
-        }
-    }
-
-    .close-chat-btn {
-        background: linear-gradient(45deg, #c84b58, #bf2f5f);
-        border: none;
-        transition: all 0.3s ease;
-    }
-
-    @media (max-width: 768px) {
-        .close-chat-btn {
-            font-size: 0.85rem;
-            padding: 0.5rem 1rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .close-chat-btn {
-            font-size: 0.75rem;
-            padding: 0.4rem 0.8rem;
-        }
-    }
-
-    .attachment-preview {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 12px;
-        padding: 0.75rem;
-        margin-top: 0.5rem;
-        border: 1px solid #dee2e6;
-        transition: all 0.3s ease;
-    }
-
-    @media (max-width: 768px) {
-        .attachment-preview {
-            padding: 0.5rem;
-            border-radius: 10px;
-            font-size: 0.9rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .attachment-preview {
-            padding: 0.4rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
-        }
-    }
-
-    /* Emoji picker responsive */
-    #studentEmojiPicker {
-        position: relative;
-        z-index: 1000;
-    }
-
-    @media (max-width: 768px) {
-        .emoji-grid .row {
-            margin: 0;
-        }
-
-        .emoji-grid .emoji-btn {
-            padding: 0.25rem;
-            font-size: 1.1rem;
-            width: 35px;
-            height: 35px;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .emoji-grid .emoji-btn {
-            padding: 0.2rem;
-            font-size: 1rem;
-            width: 30px;
-            height: 30px;
-        }
-    }
-
-    /* Alert responsiveness for chat ended message */
-    @media (max-width: 768px) {
-        .chat-input .alert h5 {
-            font-size: 1.1rem;
-        }
-
-        .chat-input .alert p {
-            font-size: 0.9rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .chat-input .alert h5 {
-            font-size: 1rem;
-        }
-
-        .chat-input .alert p {
-            font-size: 0.8rem;
-            margin-bottom: 1rem;
-        }
-    }
-
-    /* Container responsiveness */
-    @media (max-width: 768px) {
-        .container-fluid {
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .container-fluid {
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-        }
-    }
-
-    /* Fix for very small screens */
-    @media (max-width: 400px) {
-        .chat-header h3 {
-            font-size: 1rem;
-        }
-
-        .message-bubble {
-            max-width: 95%;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.8rem;
-        }
-
-        .chat-input {
-            padding: 0.5rem;
-        }
-
-        .student-input-group {
-            padding: 0.25rem;
-        }
-
-        .emoji-btn {
-            width: 30px;
-            height: 30px;
-            font-size: 1rem;
-        }
-    }
-
-    /* Fix input zoom on iOS */
-    @media screen and (max-width: 768px) {
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="password"],
-        textarea,
-        select {
-            font-size: 16px !important;
-        }
-    }
-
-    /* File preview responsive */
-    #studentFilePreview {
-        max-height: 150px;
-        overflow-y: auto;
-    }
-
-    @media (max-width: 768px) {
-        #studentFilePreview {
-            max-height: 120px;
-        }
-
-        #studentFilePreview .alert {
-            font-size: 0.85rem;
-            padding: 0.5rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        #studentFilePreview {
-            max-height: 100px;
-        }
-
-        #studentFilePreview .alert {
-            font-size: 0.75rem;
-            padding: 0.4rem;
-        }
-    }
-
-    /* Badge responsive adjustments */
-    @media (max-width: 768px) {
-        .badge {
-            font-size: 0.7rem;
-            padding: 0.3rem 0.6rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .badge {
-            font-size: 0.65rem;
-            padding: 0.25rem 0.5rem;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="centered-wrapper">
-    <div class="h-centered" style="max-width: 1900px;">
+    <div class="h-centered max-w-1900">
         <div class="container-fluid py-4">
             <button id="audio-toggle" class="btn btn-sm btn-outline-secondary">
                 Enable Notification Audio
@@ -504,7 +38,7 @@
                                             <i class="bi bi-hourglass-split"></i> Waiting for course assistant...
                                         </span>
                                     {% elif chat.status == 'ACTV' %}
-                                        <span class="status-badge text-dark p-2 rounded-4" style="background-color: #acfabf;">
+                                        <span class="status-badge text-dark p-2 rounded-4 bg-technician-connected">
                                             <i class="bi bi-person-check"></i> Assistant connected!
                                         </span>
                                     {% elif chat.status == 'LEFT' %}
@@ -573,7 +107,7 @@
                         {% if can_message %}
                             <div class="chat-input">
                                 <form method="post" enctype="multipart/form-data" id="studentMessageForm"
-                                    style="border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; background: #1adcfea4;">
+                                    class="student-message-form">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="send_message">
 
@@ -587,21 +121,21 @@
 
                                             <textarea name="content"
                                                       id="id_student_content"
-                                                      class="form-control shadow-none mx-2"
+                                                      class="form-control shadow-none mx-2 student-content-input"
                                                       rows="3"
                                                       maxlength="2000"
                                                       placeholder="💬 Ask your question here... (Press Ctrl+Enter to send)"
-                                                      style="resize: none; border: 2px solid rgba(79, 172, 254, 0.3);"
+                                                      aria-label="Your message"
                                                       required></textarea>
                                             </button>
 
-                                            <div style="display: grid; grid-template-columns: 1fr;">
-                                                <button type="button" class="btn submit-message-btn"
+                                            <div class="btn-stack-grid">
+                                                <button type="button" class="btn attachment-btn"
                                                     onclick="document.getElementById('id_student_attachments').click()"
                                                     title="Attach files 📎">
                                                 <i class="bi bi-paperclip"></i>
 
-                                                <button type="submit" class="btn attachment-btn">
+                                                <button type="submit" class="btn submit-message-btn" aria-label="Send message">
                                                     <i class="bi bi-send" title="Send"></i>
                                                 </button>
                                             </div>
@@ -614,6 +148,7 @@
                                            id="id_student_attachments"
                                            class="form-control d-none"
                                            multiple
+                                           aria-label="Attach files"
                                            accept=".png,.jpg,.jpeg,.gif,.bmp,.webp,.doc,.docx,.odp,.ods,.odt,.pdf,.txt,.rtf,.xls,.xlsx,.py,.js,.html,.css,.json,.csv,.mp3,.wav,.mp4,.avi,.mov,.zip,.7z">
 
                                     <div id="studentFilePreview" class="mt-2"></div>
@@ -656,8 +191,8 @@
                             </div>
                         {% else %}
                             <div class="chat-input text-center">
-                                <div class="alert alert-info mb-0" style="border-radius: 15px;">
-                                    <h5>💬 Chat Session Ended</h5>
+                                <div class="alert alert-info mb-0 rounded-15">
+                                    <h4 style="font-size: 1.25rem;">💬 Chat Session Ended</h4>
                                     <p class="mb-2">This chat has ended. Thanks for using CSCI support!</p>
                                     <a href="{% url 'chat:landing' %}" class="btn btn-primary">
                                         <i class="bi bi-chat-square-dots"></i> Start New Chat
@@ -845,10 +380,20 @@ document.addEventListener('DOMContentLoaded', function() {
     {% endif %}
 
     // Auto-refresh messages every 3.5 seconds for students
-    setInterval(function() {
+    let pollInterval = setInterval(function() {
         fetch(`/chat/api/messages/{{ chat.chat_id }}/`)
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 404) {
+                    // Technician closed (and purged) the chat
+                    clearInterval(pollInterval);
+                    window.location.href = "{% url 'chat:landing' %}?chat_closed=1";
+                    return null;
+                }
+                return response.json();
+            })
             .then(data => {
+                if (!data) return;
+
                 const currentMessageCount = document.querySelectorAll('.message').length;
 
                 if (data.messages.length > currentMessageCount) {

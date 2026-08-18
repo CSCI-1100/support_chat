@@ -3,393 +3,9 @@
 
 {% block title %}🔧 Chat {{ chat.chat_id }}{% endblock %}
 
-{% block extra_css %}
-<style>
-    .btn-green {
-        color: #5ebf71;
-    }
-
-    .tech-chat-container {
-        border-radius: 15px;
-        background: #fff;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-    }
-
-    .quick-actions {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 0.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .quick-action-btn {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: black;
-        border-radius: 8px;
-        padding: 0.25rem 0.5rem;
-        margin: 0.125rem;
-        font-size: 0.8rem;
-        transition: all 0.2s ease;
-    }
-
-    .quick-action-btn:hover {
-        background: rgba(255, 255, 255, 0.3);
-        color: black;
-    }
-
-    /* Dynamic height calculation for different screen sizes */
-    @media (min-width: 992px) {
-        /* Desktop: Use viewport height minus navbar/padding */
-        .tech-chat-container {
-            height: 85vh;
-        }
-    }
-
-    @media (max-width: 991.98px) {
-        /* Mobile/Tablet: Use auto height with minimum constraints */
-        .tech-chat-container {
-            min-height: 60vh;
-            max-height: 70vh;
-        }
-    }
-
-    @media (max-width: 576px) {
-        /* Small mobile: Optimize for smaller screens */
-        .tech-chat-container {
-            min-height: 50vh;
-            max-height: 60vh;
-            margin-bottom: 1rem;
-        }
-    }
-
-    .tech-chat-header {
-        background: linear-gradient(45deg, #93edaa 0%, #80e097 100%);
-        color: black;
-        padding: 1rem;
-        border-radius: 15px 15px 0 0;
-        flex-shrink: 0;
-    }
-
-    /* Responsive header layout */
-    @media (max-width: 768px) {
-        .tech-chat-header {
-            padding: 0.75rem;
-        }
-
-        .tech-chat-header h4 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .tech-chat-header .d-flex {
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .participant-badge {
-            font-size: 0.7rem;
-            padding: 0.2rem 0.5rem;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .chat-messages {
-            padding: 0.75rem;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .tech-input-area {
-            padding: 0.75rem;
-        }
-
-        .tech-input-area .input-group {
-            flex-wrap: wrap;
-        }
-
-        .tech-input-area textarea {
-            font-size: 16px; /* Prevents zoom on iOS */
-            min-height: 80px;
-        }
-    }
-
-    /* Quick actions responsive behavior */
-    .quick-actions {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 0.5rem;
-        margin-bottom: 1rem;
-    }
-
-    @media (max-width: 768px) {
-        .quick-actions {
-            padding: 0.25rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .quick-action-btn {
-            font-size: 0.7rem;
-            padding: 0.2rem 0.4rem;
-            margin: 0.1rem;
-        }
-    }
-
-    /* Message styling remains the same but with mobile optimizations */
-    .message {
-        margin-bottom: 1rem;
-        animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    .message.student {
-        text-align: left;
-    }
-
-    .message.technician {
-        text-align: right;
-    }
-
-    .message.system {
-        text-align: center;
-    }
-
-    .message-bubble {
-        display: inline-block;
-        max-width: 75%;
-        padding: 0.875rem 1.125rem;
-        border-radius: 18px;
-        word-wrap: break-word;
-        position: relative;
-    }
-
-    @media (max-width: 768px) {
-        .message-bubble {
-            max-width: 85%;
-            padding: 0.75rem 1rem;
-            font-size: 0.9rem;
-        }
-    }
-
-    .student .message-bubble {
-        background: linear-gradient(145deg, #007bff, #0056b3);
-        color: white;
-        border-bottom-left-radius: 3px;
-    }
-
-    .technician .message-bubble {
-        background: linear-gradient(145deg, #acfabf, #a0e1af);
-        color: black;
-        border-bottom-right-radius: 3px;
-    }
-
-    /* Sidebar responsive behavior */
-    .chat-sidebar {
-        background: #fff;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    @media (max-width: 991.98px) {
-        .chat-sidebar {
-            margin-top: 1rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .chat-sidebar .card-body {
-            padding: 1rem;
-        }
-
-        .chat-sidebar dt {
-            font-size: 0.9rem;
-        }
-
-        .chat-sidebar dd {
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-        }
-    }
-
-    /* Button responsive behavior */
-    .submit-message-btn {
-        background: linear-gradient(45deg, #93edaa 0%, #80e097 100%);
-        border: 1px solid #6c757d;
-        border-top-left-radius: 0px;
-        border-top-right-radius: 0px;
-        border-bottom-left-radius: 0px;
-    }
-
-    .submit-message-btn:hover {
-        background: linear-gradient(35deg, #9effb6 0%, #8ff8a7 100%);
-        color: #888686;
-    }
-
-    .attachment-btn {
-        background-color: #f4f5f6;
-        border: 1px solid #6c757d;
-        border-top-left-radius: 0px;
-        border-bottom-left-radius: 0px;
-        border-bottom-right-radius: 0px;
-    }
-
-    .close-chat-btn {
-        background: linear-gradient(45deg, #c84b58, #bf2f5f);
-        border: none;
-        transition: all 0.3s ease;
-    }
-
-    .close-chat-btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
-    }
-
-    @media (max-width: 768px) {
-        .close-chat-btn {
-            font-size: 0.8rem;
-            padding: 0.4rem 0.8rem;
-        }
-    }
-
-    /* Attachment grid responsive */
-    .attachment-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 0.5rem;
-        margin-top: 0.5rem;
-        color: #287ffc;
-    }
-
-    @media (max-width: 768px) {
-        .attachment-grid {
-            grid-template-columns: 1fr;
-            gap: 0.25rem;
-        }
-    }
-
-    .attachment-item {
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 8px;
-        padding: 0.5rem;
-        border: 1px solid #dee2e6;
-        text-decoration: none;
-        color: inherit;
-        transition: all 0.2s ease;
-    }
-
-    .attachment-item:hover {
-        background: rgb(234, 234, 234);
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Emoji picker responsive */
-    #techEmojiPicker {
-        position: relative;
-        z-index: 1000;
-    }
-
-    @media (max-width: 768px) {
-        .emoji-grid .row {
-            margin: 0;
-        }
-
-        .emoji-btn {
-            padding: 0.25rem;
-            font-size: 1.2rem;
-        }
-    }
-
-    /* Modal responsive fixes */
-    .modal {
-        z-index: 99999 !important;
-    }
-
-    .modal-backdrop {
-        z-index: 99998 !important;
-    }
-
-    @media (max-width: 576px) {
-        .modal-dialog {
-            margin: 1rem;
-            max-width: calc(100% - 2rem);
-        }
-
-        .modal-body {
-            padding: 1rem;
-        }
-
-        .modal-footer {
-            padding: 0.75rem 1rem;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .modal-footer button {
-            width: 100%;
-        }
-    }
-
-    /* Utility classes for responsive spacing */
-    @media (max-width: 768px) {
-        .container-fluid {
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
-        }
-    }
-
-    /* Fix for very small screens */
-    @media (max-width: 400px) {
-        .tech-chat-header h4 {
-            font-size: 1rem;
-        }
-
-        .message-bubble {
-            max-width: 90%;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.85rem;
-        }
-
-        .quick-action-btn {
-            font-size: 0.6rem;
-            padding: 0.15rem 0.3rem;
-        }
-    }
-
-    /* Ensure proper scrolling on iOS */
-    .chat-messages {
-        -webkit-overflow-scrolling: touch;
-    }
-
-    /* Fix input zoom on iOS */
-    @media screen and (max-width: 768px) {
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="password"],
-        textarea,
-        select {
-            font-size: 16px !important;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="centered-wrapper">
-    <div class="h-centered" style="max-width: 1900px;">
+<div class="centered-wrapper tech-chat-page">
+    <div class="h-centered max-w-1900">
         <div class="container-fluid py-3">
             <button id="audio-toggle" class="btn btn-sm btn-outline-secondary">
                 🔊 Enable Notification Audio
@@ -487,7 +103,7 @@
                                                                 <div class="text-truncate">
                                                                     {{ attachment.original_filename }}
                                                                 </div>
-                                                                <div class="text-muted" style="font-size: 0.7rem;">
+                                                                <div class="text-muted attachment-size">
                                                                     {{ attachment.display_size }}
                                                                 </div>
                                                             </div>
@@ -520,22 +136,22 @@
                                     <!-- 🔧 EXPLICIT TEXTAREA MANIFESTATION -->
                                     <textarea name="content"
                                               id="id_content"
-                                              class="form-control shadow-none"
+                                              class="form-control shadow-none textarea-no-resize"
                                               rows="3"
                                               maxlength="2000"
                                               placeholder="💬 Type your response... (Use Ctrl+Enter to send)"
-                                              style="resize: none;"
+                                              aria-label="Your response"
                                               required></textarea>
 
-                                    <div style="display: grid; grid-template-columns: 1fr;">
+                                    <div class="btn-stack-grid">
                                         <button type="button" class="btn attachment-btn"
                                             onclick="document.getElementById('id_attachments').click()"
                                             title="Attach files 📎">
-                                            <i class="bi bi-paperclip"></i>
+                                            <i class="bi bi-paperclip text-white"></i>
                                         </button>
 
-                                        <button type="submit" class="btn submit-message-btn">
-                                            <i class="bi bi-send" title="Send"></i>
+                                        <button type="submit" class="btn submit-message-btn" aria-label="Send message">
+                                            <i class="bi bi-send text-white" title="Send"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -546,6 +162,7 @@
                                        id="id_attachments"
                                        class="form-control d-none"
                                        multiple
+                                       aria-label="Attach files"
                                        accept=".png,.jpg,.jpeg,.gif,.bmp,.webp,.doc,.docx,.odp,.ods,.odt,.pdf,.txt,.rtf,.xls,.xlsx,.py,.js,.html,.css,.json,.csv,.mp3,.wav,.mp4,.avi,.mov,.zip,.7z">
 
                                 <div id="techFilePreview" class="mt-2"></div>
@@ -572,11 +189,11 @@
 
                 <!-- 📊 Chat Info Sidebar -->
                 <div class="col-lg-3">
-                    <div class="card h-100" style="border-radius: 15px;">
+                    <div class="card h-100 rounded-15">
                         <div class="card-header bg-info text-white">
-                            <h6 class="mb-0">
+                            <h5 class="mb-0" style="font-size: 1rem;">
                                 <i class="bi bi-info-circle"></i> Chat Information
-                            </h6>
+                            </h5>
                         </div>
                         <div class="card-body">
                             <dl>
@@ -622,72 +239,25 @@
 </div>
 
 <!-- 🔒 Close Chat Modal -->
-<div class="modal fade" id="closeChatModal" tabindex="-1" aria-labelledby="closeChatModalLabel" aria-hidden="true"
-     style="position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: 2147483647 !important;
-            background-color: rgba(0, 0, 0, 0.6) !important;
-            display: none;">
-    <div class="modal-dialog"
-         style="position: absolute !important;
-                top: 50% !important;
-                left: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                z-index: 2147483647 !important;
-                margin: 0 !important;
-                width: 90% !important;
-                max-width: 500px !important;">
-        <div class="modal-content"
-             style="z-index: 2147483647 !important;
-                    position: relative !important;
-                    background-color: #fff !important;
-                    border-radius: 0.5rem !important;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.8) !important;">
-            <div class="modal-header bg-danger text-white"
-                 style="z-index: 2147483647 !important;
-                        position: relative !important;
-                        pointer-events: auto !important;">
+<div class="modal fade modal-nuclear js-hidden" id="closeChatModal" tabindex="-1" aria-labelledby="closeChatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-nuclear">
+        <div class="modal-content modal-content-nuclear">
+            <div class="modal-header bg-danger text-white modal-section-nuclear">
                 <h5 class="modal-title" id="closeChatModalLabel">
                     <i class="bi bi-exclamation-triangle"></i> Close Chat Session
                 </h5>
-                <button type="button" class="btn-close btn-close-white nuclear-close-btn"
-                        style="z-index: 2147483647 !important;
-                               position: relative !important;
-                               pointer-events: auto !important;
-                               background-color: white !important;
-                               border-radius: 50% !important;
-                               padding: 0.5rem !important;">❌
+                <button type="button" class="btn-close btn-close-white nuclear-close-btn modal-close-btn-nuclear">
                 </button>
             </div>
-            <div class="modal-body"
-                 style="z-index: 2147483647 !important;
-                        position: relative !important;
-                        pointer-events: auto !important;
-                        padding: 2rem !important;">
-                <p style="color: black;"><strong>⚠️ Warning:</strong> This action will permanently close the chat and delete all messages and files.</p>
-                <p style="color: black;">Are you sure you want to close this chat session with <strong>{{ chat.student_name }}</strong>?</p>
+            <div class="modal-body modal-section-nuclear p-4">
+                <p class="text-dark"><strong>⚠️ Warning:</strong> This action will permanently close the chat and delete all messages and files.</p>
+                <p class="text-dark">Are you sure you want to close this chat session with <strong>{{ chat.student_name }}</strong>?</p>
             </div>
-            <div class="modal-footer"
-                 style="z-index: 2147483647 !important;
-                        position: relative !important;
-                        pointer-events: auto !important;
-                        padding: 1rem 2rem !important;">
-                <button type="button" class="btn btn-secondary nuclear-cancel-btn"
-                        style="z-index: 2147483647 !important;
-                               position: relative !important;
-                               pointer-events: auto !important;
-                               margin-right: 1rem !important;
-                               padding: 0.75rem 1.5rem !important;">
+            <div class="modal-footer modal-section-nuclear modal-footer-pad">
+                <button type="button" class="btn btn-secondary nuclear-cancel-btn modal-footer-btn-nuclear me-3">
                     Cancel
                 </button>
-                <button type="button" class="btn btn-danger nuclear-confirm-btn"
-                        style="z-index: 2147483647 !important;
-                               position: relative !important;
-                               pointer-events: auto !important;
-                               padding: 0.75rem 1.5rem !important;">
+                <button type="button" class="btn btn-danger nuclear-confirm-btn modal-footer-btn-nuclear">
                     <i class="bi bi-trash"></i> Close & Delete Chat
                 </button>
             </div>

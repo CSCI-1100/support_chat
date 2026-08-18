@@ -3,79 +3,9 @@
 
 {% block title %}🔧 Chat Dashboard{% endblock %}
 
-{% block extra_css %}
-<style>
-.dashboard-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    border-radius: 15px;
-    color: white;
-    transition: transform 0.3s ease;
-}
-
-.dashboard-card:hover {
-    transform: translateY(-5px);
-}
-
-.metric-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-}
-
-.waiting-indicator {
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-.new-chat-alert {
-    background: linear-gradient(45deg, rgba(250, 84, 145, 0.55), rgba(240, 187, 72, 0.55));
-    border-radius: 10px;
-    animation: glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
-    from { box-shadow: 0 0 5px rgba(255, 107, 107, 0.5); }
-    to { box-shadow: 0 0 20px rgba(255, 107, 107, 0.8); }
-}
-
-.status-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 8px;
-}
-
-.status-waiting { background: #ffd93d; }
-.status-active { background: #6bcf7f; }
-.status-left { background: #95a5a6; }
-
-.chat-timestamp {
-    font-size: 0.8rem;
-}
-
-.notification-badge {
-    background: #ff6b6b;
-    color: white;
-    border-radius: 50%;
-    padding: 0.25rem 0.7rem;
-    font-size: 0.75rem;
-    position: absolute;
-    right: -8px;
-}
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="centered-wrapper">
-    <div class="h-centered" style="max-width: 1400px;">
+    <div class="h-centered max-w-1400">
         <div class="container-fluid py-4">
             <!-- Messages -->
             {% if messages %}
@@ -133,24 +63,23 @@
                 <!-- Waiting Queue -->
                 <div class="col-lg-6 mb-4">
                     <div class="card chat-item h-100">
-                        <div class="card-header text-white d-flex justify-content-between align-items-center"
-                         style="background: linear-gradient(135deg, rgba(250, 84, 145, 0.9), rgba(240, 187, 72, 0.9));">
-                            <h5 class="mb-0">
+                        <div class="card-header text-white d-flex justify-content-between align-items-center waiting-queue-header">
+                            <h3 class="mb-0" style="font-size: 1.25rem;">
                                 <i class="bi bi-hourglass-split"></i> Students Waiting for Help
-                            </h5>
+                            </h3>
                             {% if waiting_chats %}
                                 <span class="notification-badge">{{ waiting_chats.count }}</span>
                             {% endif %}
                         </div>
-                        <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                        <div class="card-body queue-scroll">
                             {% for chat in waiting_chats %}
                                 <div class="chat-item p-3 mb-3 {% if forloop.first %}new-chat-alert{% endif %}">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="flex-grow-1">
-                                            <h6 class="mb-1">
+                                            <h4 class="mb-1" style="font-size: 1rem;">
                                                 <span class="status-dot status-waiting"></span>
                                                 👨‍🎓 {{ chat.student_name }}
-                                            </h6>
+                                            </h4>
                                             <p class="mb-2">
                                                 "{{ chat.initial_message|truncatewords:15 }}"
                                             </p>
@@ -179,25 +108,24 @@
                 <!-- Active Chats -->
                 <div class="col-lg-6 mb-4">
                     <div class="card chat-item h-100">
-                        <div class="card-header text-white d-flex justify-content-between align-items-center"
-                            style="background: linear-gradient(135deg, #58b86b, #6bcf7f);">
-                            <h5 class="mb-0">
+                        <div class="card-header text-white d-flex justify-content-between align-items-center active-queue-header">
+                            <h3 class="mb-0" style="font-size: 1.25rem;">
                                 <i class="bi bi-chat-dots"></i> Your Active Chats
-                            </h5>
+                            </h3>
                             {% if active_chats %}
                                 <span class="badge bg-light text-dark">{{ active_chats.count }}</span>
                             {% endif %}
                         </div>
-                        <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                        <div class="card-body queue-scroll">
                             {% for chat in active_chats %}
                                 <div class="chat-item p-3 mb-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="flex-grow-1">
-                                            <h6 class="mb-1">
+                                            <h4 class="mb-1" style="font-size: 1rem;">
                                                 <span class="status-dot status-active"></span>
                                                 👨‍🎓 {{ chat.student_name }}
                                                 <small class="text-muted"><span>- {{ chat.chat_id }}</span></small>
-                                            </h6>
+                                            </h4>
                                             <p class="mb-2 text-white">
                                                 Started: {{ chat.created_at|timesince }} ago
                                             </p>
@@ -230,7 +158,7 @@
             <!-- Auto-refresh Notice -->
             <div class="row">
                 <div class="col-12">
-                    <div class="alert alert-info text-center" style="border-radius: 12px; background: rgba(13, 202, 240, 0.1); border: 1px solid rgba(13, 202, 240, 0.2);">
+                    <div class="alert alert-info text-center dashboard-notice">
                         <i class="bi bi-arrow-clockwise"></i>
                         Dashboard auto-refreshes every 10 seconds to show new chats
                         <small class="ms-2 text-muted"><span>| &ensp;Last updated: </span><span id="lastUpdated"></span></small>
