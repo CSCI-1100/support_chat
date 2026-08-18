@@ -299,7 +299,7 @@ document.getElementById('audio-toggle').addEventListener('click', (e) => {
     if (!enabled) {
         localStorage.setItem('audioEnabled', 'true');
         btn.textContent = '🔊 Notification Audio On';
-        btn.className = 'btn btn-sm btn-green';
+        btn.className = 'btn btn-sm btn-success';
     } else {
         localStorage.setItem('audioEnabled', 'false');
         btn.textContent = '🔇 Notification Audio Off';
