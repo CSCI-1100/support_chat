@@ -20,6 +20,10 @@
             </div>
             {% endif %}
 
+            <button id="audio-toggle" class="btn btn-sm btn-outline-secondary mb-3">
+                🔇 Notification Audio Off
+            </button>
+
             <!-- Metrics Dashboard -->
             <div class="row mb-4">
                 <div class="col-12">
@@ -192,7 +196,9 @@ function refreshDashboard() {
 
             if (newWaiting > currentWaiting) {
                 // New chat alert sound
-                playNotificationSound();
+                if (localStorage.getItem('audioEnabled') === 'true') {
+                    playNotificationSound();
+                }
                 // Full refresh to show new chats
                 location.reload();
             }
@@ -202,31 +208,56 @@ function refreshDashboard() {
         .catch(console.error);
 }
 
+// Plain <audio> playback, same as the chat pages - a Web Audio AudioContext
+// auto-suspends after ~30s of silence even once unlocked, which is why the
+// oscillator beep stopped firing for real (infrequent) notifications.
+const notificationSound = new Audio('https://csci-1100.github.io/class_resources_public/assets/audio/message-received.mp3');
+notificationSound.volume = 0.5;
+
 function playNotificationSound() {
-    // Simple notification beep
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    // ASCII BEL - legacy system-beep trick. Harmless to try even where unsupported.
+    console.log('\x07');
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.5);
+    notificationSound.currentTime = 0;
+    notificationSound.play().catch(() => {});
 }
 
-// Initialize
+document.getElementById('audio-toggle').addEventListener('click', (e) => {
+    let btn = e.target;
+    let enabled = localStorage.getItem('audioEnabled') === 'true';
+
+    if (!enabled) {
+        localStorage.setItem('audioEnabled', 'true');
+        btn.textContent = '🔊 Notification Audio On';
+        btn.className = 'btn btn-sm btn-success mb-3';
+        // Play immediately, inside this click, to unlock autoplay for later
+        // background-triggered plays and to confirm it's audible right now.
+        playNotificationSound();
+    } else {
+        localStorage.setItem('audioEnabled', 'false');
+        btn.textContent = '🔇 Notification Audio Off';
+        btn.className = 'btn btn-sm btn-outline-secondary mb-3';
+    }
+});
+
+// Initialize - restore the audio toggle's saved state
 document.addEventListener('DOMContentLoaded', function() {
+    let enabled = localStorage.getItem('audioEnabled') === 'true';
+    let btn = document.getElementById('audio-toggle');
+    if (enabled) {
+        btn.textContent = '🔊 Notification Audio On';
+        btn.className = 'btn btn-sm btn-success mb-3';
+    } else {
+        btn.textContent = '🔇 Notification Audio Off';
+        btn.className = 'btn btn-sm btn-outline-secondary mb-3';
+    }
+
     updateLastUpdated();
     setInterval(refreshDashboard, 10000); // 10 seconds
 });
 
 // Add visual feedback for join buttons
-document.querySelectorAll('.btn').forEach(button => {
+document.querySelectorAll('.btn:not(#audio-toggle)').forEach(button => {
     button.addEventListener('click', function() {
         this.innerHTML = '<i class="bi bi-hourglass-split"></i> Connecting...';
         this.disabled = true;
