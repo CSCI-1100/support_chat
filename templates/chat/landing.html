@@ -2,7 +2,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}CSCI 1100 Live Support Chat{% endblock %}
+{% block title %}CSCI Live Support Chat{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -140,6 +140,20 @@
 .forest-1 { background: linear-gradient(45deg, #16a34a8f, #22c55e8c); }
 .forest-2 { background: linear-gradient(135deg, #0596688f, #10b98191); }
 .forest-3 { background: linear-gradient(45deg, #10b98190, #93cb39a3); }
+
+/* CSCI 1300 topic color schemes */
+.berry-1 { background: linear-gradient(45deg, #7e22ce85, #a855f78b); }
+.berry-2 { background: linear-gradient(135deg, #9333ea89, #c026d37e); }
+.berry-3 { background: linear-gradient(45deg, #a21caf88, #86198f8c); }
+.amber-1 { background: linear-gradient(45deg, #b4530983, #f59e0b8e); }
+.amber-2 { background: linear-gradient(135deg, #d9770688, #ca8a047e); }
+.amber-3 { background: linear-gradient(45deg, #ea580c8d, #c2410c97); }
+
+.course-heading {
+    font-weight: 700;
+    text-align: left;
+    margin-bottom: 0.75rem;
+}
 </style>
 {% endblock %}
 
@@ -182,18 +196,19 @@
                 <div class="card-header text-center py-4 border-0" style="background: linear-gradient(45deg, #398ccc 0%, #26ccd5 100%); border-radius: 20px 20px 0 0;">
                     <h1 class="text-white mb-2">
                         <i class="bi bi-mortarboard"></i>
-                        CSCI 1100 Live Support Hub
+                        CSCI Live Support Hub
                     </h1>
                     <p class="mb-0 text-white fs-400">Get help with course topics & assignments!</p>
                 </div>
-                
+
                 <div class="card-body p-4">
-                    <div class="text-center mb-4">
-                        <p class="text-muted mb-3">
-                            <span>💬 Connect with course assistants for help with CSCI 1100 topics:</span>
+                    <div class="mb-4">
+                        <p class="text-muted text-center mb-3">
+                            <span>💬 Connect with course assistants for help with CSCI 1100 and CSCI 1300 topics:</span>
                         </p>
 
-                        <!-- Enhanced Topic Grid -->
+                        <h6 class="course-heading text-muted"><i class="bi bi-1-circle"></i> CSCI 1100 Topics</h6>
+                        <!-- Enhanced Topic Grid: CSCI 1100 -->
                         <div class="row g-2 mb-4">
                             <div class="col-md-4 col-6">
                                 <div class="topic-badge ocean-1">
@@ -256,6 +271,53 @@
                                     <i class="bi bi-shield-lock"></i>
                                     <div>Cybersecurity</div>
                                     <small>Privacy, threats, best practices</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="course-heading text-muted"><i class="bi bi-2-circle"></i> CSCI 1300 Topics</h6>
+                        <!-- Enhanced Topic Grid: CSCI 1300 -->
+                        <div class="row g-2 mb-4">
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge berry-1">
+                                    <i class="bi bi-lightbulb"></i>
+                                    <div>Critical Thinking</div>
+                                    <small>Frameworks, standards, reasoning</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge berry-2">
+                                    <i class="bi bi-cpu"></i>
+                                    <div>AI Concepts</div>
+                                    <small>How AI works, foundations</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge berry-3">
+                                    <i class="bi bi-scale"></i>
+                                    <div>Bias & Ethics in AI</div>
+                                    <small>Fairness, bias, implications</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge amber-1">
+                                    <i class="bi bi-chat-dots"></i>
+                                    <div>Effective Prompting</div>
+                                    <small>Questioning & prompt design</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge amber-2">
+                                    <i class="bi bi-clipboard-check"></i>
+                                    <div>Evaluating AI Outputs</div>
+                                    <small>Accuracy & hallucinations</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-6">
+                                <div class="topic-badge amber-3">
+                                    <i class="bi bi-people"></i>
+                                    <div>Decision-Making & Communication</div>
+                                    <small>Appropriate use & disclosure</small>
                                 </div>
                             </div>
                         </div>
