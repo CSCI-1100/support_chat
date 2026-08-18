@@ -77,7 +77,7 @@
                         </div>
                         <div class="card-body queue-scroll">
                             {% for chat in waiting_chats %}
-                                <div class="chat-item p-3 mb-3 {% if forloop.first %}new-chat-alert{% endif %}">
+                                <div class="chat-item waiting-item p-3 mb-3 {% if forloop.first %}new-chat-alert{% endif %}" data-chat-id="{{ chat.chat_id }}">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="flex-grow-1">
                                             <h4 class="mb-1" style="font-size: 1rem;">
@@ -122,7 +122,7 @@
                         </div>
                         <div class="card-body queue-scroll">
                             {% for chat in active_chats %}
-                                <div class="chat-item p-3 mb-3">
+                                <div class="chat-item active-item p-3 mb-3" data-chat-id="{{ chat.chat_id }}">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="flex-grow-1">
                                             <h4 class="mb-1" style="font-size: 1rem;">
@@ -181,8 +181,12 @@ function updateLastUpdated() {
     document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
 }
 
+function chatIds(doc, selector) {
+    return Array.from(doc.querySelectorAll(selector)).map(el => el.dataset.chatId);
+}
+
 function refreshDashboard() {
-    // Soft refresh - only reload if new chats are detected
+    // Soft refresh - only reload if the queues actually changed
     fetch(window.location.href + '?ajax=1')
         .then(response => response.text())
         .then(html => {
@@ -190,16 +194,22 @@ function refreshDashboard() {
             const parser = new DOMParser();
             const newDoc = parser.parseFromString(html, 'text/html');
 
-            // Check if waiting queue count changed
-            const currentWaiting = document.querySelectorAll('.new-chat-alert').length;
-            const newWaiting = newDoc.querySelectorAll('.new-chat-alert').length;
+            const currentWaitingIds = chatIds(document, '.waiting-item');
+            const newWaitingIds = chatIds(newDoc, '.waiting-item');
+            const currentActiveIds = chatIds(document, '.active-item');
+            const newActiveIds = chatIds(newDoc, '.active-item');
 
-            if (newWaiting > currentWaiting) {
-                // New chat alert sound
-                if (localStorage.getItem('audioEnabled') === 'true') {
+            const hasNewWaitingChat = newWaitingIds.some(id => !currentWaitingIds.includes(id));
+            const queueChanged = hasNewWaitingChat
+                || newWaitingIds.length !== currentWaitingIds.length
+                || newActiveIds.length !== currentActiveIds.length
+                || newActiveIds.some(id => !currentActiveIds.includes(id));
+
+            if (queueChanged) {
+                if (hasNewWaitingChat && localStorage.getItem('audioEnabled') === 'true') {
                     playNotificationSound();
                 }
-                // Full refresh to show new chats
+                // Full refresh to show the updated queues
                 location.reload();
             }
 
@@ -221,6 +231,25 @@ function playNotificationSound() {
     notificationSound.currentTime = 0;
     notificationSound.play().catch(() => {});
 }
+
+// The audio-toggle click unlocks autoplay for that page load, but if audio was
+// already saved 'on' from a previous session, nothing has unlocked it yet this
+// load - the first real notification would silently fail. Unlock silently on
+// the technician's first interaction of any kind with the page instead.
+function unlockNotificationAudio(e) {
+    // The toggle button already unlocks (and plays) on its own click - avoid
+    // stepping on that confirmation beep by pausing the same element under it.
+    if (e.target && e.target.id === 'audio-toggle') return;
+
+    notificationSound.play().then(() => {
+        notificationSound.pause();
+        notificationSound.currentTime = 0;
+    }).catch(() => {});
+    document.removeEventListener('click', unlockNotificationAudio);
+    document.removeEventListener('keydown', unlockNotificationAudio);
+}
+document.addEventListener('click', unlockNotificationAudio);
+document.addEventListener('keydown', unlockNotificationAudio);
 
 document.getElementById('audio-toggle').addEventListener('click', (e) => {
     let btn = e.target;
