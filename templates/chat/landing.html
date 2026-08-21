@@ -401,8 +401,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div>
                         <span class="status-dot dot-current"></span>
                         <span class="ff-sans-bolder">${todayName} (Special Hours)</span>
+                        <span class="ml-xs"><em>${overrideReason}</em></span>
                     </div>
-                    <div><em>${overrideReason}</em></div>
                 </div>
             `;
         } else if (todaySchedule.is_active && todaySchedule.start_time && todaySchedule.end_time) {
@@ -411,8 +411,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div>
                         <span class="status-dot dot-current"></span>
                         <span class="ff-sans-bolder">${todayName}</span>
+                        <span class="ml-xs">${todaySchedule.start_time} - ${todaySchedule.end_time}</div>
                     </div>
-                    <div>${todaySchedule.start_time} - ${todaySchedule.end_time}</div>
                 </div>
             `;
         } else if (todaySchedule.is_active) {
@@ -421,8 +421,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div>
                         <span class="status-dot dot-current"></span>
                         <span class="ff-sans-bolder">${todayName}</span>
+                        <span class="ml-xs">Open (no time restrictions)</span>
                     </div>
-                    <div>Open (no time restrictions)</div>
                 </div>
             `;
         } else {
@@ -431,8 +431,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div>
                         <span class="status-dot dot-unavailable"></span>
                         <span class="ff-sans-bolder">${todayName}</span>
+                        <span class="ml-xs">Closed</span>
                     </div>
-                    <div>Closed</div>
                 </div>
             `;
         }
